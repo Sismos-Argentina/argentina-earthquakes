@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare:data": "node tools/prepare-inpres.mjs",
+    "predev": "npm run prepare:data",
     "dev": "next dev",
+    "prebuild": "npm run prepare:data",
     "build": "next build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
@@ -14,12 +17,14 @@
   "dependencies": {
     "next": "16.3.5",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "three": "0.186.0"
   },
   "devDependencies": {
     "@types/node": "22.20.3",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.5",
     "typescript": "6.0.3"
