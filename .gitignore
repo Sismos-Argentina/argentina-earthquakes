@@ -1,0 +1,39 @@
+# Dependencies and Next.js outputs
+node_modules/
+.next/
+out/
+
+# Local environment
+.env
+.env.local
+.env.*.local
+
+# Local datasets and caches
+.local-data/
+.cache/
+benchmark-results/
+data/raw/
+research/raw/
+
+# Raw scientific formats should not be committed accidentally
+*.nc
+*.grd
+*.tif
+*.tiff
+*.asc
+*.shp
+*.shx
+*.dbf
+GEBCO_*.zip
+sam_slab2_*.xyz
+sam_shapefiles.zip
+ne_10m_admin_0_countries.zip
+
+# Tooling and OS files
+*.tsbuildinfo
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
+# Deliberately not ignored: public/data/generated/
