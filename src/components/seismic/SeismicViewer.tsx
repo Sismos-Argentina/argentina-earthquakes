@@ -73,6 +73,7 @@ export default function SeismicViewer() {
     let catalogPoints: THREE.Points | null = null;
     let selectedPoint: THREE.Points | null = null;
     let selectedDepthLine: THREE.Line | null = null;
+    const fetchController = new AbortController();
     const startedAt = performance.now();
 
     const scene = new THREE.Scene();
@@ -221,9 +222,12 @@ export default function SeismicViewer() {
       try {
         const heapBefore = heapBytes();
         const fetchStart = performance.now();
-        const response = await fetch(CATALOG_URL);
+        const response = await fetch(CATALOG_URL, {
+          signal: fetchController.signal,
+        });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const bytes = await response.arrayBuffer();
+        if (disposed) return;
         const fetchMs = performance.now() - fetchStart;
         const text = new TextDecoder().decode(bytes);
         const parseStart = performance.now();
@@ -287,14 +291,15 @@ export default function SeismicViewer() {
         selectedDepthLine.visible = false;
         scene.add(selectedDepthLine);
 
-        const resource = performance.getEntriesByName(
+        const resourceEntries = performance.getEntriesByName(
           response.url,
           "resource",
-        )[0] as PerformanceResourceTiming | undefined;
+        ) as PerformanceResourceTiming[];
+        const resource = resourceEntries.at(-1);
         setMetrics((previous) => ({
           ...previous,
           decodedBytes: bytes.byteLength,
-          transferBytes: resource?.transferSize || undefined,
+          transferBytes: resource?.transferSize,
           fetchMs,
           parseMs,
           buildMs: performance.now() - buildStart,
@@ -316,6 +321,7 @@ export default function SeismicViewer() {
 
     return () => {
       disposed = true;
+      fetchController.abort();
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
@@ -357,7 +363,7 @@ export default function SeismicViewer() {
         <span><i className="legendIntermediate" />70–300</span>
         <span><i className="legendDeep" />más de 300</span>
         <small>Hacia abajo (−Y) · escala vertical {VERTICAL_EXAGGERATION}×</small>
-        <small>Cuadrícula = plano 0 km, no terreno. Este +X · norte +Z.</small>
+        <small>Cuadrícula = plano 0 km, no terreno. Este +X · norte −Z.</small>
         <small>Vista inicial centrada en región andina; “Todo el catálogo” incluye registros lejanos.</small>
       </aside>
 
