@@ -9,7 +9,8 @@
     "prebuild": "npm run prepare:data",
     "build": "next build",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "terrain:validate": "python tools/terrain/validate_gebco.py"
   },
   "engines": {
     "node": ">=20.9.0"

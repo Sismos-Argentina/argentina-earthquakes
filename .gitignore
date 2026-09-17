@@ -10,3 +10,13 @@ out/
 
 # TypeScript
 *.tsbuildinfo
+
+# Local scientific preprocessing
+.local-data/
+__pycache__/
+*.pyc
+*.nc
+*.tif
+*.tiff
+*.asc
+GEBCO_*.zip
