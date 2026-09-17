@@ -34,7 +34,7 @@ button:focus-visible, summary:focus-visible {
 .scene { position: absolute; inset: 0; }
 .scene canvas { display: block; touch-action: none; }
 
-.viewerHeader, .viewControls, .depthLegend, .inspector, .benchmark {
+.viewerHeader, .viewControls, .reliefControls, .slabControl, .profileControl, .compass, .depthLegend, .inspector, .benchmark, .sectionMode, .sectionLoading {
   position: absolute;
   z-index: 1;
 }
@@ -62,10 +62,12 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
   top: 1.5rem;
   right: 1.5rem;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 0.5rem;
 }
 
-.viewControls button {
+.viewControls button, .reliefControls button, .slabControl button, .profileControl button, .sectionActions button, .sectionBack, .sectionLoading button {
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 0.35rem;
@@ -73,7 +75,64 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
   color: var(--text);
   cursor: pointer;
 }
-.viewControls button:hover { border-color: #86a6ae; }
+.viewControls button:hover, .reliefControls button:hover, .slabControl button:hover, .profileControl button:hover, .sectionActions button:hover, .sectionBack:hover, .sectionLoading button:hover { border-color: #86a6ae; }
+.viewControls button[aria-pressed="true"], .reliefControls button[aria-pressed="true"] {
+  border-color: #f2bb70;
+  background: rgb(76 58 34 / 94%);
+  color: #fff4db;
+}
+
+.reliefControls {
+  top: 4.8rem;
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  background: var(--panel);
+}
+.reliefControls span {
+  padding: 0 0.4rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.reliefControls button { padding: 0.35rem 0.55rem; }
+
+.slabControl { top: 8.35rem; right: 1.5rem; }
+.slabControl button[aria-pressed="true"] { border-color: #d2abeb; color: #f3e2ff; }
+.slabControl button:disabled { opacity: 0.55; cursor: wait; }
+.profileControl { top: 11.6rem; right: 1.5rem; }
+.profileControl button:disabled { opacity: 0.55; cursor: wait; }
+
+.compass {
+  top: 12rem;
+  right: 1.5rem;
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--panel);
+  color: #f2bb70;
+  pointer-events: none;
+}
+.compassNeedle {
+  position: absolute;
+  display: block;
+  font-size: 1.7rem;
+  line-height: 1;
+  transform-origin: 50% 50%;
+}
+.compass b {
+  position: absolute;
+  top: -1rem;
+  font-size: 0.68rem;
+}
 
 .depthLegend, .inspector, .benchmark {
   border: 1px solid var(--border);
@@ -100,6 +159,7 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 .terrainTitle { margin-top: 0.4rem; padding-top: 0.65rem; border-top: 1px solid var(--border); }
 .depthLegend .legendLand { border-radius: 0.1rem; background: #668259; }
 .depthLegend .legendOcean { border-radius: 0.1rem; background: #235b70; }
+.depthLegend .legendSlab { border-radius: 0.1rem; background: #d3ded8; }
 .depthLegend small, .benchmark small, .caveat, .source {
   color: var(--muted);
   line-height: 1.4;
@@ -139,13 +199,88 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 .benchmark summary { cursor: pointer; }
 .benchmark dl { margin: 0.7rem 0; }
 
+.viewer--section .viewerHeader,
+.viewer--section .viewControls,
+.viewer--section .reliefControls,
+.viewer--section .slabControl,
+.viewer--section .profileControl,
+.viewer--section .compass,
+.viewer--section .depthLegend,
+.viewer--section .benchmark { display: none; }
+
+.viewer--section .scene {
+  inset: 6.1rem auto auto auto;
+  width: min(36vw, 520px);
+  height: 148px;
+  right: 2.5rem;
+  z-index: 4;
+  overflow: hidden;
+  border: 1px solid #567078;
+  border-radius: 0.45rem 0.45rem 0 0;
+}
+
+.sectionMode, .sectionLoading {
+  inset: 0;
+  z-index: 2;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+  background: #08161c;
+}
+.sectionMode { display: flex; flex-direction: column; gap: 0.8rem; overflow-y: scroll; scrollbar-gutter: stable; }
+.sectionModeHeader { display: flex; align-items: center; gap: 1.2rem; min-height: 72px; border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }
+.sectionModeHeader .eyebrow { margin-bottom: 0.15rem; }
+.sectionModeHeader h2 { margin: 0; font-size: clamp(1.25rem, 2vw, 1.8rem); font-weight: 500; }
+.sectionBack { white-space: nowrap; }
+.sectionModeTag { margin-left: auto; color: var(--muted); font-size: 0.76rem; }
+.sectionContext { display: grid; grid-template-columns: minmax(0, 1fr) min(36vw, 520px); gap: 1rem; min-height: 190px; }
+.sectionContextCopy { align-self: center; max-width: 40rem; }
+.sectionContextCopy p { margin: 0.75rem 0; font-size: 0.96rem; line-height: 1.45; }
+.sectionContextCopy small, .sectionMapSlot small { color: var(--muted); }
+.sectionRoute { display: flex; flex-wrap: wrap; gap: 0.4rem; color: #e6cf9d; font-size: 0.82rem; }
+.sectionRoute span { color: var(--muted); }
+.sectionMapSlot { display: flex; flex-direction: column; justify-content: flex-end; gap: 0.15rem; padding: 0.45rem 0.65rem; border: 1px solid var(--border); border-radius: 0.45rem; background: #10252c; font-size: 0.75rem; }
+.sectionMiniDiagram { display: none; }
+.sectionPrimary { display: flex; flex: 1 0 auto; flex-direction: column; min-height: 270px; border: 1px solid var(--border); border-radius: 0.45rem; background: #0b1a20; }
+.sectionPrimaryHeading { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.65rem 0.85rem; border-bottom: 1px solid #29434a; }
+.sectionPrimaryHeading span { color: var(--muted); font-size: 0.75rem; }
+.sectionPlot { flex: 1; min-height: 100px; overflow: auto; }
+.sectionPlot canvas { display: block; cursor: crosshair; max-width: none; }
+.sectionAxis { display: flex; justify-content: space-between; gap: 1rem; padding: 0.3rem 0.85rem 0.5rem; color: var(--muted); font-size: 0.75rem; }
+.sectionBottom { display: grid; grid-template-columns: minmax(0, 1fr) min(24vw, 330px); gap: 0.8rem; }
+.sectionReference { min-width: 0; }
+.sectionLegend { display: flex; flex-wrap: wrap; gap: 0.45rem 1rem; font-size: 0.74rem; }
+.sectionLegend span { display: inline-flex; align-items: center; gap: 0.38rem; }
+.sectionLegend i { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 50%; }
+.sectionLegend .sectionLegendGebco, .sectionLegend .sectionLegendSlab { width: 1.1rem; height: 0.2rem; border-radius: 0; }
+.sectionLegendGebco { background: #90c48f; }
+.sectionLegendSlab { background: #eee3ca; }
+.sectionActions { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
+.sectionActions button { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
+.sectionActions button[aria-pressed="true"] { border-color: #e6cf9d; }
+.sectionDetails { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-top: 0.6rem; font-size: 0.76rem; }
+.sectionDetails details { max-width: 38rem; }
+.sectionDetails summary { color: #d8e7e1; cursor: pointer; }
+.sectionDetails p { color: var(--muted); line-height: 1.45; }
+.sectionDetails a { color: #bcdadf; }
+.inspector--section { position: static; width: auto; max-height: 190px; overflow-y: auto; padding: 0.65rem; font-size: 0.74rem; }
+.inspector--section h2 { font-size: 0.88rem; margin-bottom: 0.45rem; }
+.inspector--section .caveat, .inspector--section .source { font-size: 0.7rem; }
+.sectionLoading { padding-top: 2rem; }
+.sectionLoading p { margin-top: 1.5rem; color: var(--muted); }
+
 @media (max-width: 900px) {
   .viewerHeader { top: 0.8rem; left: 0.8rem; }
   .viewControls { top: 5.5rem; left: 0.8rem; right: auto; }
+  .reliefControls { top: 8.7rem; left: 0.8rem; right: auto; }
+  .slabControl { top: 12rem; left: 0.8rem; right: auto; }
+  .profileControl { top: 15.2rem; left: 0.8rem; right: auto; }
+  .compass { top: 6rem; right: 0.8rem; }
   .depthLegend {
     left: 0.8rem;
     bottom: calc(40dvh + 0.7rem);
     width: min(13rem, 48vw);
+    max-height: 29dvh;
+    overflow-y: auto;
     font-size: 0.7rem;
   }
   .inspector {
@@ -162,4 +297,30 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
     width: min(14rem, 43vw);
     min-width: 0;
   }
+  .viewer--section .scene { right: 1.8rem; width: 38vw; }
+  .sectionMode { padding: 0.8rem; }
+  .sectionContext { grid-template-columns: minmax(0, 1fr) 38vw; }
+  .sectionBottom { grid-template-columns: minmax(0, 1fr) min(34vw, 280px); }
+  .sectionAxis { font-size: 0.7rem; flex-wrap: wrap; }
+}
+
+@media (max-width: 900px) and (min-height: 750px) {
+  .viewControls { top: 8.4rem; }
+  .reliefControls { top: 11.6rem; }
+  .slabControl { top: 14.9rem; }
+  .profileControl { top: 18.1rem; }
+}
+
+@media (max-width: 700px) {
+  .viewer--section .scene { display: none; }
+  .sectionModeHeader { align-items: flex-start; flex-wrap: wrap; gap: 0.65rem; }
+  .sectionModeTag { display: none; }
+  .sectionContext { display: flex; flex-direction: column; min-height: 0; }
+  .sectionContextCopy { align-self: stretch; }
+  .sectionContextCopy p { font-size: 0.85rem; }
+  .sectionMapSlot { min-height: 82px; }
+  .sectionMiniDiagram { display: block; color: #e6cf9d; font-size: 0.78rem; }
+  .sectionPrimaryHeading { flex-wrap: wrap; }
+  .sectionBottom { display: flex; flex-direction: column; }
+  .inspector--section { max-height: 190px; }
 }

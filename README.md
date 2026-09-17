@@ -1,32 +1,61 @@
 # Sismos Visuales
 
-Primer vertical slice: exploracion 3D de 80.470 sismos reales del catalogo INPRES. Esta escena de prueba no incluye terreno, cartografia oficial ni modelos tectonicos.
+Visualización científica e interactiva de los sismos catalogados en Argentina y su distribución en profundidad. El usuario puede explorar el catálogo real en 3D, inspeccionar eventos y superponer modelos geográficos y geofísicos diferenciados.
 
-## Desarrollo local
+**Estado:** snapshot de 80.470 eventos INPRES (2011–14/09/2026), relieve GEBCO 2026, cartografía IGN/Natural Earth y primera superficie diagnóstica Slab2 South America 2018. La proyección horizontal es una aproximación local sustituible. Ninguna superposición clasifica tectónicamente los eventos. Fecha objetivo del MVP: 15 de octubre de 2026.
 
-Requisitos: Node.js 20.9 o superior, npm y un navegador con WebGL. No hacen falta servicios pagos ni variables de entorno obligatorias.
+## Principios
+
+- Separar observaciones INPRES, modelos externos, derivados e interpretaciones.
+- Mostrar profundidad, unidades, procedencia y limitaciones sin inventar datos ausentes.
+- Medir el catálogo real antes de optimizar.
+- Mantener el scraping y la normalización en el repositorio proveedor `inpres-sismos`.
+
+## Requisitos y desarrollo local
+
+- Node.js 20.9 o superior y npm.
+- WebGL en el navegador.
+- Sin servicios pagos ni variables obligatorias. El repositorio hermano `../inpres-sismos` permite preparar los datos sin red; si no está presente, el script descarga el snapshot fijado desde GitHub Raw.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abrir http://localhost:3000. El comando `predev` prepara automaticamente el GeoJSON. Si existe un repositorio hermano `../inpres-sismos` con el snapshot esperado, se usa localmente; si falta o cambio, se descarga el commit fijado desde GitHub Raw. La primera preparacion y descarga en el navegador procesan unos 41 MB.
+Abrir [http://localhost:3000](http://localhost:3000). `predev` verifica el export y genera el artefacto web automáticamente. La primera preparación y descarga del navegador procesan aproximadamente 41 MB; pueden tardar.
 
 ```bash
 npm run lint
 npm run typecheck
+npm run data:validate
 npm run build
 ```
 
-`prebuild` prepara los datos y `npm run build` genera un sitio estatico en `out/`. No hay suite automatizada de tests ni deploy configurado todavia.
+`prebuild` prepara los mismos datos y `npm run build` genera la exportación estática en `out/`. Aún no existe deploy configurado. La suite científica se ejecuta con `npm test`.
 
-## Snapshot reproducible
+## Snapshot y transformación web
 
 - Proveedor: `Sismos-Argentina/inpres-sismos`, commit `81e230c782972a2996a32f1ef21d56a2ef22e2e7`.
 - Entrada: `data/exports/sismos.geojson`, SHA-256 `ae37584d4e5b45ad9225a10f74d5a44609bf202bee8fdca2f295af2025344a44`, 41.059.737 bytes.
-- El export contiene 31 `NaN` en `ubicacion_original` (JSON invalido). `tools/prepare-inpres.mjs` verifica el hash y convierte solo esos valores a `null`; valida los 80.470 eventos.
-- Salida: `public/data/generated/inpres-2026-09-14.geojson`, SHA-256 `685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82`, 41.059.768 bytes. Se sirve desde el mismo origen, se genera localmente y no se versiona.
-- Opcional: `SISMOS_INPRES_GEOJSON` permite indicar una ruta de entrada; su contenido debe tener el checksum fijado.
+- El export contiene 31 `NaN` en `ubicacion_original`, sintaxis inválida para `JSON.parse`. `tools/prepare-inpres.mjs` verifica el hash, convierte **sólo esos 31 valores** a `null` y valida los 80.470 puntos. No cambia coordenadas, profundidad, magnitud ni otros campos.
+- Salida estática same-origin: `public/data/generated/inpres-2026-09-14.geojson`, SHA-256 `685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82`, 41.059.768 bytes. Se genera localmente y está ignorada de forma específica; no se versiona el dataset pesado.
+- Opcional: `SISMOS_INPRES_GEOJSON` indica una ruta de entrada alternativa; debe coincidir con el checksum fijado.
 
-La escena usa una aproximacion equirectangular local (no apta para medir distancias geodesicas). La profundidad aumenta hacia abajo, sin exageracion vertical. La cuadricula es una referencia de 0 km, no topografia. El inspector muestra los campos disponibles sin asignar un tipo de magnitud desconocido. El panel de mediciones muestra tiempos, memoria cuando esta disponible, FPS y picking orientativos de la sesion.
+La vista inicial se centra en la región andina; el botón «Todo el catálogo» incluye también registros geográficamente lejanos. El panel «Mediciones de esta sesión» muestra tiempos y FPS orientativos. Para una comparación reproducible, usar build de producción y el protocolo de `docs/BENCHMARK_PLAN.md`.
+
+Navegación: arrastrar para rotar, botón derecho para desplazar, doble clic para centrar el mapa en el punto señalado y rueda para acercar hacia la posición del cursor.
+Con ambos botones del mouse presionados, arrastrar traslada la escena en sentido inverso al movimiento en pantalla e incluye el eje de profundidad según la inclinación de la cámara.
+
+El control «Modelo Slab2» activa la superficie modelada sin modificar la profundidad de los hipocentros. Los controles 1×/5×/10× exageran sólo GEBCO. Los artefactos web GEBCO, cartografía y Slab2 ya están incluidos; `npm run dev` no requiere sus fuentes raw. Para regenerar Slab2 con `SISMOS_DATA_DIR`, consultar [la herramienta](tools/slab2/README.md).
+
+## Documentación activa
+
+- [Constitución científica y técnica](CLAUDE.md)
+- [Alcance del MVP](docs/MVP_SCOPE.md)
+- [Contrato de datos](docs/DATA_CONTRACT.md)
+- [Benchmark inicial](docs/BENCHMARK_PLAN.md)
+- [Sistema de diseño](docs/DESIGN_SYSTEM.md)
+- [Manifiesto y checksums](manifests/DATASET_MANIFEST.md)
+- [Hoja de ruta](plans/04-hoja-de-ruta-y-fases.md)
+
+Los planes y marcadores de posición anteriores se preservan en [el archivo histórico](archive/2026-09-pre-mvp/README.md); no definen el MVP vigente.
