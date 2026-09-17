@@ -10,12 +10,17 @@
     "build": "next build",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "terrain:validate": "python tools/terrain/validate_gebco.py"
+    "test": "node --experimental-strip-types --test --test-isolation=none tests/*.test.mjs",
+    "terrain:validate": "python tools/terrain/validate_gebco.py",
+    "cartography:validate": "python tools/cartography/validate_cartography.py",
+    "slab2:validate": "python tools/slab2/validate_slab2.py",
+    "data:validate": "npm run terrain:validate && npm run cartography:validate && npm run slab2:validate"
   },
   "engines": {
     "node": ">=20.9.0"
   },
   "dependencies": {
+    "geographiclib-geodesic": "^2.2.0",
     "next": "16.3.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
