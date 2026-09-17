@@ -208,11 +208,16 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 .viewer--section .depthLegend,
 .viewer--section .benchmark { display: none; }
 
+.viewer--section {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 .viewer--section .scene {
-  inset: 6.1rem auto auto auto;
+  inset: 6.3rem auto auto auto;
   width: min(36vw, 520px);
   height: 148px;
-  right: 2.5rem;
+  right: 1.5rem;
   z-index: 4;
   overflow: hidden;
   border: 1px solid #567078;
@@ -226,7 +231,15 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
   padding: 1rem 1.5rem;
   background: #08161c;
 }
-.sectionMode { display: flex; flex-direction: column; gap: 0.8rem; overflow-y: scroll; scrollbar-gutter: stable; }
+.sectionMode {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-height: 100%;
+  overflow: visible;
+}
 .sectionModeHeader { display: flex; align-items: center; gap: 1.2rem; min-height: 72px; border-bottom: 1px solid var(--border); padding-bottom: 0.6rem; }
 .sectionModeHeader .eyebrow { margin-bottom: 0.15rem; }
 .sectionModeHeader h2 { margin: 0; font-size: clamp(1.25rem, 2vw, 1.8rem); font-weight: 500; }
@@ -297,7 +310,7 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
     width: min(14rem, 43vw);
     min-width: 0;
   }
-  .viewer--section .scene { right: 1.8rem; width: 38vw; }
+  .viewer--section .scene { top: 6.1rem; right: 0.8rem; width: 38vw; }
   .sectionMode { padding: 0.8rem; }
   .sectionContext { grid-template-columns: minmax(0, 1fr) 38vw; }
   .sectionBottom { grid-template-columns: minmax(0, 1fr) min(34vw, 280px); }
