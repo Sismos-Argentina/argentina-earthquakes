@@ -97,6 +97,9 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 .legendShallow { background: #f5a957; }
 .legendIntermediate { background: #52c7de; }
 .legendDeep { background: #b894ed; }
+.terrainTitle { margin-top: 0.4rem; padding-top: 0.65rem; border-top: 1px solid var(--border); }
+.depthLegend .legendLand { border-radius: 0.1rem; background: #668259; }
+.depthLegend .legendOcean { border-radius: 0.1rem; background: #235b70; }
 .depthLegend small, .benchmark small, .caveat, .source {
   color: var(--muted);
   line-height: 1.4;

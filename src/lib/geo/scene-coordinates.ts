@@ -21,3 +21,17 @@ export function geographicToScene(
     -(latitude - SCENE_ORIGIN.latitude) * KM_PER_DEGREE,
   ];
 }
+
+export function geographicElevationToScene(
+  longitude: number,
+  latitude: number,
+  elevationKm: number,
+  verticalExaggeration = VERTICAL_EXAGGERATION,
+): [number, number, number] {
+  return geographicToScene(
+    longitude,
+    latitude,
+    -elevationKm,
+    verticalExaggeration,
+  );
+}

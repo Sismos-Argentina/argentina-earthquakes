@@ -53,4 +53,20 @@ Para la primera comparación usar BBOX **80°O–60°O, 46°S–18°S**, que con
 
 Conservar alturas positivas y batimetría negativa de la **misma** grilla, sin aplanar océano ni inventar fondo. El plano de nivel del mar nominal será `y = 0`; la superficie utilizaría `y = elevación_m / 1000` con exageración vertical 1×. Para cada celda, longitud y latitud pasarían por `geographicToScene` igual que los sismos. **Puerta científica:** antes de afirmar que un hipocentro está a cierta distancia bajo la superficie GEBCO, verificar a qué referencia vertical se refiere la profundidad INPRES. Si no coincide con el nivel del mar nominal de GEBCO, mostrar la comparación como aproximada y no publicar separaciones verticales cuantitativas. GEBCO integra fuentes heterogéneas y puede incluir datums distintos del nivel medio del mar en aguas someras; atribuirlo como modelo de elevación/batimetría, no como terreno real exacto.
 
-La pregunta exclusiva de esa iteración será: «¿Podemos colocar correctamente nuestros hipocentros debajo de una superficie derivada de GEBCO?» No se procesó el ZIP ni se generó ninguna malla en este cierre.
+La pregunta exclusiva de esa iteración será: «¿Podemos colocar correctamente nuestros hipocentros debajo de una superficie derivada de GEBCO?» En el cierre del baseline todavía no se había procesado el ZIP ni generado una malla.
+
+## Seguimiento: prototipo GEBCO 2026
+
+Prueba realizada el 17/09/2026 con el mismo entorno local y snapshot INPRES. Se procesó offline el GeoTIFF `gebco_2026_n0.0_s-77.0_w-85.0_e-9.0_geotiff.tif` incluido en el ZIP cuyo SHA-256 es `5bcaf61045b50461332829c44c36c1f3385bfaa2febb2da62941e0bdce528ecb`. El raw no se modificó ni incorporó al repositorio.
+
+- Recorte científico **provisional**, no territorial: 80°O–60°O, 46°S–18°S.
+- Salida: 256 × 358 celdas; 91.648 válidas, 0 nodata; −7.703 a +5.917 m.
+- Artefacto JSON determinista: 450.758 bytes; SHA-256 `94ea97591859b3eb011a0c08bd827a65767fbece07d67852efa0b093e5601514`.
+- Sanity checks: Andes centrales +3.625 m; costa chilena −68 m; centro argentino +167 m; Pacífico −4.322 m.
+- Malla: 91.648 vértices, 182.070 triángulos, un draw call adicional.
+
+Medición de una carga del build estático local, sin compresión HTTP: GEBCO transfirió 0,4 MiB; fetch 335 ms; parseo 1 ms; construcción 32 ms. El primer frame con catálogo y terreno fue 1.073 ms, frente a 1.456 ms del baseline observado en otra ejecución; esa diferencia no demuestra una mejora porque no son corridas controladas equivalentes. FPS aproximado permaneció en 120. El heap JS observado pasó de 14,7 a 137,6 MiB, frente a 14,7 a 101,1 MiB en el baseline; la diferencia de 36,5 MiB es una estimación afectada por GC y no equivale por sí sola al costo estable de la capa. No apareció un problema medible que justifique optimización.
+
+La superficie utiliza la misma transformación geográfica que los hipocentros: +X este, −Z norte y +Y elevación. GEBCO se convierte de metros a kilómetros; el catálogo conserva profundidad hacia −Y. Ambas capas usan exageración vertical 1× y nivel del mar nominal `y = 0`. La inspección visual confirmó la secuencia oeste→este Pacífico–Andes–interior continental y la selección continuó funcionando. La consola no mostró errores ni advertencias.
+
+El artefacto se versiona porque es pequeño, determinista y permite ejecutar el frontend sin Python ni el raw de 3,7 GB. Regenerarlo requiere Python, Rasterio/GDAL y `SISMOS_DATA_DIR`; los detalles están en `../tools/terrain/README.md`. La representación territorial completa continúa siendo una capa separada y pendiente: este BBOX no define el alcance final de Tierra del Fuego, Malvinas/Islas del Atlántico Sur ni Antártida.

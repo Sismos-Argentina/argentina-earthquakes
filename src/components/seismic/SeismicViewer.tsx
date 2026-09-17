@@ -11,9 +11,14 @@ import {
   type InpresFeature,
 } from "@/lib/data/inpres";
 import {
+  assertGebcoArtifact,
+  GEBCO_URL,
+} from "@/lib/data/gebco";
+import {
   geographicToScene,
   VERTICAL_EXAGGERATION,
 } from "@/lib/geo/scene-coordinates";
+import { createGebcoGeometry } from "@/lib/terrain/create-gebco-geometry";
 
 type Metrics = {
   decodedBytes?: number;
@@ -26,6 +31,14 @@ type Metrics = {
   heapAfter?: number;
   fps?: number;
   pickingMs?: number;
+  terrainBytes?: number;
+  terrainTransferBytes?: number;
+  terrainFetchMs?: number;
+  terrainParseMs?: number;
+  terrainBuildMs?: number;
+  terrainVertices?: number;
+  terrainTriangles?: number;
+  drawCalls?: number;
 };
 
 type ViewActions = {
@@ -58,6 +71,7 @@ export default function SeismicViewer() {
   const canvasHost = useRef<HTMLDivElement>(null);
   const views = useRef<ViewActions | null>(null);
   const [status, setStatus] = useState("Cargando catálogo INPRES…");
+  const [terrainStatus, setTerrainStatus] = useState("Cargando modelo GEBCO…");
   const [count, setCount] = useState(0);
   const [selected, setSelected] = useState<InpresFeature | null>(null);
   const [metrics, setMetrics] = useState<Metrics>({});
@@ -69,12 +83,21 @@ export default function SeismicViewer() {
     let disposed = false;
     let animationFrame = 0;
     let pendingFirstRender = false;
+    let catalogReady = false;
+    let terrainReady = false;
     let features: InpresFeature[] = [];
     let catalogPoints: THREE.Points | null = null;
+    let terrainMesh: THREE.Mesh | null = null;
     let selectedPoint: THREE.Points | null = null;
     let selectedDepthLine: THREE.Line | null = null;
     const fetchController = new AbortController();
     const startedAt = performance.now();
+    const markLayerReady = () => {
+      if (catalogReady && terrainReady) {
+        pendingFirstRender = true;
+        setMetrics((previous) => ({ ...previous, heapAfter: heapBytes() }));
+      }
+    };
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color("#071014");
@@ -154,7 +177,11 @@ export default function SeismicViewer() {
       frameCount++;
       if (now - lastFpsSample >= 1000) {
         const fps = (frameCount * 1000) / (now - lastFpsSample);
-        setMetrics((previous) => ({ ...previous, fps }));
+        setMetrics((previous) => ({
+          ...previous,
+          fps,
+          drawCalls: renderer.info.render.calls,
+        }));
         frameCount = 0;
         lastFpsSample = now;
       }
@@ -308,7 +335,8 @@ export default function SeismicViewer() {
         }));
         setCount(features.length);
         setStatus("Catálogo cargado");
-        pendingFirstRender = true;
+        catalogReady = true;
+        markLayerReady();
       } catch (error) {
         if (!disposed) {
           setStatus(
@@ -317,7 +345,63 @@ export default function SeismicViewer() {
         }
       }
     };
+    const loadTerrain = async () => {
+      try {
+        const fetchStart = performance.now();
+        const response = await fetch(GEBCO_URL, {
+          signal: fetchController.signal,
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const bytes = await response.arrayBuffer();
+        if (disposed) return;
+        const fetchMs = performance.now() - fetchStart;
+        const parseStart = performance.now();
+        const parsed: unknown = JSON.parse(new TextDecoder().decode(bytes));
+        assertGebcoArtifact(parsed);
+        const parseMs = performance.now() - parseStart;
+        const buildStart = performance.now();
+        const terrain = createGebcoGeometry(parsed);
+        terrainMesh = new THREE.Mesh(
+          terrain.geometry,
+          new THREE.MeshBasicMaterial({
+            vertexColors: true,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.68,
+            depthWrite: false,
+          }),
+        );
+        terrainMesh.renderOrder = 1;
+        scene.add(terrainMesh);
+
+        const resourceEntries = performance.getEntriesByName(
+          response.url,
+          "resource",
+        ) as PerformanceResourceTiming[];
+        const resource = resourceEntries.at(-1);
+        setMetrics((previous) => ({
+          ...previous,
+          terrainBytes: bytes.byteLength,
+          terrainTransferBytes: resource?.transferSize,
+          terrainFetchMs: fetchMs,
+          terrainParseMs: parseMs,
+          terrainBuildMs: performance.now() - buildStart,
+          terrainVertices: terrain.vertices,
+          terrainTriangles: terrain.triangles,
+        }));
+        setTerrainStatus("GEBCO cargado");
+        terrainReady = true;
+        markLayerReady();
+      } catch (error) {
+        if (!disposed) {
+          setTerrainStatus(
+            `GEBCO no disponible: ${error instanceof Error ? error.message : "error desconocido"}`,
+          );
+        }
+      }
+    };
     void loadCatalog();
+    void loadTerrain();
 
     return () => {
       disposed = true;
@@ -332,7 +416,12 @@ export default function SeismicViewer() {
       (grid.material as THREE.Material).dispose();
       guide.geometry.dispose();
       (guide.material as THREE.Material).dispose();
-      for (const object of [catalogPoints, selectedPoint, selectedDepthLine]) {
+      for (const object of [
+        catalogPoints,
+        terrainMesh,
+        selectedPoint,
+        selectedDepthLine,
+      ]) {
         object?.geometry.dispose();
         if (object?.material instanceof THREE.Material) object.material.dispose();
       }
@@ -349,7 +438,7 @@ export default function SeismicViewer() {
       <header className="viewerHeader">
         <p className="eyebrow">Catálogo INPRES · snapshot 14/09/2026</p>
         <h1>Sismos Visuales</h1>
-        <p>{status}{count > 0 ? ` · ${count.toLocaleString("es-AR")} eventos` : ""}</p>
+        <p>{status}{count > 0 ? ` · ${count.toLocaleString("es-AR")} eventos` : ""}<br />{terrainStatus}</p>
       </header>
 
       <div className="viewControls" aria-label="Vistas de cámara">
@@ -364,6 +453,10 @@ export default function SeismicViewer() {
         <span><i className="legendDeep" />más de 300</span>
         <small>Hacia abajo (−Y) · escala vertical {VERTICAL_EXAGGERATION}×</small>
         <small>Cuadrícula = plano 0 km, no terreno. Este +X · norte −Z.</small>
+        <strong className="terrainTitle">Superficie GEBCO 2026</strong>
+        <span><i className="legendLand" />elevación &gt; 0 m</span>
+        <span><i className="legendOcean" />batimetría &lt; 0 m</span>
+        <small>Modelo continuo externo, no terreno medido uniformemente · nivel del mar nominal 0 km · BBOX científico provisional.</small>
         <small>Vista inicial centrada en región andina; “Todo el catálogo” incluye registros lejanos.</small>
       </aside>
 
@@ -398,10 +491,16 @@ export default function SeismicViewer() {
           <dt>Fetch</dt><dd>{formatMs(metrics.fetchMs)}</dd>
           <dt>JSON.parse</dt><dd>{formatMs(metrics.parseMs)}</dd>
           <dt>BufferGeometry</dt><dd>{formatMs(metrics.buildMs)}</dd>
-          <dt>Primer frame con datos</dt><dd>{formatMs(metrics.firstRenderMs)}</dd>
+          <dt>Primer frame completo</dt><dd>{formatMs(metrics.firstRenderMs)}</dd>
           <dt>Heap antes/después</dt><dd>{formatMiB(metrics.heapBefore)} / {formatMiB(metrics.heapAfter)}</dd>
           <dt>FPS aprox.</dt><dd>{metrics.fps?.toFixed(0) ?? "—"}</dd>
           <dt>Último picking</dt><dd>{formatMs(metrics.pickingMs)}</dd>
+          <dt>GEBCO recibido</dt><dd>{formatMiB(metrics.terrainBytes)}</dd>
+          <dt>Transferencia GEBCO</dt><dd>{formatMiB(metrics.terrainTransferBytes)}</dd>
+          <dt>Fetch/parse GEBCO</dt><dd>{formatMs(metrics.terrainFetchMs)} / {formatMs(metrics.terrainParseMs)}</dd>
+          <dt>Geometría GEBCO</dt><dd>{formatMs(metrics.terrainBuildMs)}</dd>
+          <dt>Vértices/triángulos</dt><dd>{metrics.terrainVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.terrainTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
+          <dt>Draw calls</dt><dd>{metrics.drawCalls ?? "—"}</dd>
         </dl>
         <small>Mediciones orientativas del navegador; el heap y bytes transferidos pueden no estar disponibles. Para comparar, usar build de producción y caché fría.</small>
       </details>
