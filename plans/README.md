@@ -11,7 +11,7 @@ La hoja de ruta activa es `04-hoja-de-ruta-y-fases.md`. Los planes `00` a `03` s
 | Visión científica | definida |
 | Alcance del MVP | consolidado |
 | Contratos de datos | documentados con pendientes explícitos |
-| Frontend Next.js | catálogo INPRES, terreno GEBCO, cartografía, Slab2 e inspector integrados |
+| Frontend Next.js | catálogo INPRES, filtros accesibles, terreno GEBCO, cartografía, Slab2 e inspector integrados |
 | Vertical slice | completado y medido con el catálogo real |
 | Benchmark | diseñado, no ejecutado |
 | Preprocesamiento INPRES | no implementado en este repositorio; scraper externo operativo |

@@ -41,12 +41,12 @@ npm run build
 - Salida estática same-origin: `public/data/generated/inpres-2026-09-14.geojson`, SHA-256 `685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82`, 41.059.768 bytes. Se genera localmente y está ignorada de forma específica; no se versiona el dataset pesado.
 - Opcional: `SISMOS_INPRES_GEOJSON` indica una ruta de entrada alternativa; debe coincidir con el checksum fijado.
 
-La vista inicial se centra en el área científica y mantiene cargado el catálogo completo; la navegación libre permite abrir el encuadre hasta el contexto territorial. El panel «Mediciones de esta sesión» muestra tiempos y FPS orientativos. Para una comparación reproducible, usar build de producción y el protocolo de `docs/BENCHMARK_PLAN.md`.
+La vista inicial se centra en el área científica y mantiene cargado el catálogo completo; la navegación libre permite abrir el encuadre hasta el contexto territorial. El panel «Filtros» combina fecha, magnitud reportada y profundidad sin perder el estado al cerrarse. «Capas» agrupa la exageración del relieve y Slab2; «Información» conserva metodología y mediciones sin ocupar permanentemente el mapa. Para una comparación reproducible, usar build de producción y el protocolo de `docs/BENCHMARK_PLAN.md`.
 
 Navegación: arrastrar para rotar, botón derecho para desplazar, doble clic para centrar el mapa en el punto señalado y rueda para acercar hacia la posición del cursor.
 Con ambos botones del mouse presionados, arrastrar traslada la escena en sentido inverso al movimiento en pantalla e incluye el eje de profundidad según la inclinación de la cámara.
 
-El control «Modelo Slab2» activa la superficie modelada sin modificar la profundidad de los hipocentros. Los controles 1×/5×/10× exageran sólo GEBCO. Los artefactos web GEBCO, cartografía y Slab2 ya están incluidos; `npm run dev` no requiere sus fuentes raw. Para regenerar Slab2 con `SISMOS_DATA_DIR`, consultar [la herramienta](tools/slab2/README.md).
+El control «Modelo Slab2» dentro de «Capas» activa la superficie modelada sin modificar la profundidad de los hipocentros. Los controles 1×/5×/10× exageran sólo GEBCO. Los artefactos web GEBCO, cartografía y Slab2 ya están incluidos; `npm run dev` no requiere sus fuentes raw. Para regenerar Slab2 con `SISMOS_DATA_DIR`, consultar [la herramienta](tools/slab2/README.md).
 
 ## Documentación activa
 
