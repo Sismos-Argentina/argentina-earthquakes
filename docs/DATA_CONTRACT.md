@@ -146,6 +146,27 @@ Cada transformación debe registrar:
 
 No se adoptará un formato binario propio hasta completar el benchmark inicial.
 
-## 9. Catálogo histórico: contrato separado, todavía no implementado
+## 9. Catálogo histórico: proveedor implementado, consumo pendiente
 
-El catálogo de terremotos históricos de INPRES y el material fotográfico potencial pertenecen a una experiencia futura distinta de la exploración instrumental en profundidad. No se debe extender `InpresFeature` con profundidad o magnitud ficticias para alojarlos. Fecha, lugar, intensidad Mercalli, descripción, coordenadas y fotografías tendrán un contrato propio sólo después de verificar el origen, campos y derechos de uso. Véase [`HISTORICAL_EARTHQUAKES_PLAN.md`](HISTORICAL_EARTHQUAKES_PLAN.md).
+El catálogo de terremotos históricos de INPRES y su material fotográfico pertenecen
+a una experiencia futura distinta de la exploración instrumental en profundidad. El
+proveedor `inpres-sismos` ya publica dos artefactos con `schema_version: "1.0"`:
+
+- `data/exports/sismos_historicos.json`: 80 eventos con fecha original e ISO,
+  ubicación, descripción normalizada, intensidad Mercalli estructurada,
+  coordenadas, asociación fotográfica e ID derivado;
+- `data/exports/fotos_historicas.json`: manifiesto de galerías argentinas e
+  internacionales, URLs oficiales, disponibilidad y rutas a derivados WebP.
+
+Estos artefactos todavía no están incorporados a este repositorio ni a la interfaz.
+Cuando se consuman, se debe fijar un commit del proveedor, registrar checksums y
+usar tipos independientes de `InpresFeature`. No agregar profundidad o magnitud
+ficticias, no confundir Mercalli con magnitud instrumental y no presentar el ID
+derivado como identificador oficial.
+
+Las asociaciones foto–evento son derivadas. Nueve coinciden por fecha exacta y
+Sampacho explicita la discrepancia `1934-06-11` (catálogo) frente a `1934-06-10`
+(galería). Chile y Japón permanecen como galerías internacionales sin asociación al
+catálogo argentino. Los derechos y créditos por imagen siguen pendientes de
+revisión antes de una publicación pública. Véase
+[`HISTORICAL_EARTHQUAKES_PLAN.md`](HISTORICAL_EARTHQUAKES_PLAN.md).
