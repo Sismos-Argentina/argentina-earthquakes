@@ -15,6 +15,7 @@ La hoja de ruta activa es `04-hoja-de-ruta-y-fases.md`. Los planes `00` a `03` s
 | Vertical slice | completado y medido con el catálogo real |
 | Benchmark | diseñado, no ejecutado |
 | Preprocesamiento INPRES | no implementado en este repositorio; scraper externo operativo |
+| Catálogo histórico | proveedor externo listo; subpágina y revisión de derechos fotográficos pendientes |
 | Terreno GEBCO | perfiles científico y contextual procesados, validados y documentados |
 | Slab2 | artefacto web validado e integrado como modelo |
 | Cartografía | IGN y Natural Earth procesados, validados e integrados |
