@@ -6,7 +6,7 @@ La auditoría científica aprobada está en [`research/AUDITORIA_CIENTIFICA_2026
 
 ## MUST HAVE — núcleo publicable
 
-1. Catálogo INPRES real y completo para un snapshot identificado por commit y checksum. Debe existir una opción explícita **“Mostrar catálogo completo”** para explorar sus eventos individuales en 3D con rotación, desplazamiento y zoom. La vista nacional inicial puede priorizar una representación derivada o filtrada, definida según `REPRESENTATION_STRATEGY.md`; no se inventan ni alteran eventos.
+1. Catálogo INPRES real y completo para un snapshot identificado por commit y checksum. El catálogo completo se carga por defecto y sus eventos individuales se exploran en 3D con rotación, desplazamiento y zoom, sin controles de cámara redundantes. La vista inicial puede priorizar el área científica mientras la navegación libre conserva el acceso al contexto territorial; no se inventan ni alteran eventos.
 2. Profundidad legible en km: eje, orientación y factor de exageración vertical siempre visibles cuando corresponda. Ningún punto se presenta como si estuviera en superficie.
 3. Filtros utilizables por fecha, magnitud reportada y profundidad. La magnitud no se etiqueta como Mw, Ml o Md sin evidencia.
 4. Selección e inspector con fecha/hora local, coordenadas, profundidad, magnitud y descripción disponibles; fuente, ausencias y limitaciones visibles. ID derivado y segundos sintéticos no se presentan como observaciones oficiales.

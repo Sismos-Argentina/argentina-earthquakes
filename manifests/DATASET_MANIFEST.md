@@ -1,6 +1,6 @@
 # Manifiesto de datasets
 
-Estado: inventario inicial consolidado el 15 de septiembre de 2026; artefactos web actualizados el 17 de septiembre de 2026.
+Estado: inventario inicial consolidado el 15 de septiembre de 2026; artefactos web actualizados el 19 de septiembre de 2026.
 
 Los paths raw son externos al repositorio. Se expresan respecto del directorio de trabajo que actualmente contiene `argentina-earthquakes`, `inpres-sismos` y `data`. Una herramienta futura deberá aceptar un directorio configurable y no depender de esa disposición.
 
@@ -18,9 +18,9 @@ Los cuatro artefactos web versionados son derivados livianos; los archivos raw p
 
 | Artefacto | Bytes | SHA-256 |
 |---|---:|---|
-| `public/data/generated/gebco-2026-scientific.json` | 852.431 | `c2f072348c3da08436fb98f4f9736f181636855147cea88b44f0fb77071b492b` |
-| `public/data/generated/gebco-2026-context.json` | 576.390 | `44126d4c0ba0633bef177b7f487c62c26f2537d1135a442576f59a7939e50265` |
-| `public/data/generated/cartography-argentina-context.json` | 348.963 | `40bd023ef141fd06785298bbcb97a65494d010ee3f9b13e29600941703542298` |
+| `public/data/generated/gebco-2026-scientific.json` | 9.892.637 | `d45db211399244cd3fb0f7d54ac12ede14af3bb06690254a8d75d4d4b7882f17` |
+| `public/data/generated/gebco-2026-context.json` | 583.677 | `4afa163dfe36cbcf41f770fcb217b458a954f6df6e80c276942569ad3f9bc0b0` |
+| `public/data/generated/cartography-argentina-context.json` | 378.954 | `c37fceb67aea1bbe29698595885e3e95d9a60aee9092f1e27a666472fb801fa8` |
 | `public/data/generated/slab2-sam-2018-scientific.json` | 814.194 | `a3856e102bdc7272df3093996aea2c1c4e1120750438af67e5d1edb5faaccc09` |
 
 ## INPRES vía `inpres-sismos`
@@ -87,21 +87,24 @@ Archivos auditados y checksums:
 | Propiedad | Valor |
 |---|---|
 | Fuente | GEBCO Bathymetric Compilation Group |
-| Origen | descarga personalizada de GEBCO; nombre `GEBCO_07_Aug_2026_5422771e0b37.zip` |
+| Origen | descarga personalizada de GEBCO; nombre `GEBCO_18_Sep_2026_2b57c69752b6.zip` |
 | Versión | GEBCO_2026 Grid, 15 arc-seconds |
-| Formatos incluidos | NetCDF, GeoTIFF, ASCII grid, imágenes y documentación |
+| Formatos incluidos | GeoTIFF y documentación |
 | CRS horizontal | coordenadas geográficas, asumidas WGS84 según GEBCO |
 | Referencia vertical | elevación en metros respecto de nivel medio del mar nominal; consultar excepciones de GEBCO |
-| Tamaño ZIP | 3.702.940.584 bytes |
-| Cobertura del recorte | 85°O a 9°O; 77°S a 0° |
+| Tamaño ZIP | 1.141.029.798 bytes |
+| Cobertura raw | 100°O a 10°E; 90°S a 0° |
+| Cobertura web contextual | 100°O a 8°E; 90°S a 0°; opción B aprobada, recortada antes de África continental |
+| Cobertura web científica | 85°O a 20°O; 72°S a 0°; toda la Sudamérica disponible en el raw, Georgia y Sandwich del Sur y el norte de la Península Antártica |
+| Resolución web científica | 1300 × 1440 celdas de 0,05°; seleccionada por benchmark visual y de rendimiento |
 | Licencia | dominio público bajo términos GEBCO; requiere atribución, no sugerir respaldo oficial y no usar para navegación |
-| Raw local | `../data/GEBCO_07_Aug_2026_5422771e0b37.zip` |
-| Artefacto web esperado | terreno recortado/remuestreado; formato pendiente de evaluación |
-| Transformaciones necesarias | seleccionar una sola fuente raster; recortar BBOX; preservar nodata y cota cero; remuestrear; registrar resolución y cuantización; transformar al CRS de escena |
+| Raw local | `../data/GEBCO_18_Sep_2026_2b57c69752b6.zip` |
+| Artefactos web | perfiles `scientific` y `context` en JSON determinista, con metadata de fuente y transformación |
+| Transformaciones aplicadas | GeoTIFF único; recorte por BBOX; remuestreo bilinear; enteros en metros; `null` para nodata; registro por centro de celda; científico 1300 × 1440 y contexto 360 × 300 |
 
-Checksum SHA-256: `5bcaf61045b50461332829c44c36c1f3385bfaa2febb2da62941e0bdce528ecb`.
+Checksum SHA-256: `46c5bced98c9e01aec61cb8abef241deee10ce6ba29daa8be043f35d739d09d9`.
 
-No procesar simultáneamente NetCDF, GeoTIFF y ASCII: son representaciones redundantes incluidas en el mismo ZIP.
+Procesar únicamente el GeoTIFF; los PDF del ZIP documentan la grilla y sus términos, pero no son entradas raster alternativas.
 
 ## IGN
 

@@ -21,8 +21,8 @@ NE_ARCHIVE_SHA256 = "ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad3513
 NE_MEMBER_STEM = "ne_10m_admin_0_countries"
 NE_VERSION = "5.1.1"
 IGN_SHA256 = "183dc06a6a66832022976162f5e2a5e207075cd6feaf6d875170520a50e304b6"
-TERRITORIAL_BBOX = (-85.0, -90.0, -25.0, -10.0)
-GEBCO_CONTEXT_BBOX = (-85.0, -77.0, -25.0, -10.0)
+TERRITORIAL_BBOX = (-100.0, -90.0, 8.0, 0.0)
+GEBCO_CONTEXT_BBOX = TERRITORIAL_BBOX
 OUTPUT = Path("public/data/generated/cartography-argentina-context.json")
 
 

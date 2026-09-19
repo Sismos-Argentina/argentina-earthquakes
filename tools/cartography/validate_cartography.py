@@ -14,8 +14,8 @@ def main() -> int:
     diagnostics = payload["diagnostics"]
     assert payload["schemaVersion"] == 1
     assert payload["crs"] == "EPSG:4326"
-    assert payload["territorialBbox"] == [-85.0, -90.0, -25.0, -10.0]
-    assert payload["gebcoContextBbox"] == [-85.0, -77.0, -25.0, -10.0]
+    assert payload["territorialBbox"] == [-100.0, -90.0, 8.0, 0.0]
+    assert payload["gebcoContextBbox"] == [-100.0, -90.0, 8.0, 0.0]
     assert diagnostics["ignJurisdictions"] == 24
     assert diagnostics["naturalEarthFeatures"] >= 8
     assert diagnostics["includesTierraDelFuego"] is True

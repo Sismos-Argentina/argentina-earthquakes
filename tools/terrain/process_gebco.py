@@ -17,23 +17,23 @@ from rasterio.enums import Resampling
 from rasterio.transform import from_bounds
 from rasterio.vrt import WarpedVRT
 
-ZIP_NAME = "GEBCO_07_Aug_2026_5422771e0b37.zip"
-ZIP_SHA256 = "5bcaf61045b50461332829c44c36c1f3385bfaa2febb2da62941e0bdce528ecb"
-TIF_NAME = "gebco_2026_n0.0_s-77.0_w-85.0_e-9.0_geotiff.tif"
-TIF_BYTES = 674_269_122
+ZIP_NAME = "GEBCO_18_Sep_2026_2b57c69752b6.zip"
+ZIP_SHA256 = "46c5bced98c9e01aec61cb8abef241deee10ce6ba29daa8be043f35d739d09d9"
+TIF_NAME = "gebco_2026_n0.0_s-90.0_w-100.0_e10.0_geotiff.tif"
+TIF_BYTES = 1_140_617_444
 
 PROFILES = {
     "scientific": {
-        "bbox": (-82.0, -58.0, -52.0, -18.0),
-        "dimensions": (360, 480),
+        "bbox": (-85.0, -72.0, -20.0, 0.0),
+        "dimensions": (1300, 1440),
         "output": "gebco-2026-scientific.json",
-        "bbox_status": "scientific-area-andes-argentina-chile-south-atlantic",
+        "bbox_status": "scientific-area-south-america-available-south-atlantic-north-antarctica",
     },
     "context": {
-        "bbox": (-85.0, -77.0, -25.0, -10.0),
-        "dimensions": (300, 360),
+        "bbox": (-100.0, -90.0, 8.0, 0.0),
+        "dimensions": (360, 300),
         "output": "gebco-2026-context.json",
-        "bbox_status": "territorial-context-partial-antarctica-to-77S",
+        "bbox_status": "territorial-context-option-b-before-africa",
     },
 }
 
@@ -64,6 +64,24 @@ def arguments() -> argparse.Namespace:
         "--output-dir", type=Path, default=Path("public/data/generated")
     )
     parser.add_argument(
+        "--dimensions",
+        type=int,
+        nargs=2,
+        metavar=("WIDTH", "HEIGHT"),
+        help="Sobrescribe dimensiones para un único perfil (benchmarks locales).",
+    )
+    parser.add_argument(
+        "--bbox",
+        type=float,
+        nargs=4,
+        metavar=("WEST", "SOUTH", "EAST", "NORTH"),
+        help="Sobrescribe el recorte para un único perfil (benchmarks locales).",
+    )
+    parser.add_argument(
+        "--output-name",
+        help="Sobrescribe el nombre JSON para un único perfil.",
+    )
+    parser.add_argument(
         "--skip-zip-checksum",
         action="store_true",
         help="Sólo para iterar localmente; conserva las demás validaciones.",
@@ -71,6 +89,18 @@ def arguments() -> argparse.Namespace:
     parsed = parser.parse_args()
     if parsed.data_dir is None:
         parser.error("definí SISMOS_DATA_DIR o usá --data-dir")
+    if (parsed.dimensions or parsed.bbox or parsed.output_name) and parsed.profile == "all":
+        parser.error("--dimensions, --bbox y --output-name requieren un --profile concreto")
+    if parsed.dimensions and any(value < 2 for value in parsed.dimensions):
+        parser.error("WIDTH y HEIGHT deben ser mayores o iguales a 2")
+    if parsed.bbox:
+        west, south, east, north = parsed.bbox
+        if west >= east or south >= north:
+            parser.error("--bbox requiere WEST < EAST y SOUTH < NORTH")
+    if parsed.output_name:
+        output_name = Path(parsed.output_name)
+        if output_name.name != parsed.output_name or output_name.suffix != ".json":
+            parser.error("--output-name debe ser un nombre de archivo .json sin directorios")
     return parsed
 
 
@@ -155,6 +185,19 @@ def build_profile(
             "coordinates": [-64.5, -69.8],
             "expected": "land-or-ice-positive",
         }
+    if profile_name == "scientific":
+        checks["GeorgiaDelSur"] = {
+            "coordinates": [-36.5, -54.3],
+            "expected": "island-positive",
+        }
+        checks["SandwichDelSur"] = {
+            "coordinates": [-26.3, -57.8],
+            "expected": "island-arc-region",
+        }
+        checks["PeninsulaAntartica"] = {
+            "coordinates": [-64.5, -69.8],
+            "expected": "land-or-ice-positive",
+        }
     for check in checks.values():
         longitude, latitude = check["coordinates"]
         check["elevationMeters"] = sample_nearest(grid, bbox, longitude, latitude)
@@ -165,6 +208,10 @@ def build_profile(
         raise ValueError(f"{profile_name}: centro de Argentina no es positivo")
     if (checks["Pacifico"]["elevationMeters"] or 1) >= 0:
         raise ValueError(f"{profile_name}: Pacífico no es negativo")
+    if profile_name == "scientific" and (
+        checks["PeninsulaAntartica"]["elevationMeters"] or -1
+    ) <= 0:
+        raise ValueError(f"{profile_name}: Península Antártica no es positiva")
 
     payload = {
         "schemaVersion": 2,
@@ -230,6 +277,22 @@ def build_profile(
 
 def main() -> int:
     args = arguments()
+    if args.bbox:
+        PROFILES[args.profile] = {
+            **PROFILES[args.profile],
+            "bbox": tuple(args.bbox),
+            "bbox_status": f"{args.profile}-local-benchmark",
+        }
+    if args.dimensions:
+        PROFILES[args.profile] = {
+            **PROFILES[args.profile],
+            "dimensions": tuple(args.dimensions),
+        }
+    if args.output_name:
+        PROFILES[args.profile] = {
+            **PROFILES[args.profile],
+            "output": args.output_name,
+        }
     zip_path = args.data_dir.resolve() / ZIP_NAME
     validate_archive(zip_path, args.skip_zip_checksum)
     selected = list(PROFILES) if args.profile == "all" else [args.profile]
