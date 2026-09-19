@@ -3,15 +3,15 @@ export type GebcoProfile = "scientific" | "context";
 export const GEBCO_PROFILES = {
   scientific: {
     url: "/data/generated/gebco-2026-scientific.json",
-    bytes: 852431,
-    bbox: [-82, -58, -52, -18] as const,
-    dimensions: [360, 480] as const,
+    bytes: 9892637,
+    bbox: [-85, -72, -20, 0] as const,
+    dimensions: [1300, 1440] as const,
   },
   context: {
     url: "/data/generated/gebco-2026-context.json",
-    bytes: 576390,
-    bbox: [-85, -77, -25, -10] as const,
-    dimensions: [300, 360] as const,
+    bytes: 583677,
+    bbox: [-100, -90, 8, 0] as const,
+    dimensions: [360, 300] as const,
   },
 } as const;
 
@@ -49,6 +49,7 @@ export type GebcoArtifact = {
 export function assertGebcoArtifact(
   value: unknown,
   expectedProfile: GebcoProfile,
+  expectedDimensions: readonly [number, number] = GEBCO_PROFILES[expectedProfile].dimensions,
 ): asserts value is GebcoArtifact {
   if (!value || typeof value !== "object") {
     throw new Error("El artefacto GEBCO no es un objeto.");
@@ -64,8 +65,8 @@ export function assertGebcoArtifact(
     artifact.dataset.crs !== "EPSG:4326" ||
     artifact.dataset.units !== "meters" ||
     !grid ||
-    grid.width !== expected.dimensions[0] ||
-    grid.height !== expected.dimensions[1] ||
+    grid.width !== expectedDimensions[0] ||
+    grid.height !== expectedDimensions[1] ||
     grid.rowOrder !== "north-to-south" ||
     grid.columnOrder !== "west-to-east" ||
     !Array.isArray(grid.bbox) ||

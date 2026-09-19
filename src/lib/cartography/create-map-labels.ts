@@ -25,8 +25,8 @@ const LABELS: Record<GebcoProfile, LabelDefinition[]> = {
     { text: "CHILE", longitude: -72.5, latitude: -36.5 },
     { text: "TIERRA DEL FUEGO", longitude: -67.6, latitude: -54.2 },
     { text: "ISLAS MALVINAS", longitude: -59.0, latitude: -51.7 },
-    { text: "ATLÁNTICO SUR", longitude: -43.0, latitude: -50.0, tone: "water" },
-    { text: "PACÍFICO", longitude: -80.0, latitude: -45.0, tone: "water" },
+    { text: "ATLÁNTICO SUR", longitude: -27.0, latitude: -43.0, tone: "water" },
+    { text: "PACÍFICO", longitude: -89.0, latitude: -42.0, tone: "water" },
     { text: "ANTÁRTIDA ARGENTINA", longitude: -49.5, latitude: -82.0, tone: "context" },
   ],
 };

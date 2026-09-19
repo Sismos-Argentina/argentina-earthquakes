@@ -46,7 +46,6 @@ import {
   type ProfileSample,
 } from "@/lib/profile/cuyo";
 
-type ViewMode = "scientific" | "territorial" | "catalog";
 type ReliefExaggeration = 1 | 5 | 10;
 
 type Metrics = {
@@ -79,9 +78,6 @@ type Metrics = {
 };
 
 type ViewActions = {
-  scientific: () => void;
-  territorial: () => void;
-  catalog: () => void;
   setRelief: (value: ReliefExaggeration) => void;
   toggleSlab: () => void;
   openProfile: () => void;
@@ -95,7 +91,7 @@ type TerrainLayer = {
   surface: THREE.Mesh;
 };
 
-const TERRITORIAL_BBOX: [number, number, number, number] = [-85, -90, -25, -10];
+const TERRITORIAL_BBOX: [number, number, number, number] = [-100, -90, 8, 0];
 const INITIAL_RELIEF_EXAGGERATION: ReliefExaggeration = 5;
 
 function heapBytes(): number | undefined {
@@ -211,6 +207,9 @@ function createTerrainLayer(
   terrain: GebcoArtifact,
   cartography: CartographyArtifact,
   reliefExaggeration: ReliefExaggeration,
+  options: {
+    surfaceOnly?: boolean;
+  } = {},
 ) {
   const built = createGebcoGeometry(terrain);
   const terrainMesh = new THREE.Mesh(
@@ -218,24 +217,31 @@ function createTerrainLayer(
     new THREE.MeshLambertMaterial({
       vertexColors: true,
       side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.84,
-      depthWrite: false,
+      transparent: false,
+      opacity: 1,
+      depthWrite: true,
+      depthTest: profile !== "scientific",
     }),
   );
-  terrainMesh.renderOrder = 2;
+  terrainMesh.renderOrder = profile === "scientific" ? 3 : 2;
 
   const displayBbox =
     profile === "scientific" ? terrain.grid.bbox : TERRITORIAL_BBOX;
   const group = new THREE.Group();
-  group.add(
-    createSeaLevel(terrain.grid.bbox),
-    terrainMesh,
-    createCartographyGroup(cartography, terrain, displayBbox),
-  );
+  group.add(terrainMesh);
+  if (!options.surfaceOnly) {
+    group.add(
+      createSeaLevel(terrain.grid.bbox),
+      createCartographyGroup(cartography, terrain, displayBbox),
+    );
+  }
   group.scale.y = reliefExaggeration;
   return {
-    layer: { group, labels: createMapLabels(profile), surface: terrainMesh },
+    layer: {
+      group,
+      labels: options.surfaceOnly ? new THREE.Group() : createMapLabels(profile),
+      surface: terrainMesh,
+    },
     vertices: built.vertices,
     triangles: built.triangles,
   };
@@ -270,7 +276,6 @@ export default function SeismicViewer() {
   const [slabSummary, setSlabSummary] = useState<Slab2Artifact["summary"] | null>(null);
   const [count, setCount] = useState(0);
   const [selected, setSelected] = useState<InpresFeature | null>(null);
-  const [activeView, setActiveView] = useState<ViewMode>("scientific");
   const [reliefExaggeration, setReliefExaggeration] =
     useState<ReliefExaggeration>(INITIAL_RELIEF_EXAGGERATION);
   const [metrics, setMetrics] = useState<Metrics>({});
@@ -300,8 +305,7 @@ export default function SeismicViewer() {
     let profileTimer: ReturnType<typeof setTimeout> | null = null;
     let profileGeneration = 0;
     let slabEnabled = false;
-    let currentView: ViewMode = "scientific";
-    let beforeProfile: { camera: THREE.Vector3; target: THREE.Vector3; view: ViewMode; relief: ReliefExaggeration } | null = null;
+    let beforeProfile: { camera: THREE.Vector3; target: THREE.Vector3; relief: ReliefExaggeration } | null = null;
     let currentRelief: ReliefExaggeration = INITIAL_RELIEF_EXAGGERATION;
     const terrainLayers: Partial<Record<GebcoProfile, TerrainLayer>> = {};
     const fetchController = new AbortController();
@@ -340,49 +344,10 @@ export default function SeismicViewer() {
     const footprint = createCuyoFootprint();
     scene.add(footprint);
 
-    const setLayerVisibility = (mode: ViewMode) => {
-      currentView = mode;
-      const contextVisible = mode === "territorial";
-      if (terrainLayers.scientific) {
-        terrainLayers.scientific.group.visible = !contextVisible;
-        terrainLayers.scientific.labels.visible = !contextVisible;
-      }
-      if (terrainLayers.context) {
-        terrainLayers.context.group.visible = contextVisible;
-        terrainLayers.context.labels.visible = contextVisible;
-      }
-      if (depthGuide) depthGuide.visible = !contextVisible;
-      setActiveView(mode);
-    };
-
-    const scientificView = () => {
-      setLayerVisibility("scientific");
+    const setInitialCamera = () => {
       const [x, , z] = geographicToScene(-66, -39, 0);
       controls.target.set(x, -100, z);
       camera.position.set(x, 4800, z + 4300);
-      controls.update();
-    };
-    const territorialView = () => {
-      setLayerVisibility("territorial");
-      const [x, , z] = geographicToScene(-55, -52, 0);
-      controls.target.set(x, -80, z);
-      camera.position.set(x, 11200, z + 10400);
-      controls.update();
-    };
-    const catalogView = () => {
-      setLayerVisibility("catalog");
-      if (!catalogPoints) return;
-      catalogPoints.geometry.computeBoundingSphere();
-      const sphere = catalogPoints.geometry.boundingSphere;
-      if (!sphere) return;
-      controls.target.copy(sphere.center);
-      camera.position
-        .copy(sphere.center)
-        .add(
-          new THREE.Vector3(0.35, 0.75, 1)
-            .normalize()
-            .multiplyScalar(sphere.radius * 2.5),
-        );
       controls.update();
     };
     const setRelief = (value: ReliefExaggeration) => {
@@ -418,7 +383,6 @@ export default function SeismicViewer() {
       footprint.visible = false;
       setProfileOpen(false);
       if (beforeProfile) {
-        setLayerVisibility(beforeProfile.view);
         setRelief(beforeProfile.relief);
         camera.position.copy(beforeProfile.camera);
         controls.target.copy(beforeProfile.target);
@@ -429,8 +393,7 @@ export default function SeismicViewer() {
     const openProfile = () => {
       if (!features.length || !scientificTerrain || !profileSlab) return;
       if (beforeProfile) return;
-      beforeProfile = { camera: camera.position.clone(), target: controls.target.clone(), view: currentView, relief: currentRelief };
-      scientificView();
+      beforeProfile = { camera: camera.position.clone(), target: controls.target.clone(), relief: currentRelief };
       setRelief(1);
       footprint.visible = true;
       setProfileOpen(true);
@@ -467,16 +430,13 @@ export default function SeismicViewer() {
       profileTimer = setTimeout(processChunk, 0);
     };
     views.current = {
-      scientific: scientificView,
-      territorial: territorialView,
-      catalog: catalogView,
       setRelief,
       toggleSlab,
       openProfile,
       closeProfile,
       selectEvent,
     };
-    scientificView();
+    setInitialCamera();
 
     const [guideX, , guideZ] = geographicToScene(-81, -20, 0);
     const guideVertices: number[] = [guideX, 0, guideZ, guideX, -750, guideZ];
@@ -558,12 +518,9 @@ export default function SeismicViewer() {
       // Recentrar conserva distancia y orientación. La superficie visible da
       // la ubicación horizontal; fuera de GEBCO se usa el plano del mar.
       setRayFromPointer(event);
-      const activeTerrain = currentView === "territorial"
-        ? terrainLayers.context
-        : terrainLayers.scientific;
-      const point = activeTerrain
-        ? raycaster.intersectObject(activeTerrain.surface, false)[0]?.point
-        : undefined;
+      const surfaces = [terrainLayers.scientific, terrainLayers.context]
+        .flatMap((layer) => layer ? [layer.surface] : []);
+      const point = raycaster.intersectObjects(surfaces, false)[0]?.point;
       const destination = point ?? raycaster.ray.intersectPlane(
         seaLevelPlane,
         new THREE.Vector3(),
@@ -806,6 +763,7 @@ export default function SeismicViewer() {
           scientificRaw,
           cartographyRaw,
           INITIAL_RELIEF_EXAGGERATION,
+          { surfaceOnly: true },
         );
         const context = createTerrainLayer(
           "context",
@@ -819,7 +777,6 @@ export default function SeismicViewer() {
           if (!layer) continue;
           scene.add(layer.group, layer.labels);
         }
-        setLayerVisibility("scientific");
 
         setMetrics((previous) => ({
           ...previous,
@@ -935,13 +892,6 @@ export default function SeismicViewer() {
     };
   }, []);
 
-  const activeViewLabel =
-    activeView === "territorial"
-      ? "Contexto territorial completo"
-      : activeView === "catalog"
-        ? "Extensión del catálogo"
-        : "Área científica principal";
-
   return (
     <main className={profileOpen ? "viewer viewer--section" : "viewer"}>
       <div
@@ -962,27 +912,6 @@ export default function SeismicViewer() {
           {slabStatus}
         </p>
       </header>
-
-      <div className="viewControls" aria-label="Vistas de cámara">
-        <button
-          aria-pressed={activeView === "scientific"}
-          onClick={() => views.current?.scientific()}
-        >
-          Área científica
-        </button>
-        <button
-          aria-pressed={activeView === "territorial"}
-          onClick={() => views.current?.territorial()}
-        >
-          Contexto territorial
-        </button>
-        <button
-          aria-pressed={activeView === "catalog"}
-          onClick={() => views.current?.catalog()}
-        >
-          Todo el catálogo
-        </button>
-      </div>
 
       <div className="reliefControls" aria-label="Exageración vertical del relieve">
         <span>Relieve</span>
@@ -1019,7 +948,7 @@ export default function SeismicViewer() {
       </div>
 
       <aside className="depthLegend" aria-label="Referencias de la escena">
-        <strong>{activeViewLabel}</strong>
+        <strong>Área científica · zoom inicial</strong>
         <span><i className="legendShallow" />0 ≤ d &lt; 70 km</span>
         <span><i className="legendIntermediate" />70 ≤ d &lt; 300 km</span>
         <span><i className="legendDeep" />300 km o más (d ≥ 300)</span>
@@ -1053,11 +982,9 @@ export default function SeismicViewer() {
             Profundidad modelada: {slabSummary.depthRangeKm[0]}–{slabSummary.depthRangeKm[1]} km. UNC: {slabSummary.uncertaintyRangeKm[0]}–{slabSummary.uncertaintyRangeKm[1]} km; mediana {slabSummary.uncertaintyMedianKm} km. Referencia vertical exacta INPRES no documentada; superposición aproximada, no clasificación.
           </small>
         ) : null}
-        {activeView === "territorial" ? (
-          <small>
-            El contexto IGN continúa hasta 90°S; el GEBCO local termina en 77°S. El tramo restante no representa elevación.
-          </small>
-        ) : null}
+        <small>
+          Contexto GEBCO y cartográfico: 100°O–8°E, 90°S–0°. El límite oriental termina antes de África continental.
+        </small>
       </aside>
 
       {profileOpen ? profileEvents && profileSamples ? (

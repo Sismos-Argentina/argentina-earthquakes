@@ -15,4 +15,4 @@ uv pip install --python .\.local-data\venv-py313\Scripts\python.exe -r tools/car
 python tools/cartography/validate_cartography.py
 ```
 
-Natural Earth aporta sólo el contexto regional. La representación territorial argentina usa IGN. El límite cartográfico IGN alcanza 90°S; la superficie GEBCO local alcanza 77°S, por lo que el tramo restante se muestra como contexto cartográfico sin inventar elevación.
+Natural Earth aporta sólo el contexto regional. La representación territorial argentina usa IGN. La salida comparte con GEBCO el recorte 100°O–8°E y 90°S–0° (opción B), de modo que límites y relieve terminan en la misma cobertura antes de África continental.

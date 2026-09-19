@@ -10,13 +10,13 @@ from pathlib import Path
 EXPECTED = {
     "scientific": {
         "path": Path("public/data/generated/gebco-2026-scientific.json"),
-        "bbox": [-82.0, -58.0, -52.0, -18.0],
-        "dimensions": [360, 480],
+        "bbox": [-85.0, -72.0, -20.0, 0.0],
+        "dimensions": [1300, 1440],
     },
     "context": {
         "path": Path("public/data/generated/gebco-2026-context.json"),
-        "bbox": [-85.0, -77.0, -25.0, -10.0],
-        "dimensions": [300, 360],
+        "bbox": [-100.0, -90.0, 8.0, 0.0],
+        "dimensions": [360, 300],
     },
 }
 
@@ -47,6 +47,9 @@ def validate(profile: str, artifact: Path) -> dict[str, object]:
     assert checks["northWest"]["coordinates"] == [grid["bbox"][0], grid["bbox"][3]]
     assert checks["southEast"]["coordinates"] == [grid["bbox"][2], grid["bbox"][1]]
     if profile == "context":
+        assert checks["PeninsulaAntartica"]["elevationMeters"] > 0
+    if profile == "scientific":
+        assert checks["GeorgiaDelSur"]["elevationMeters"] > 0
         assert checks["PeninsulaAntartica"]["elevationMeters"] > 0
 
     return {

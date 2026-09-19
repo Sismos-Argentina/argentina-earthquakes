@@ -34,7 +34,7 @@ button:focus-visible, summary:focus-visible {
 .scene { position: absolute; inset: 0; }
 .scene canvas { display: block; touch-action: none; }
 
-.viewerHeader, .viewControls, .reliefControls, .slabControl, .profileControl, .compass, .depthLegend, .inspector, .benchmark, .sectionMode, .sectionLoading {
+.viewerHeader, .reliefControls, .slabControl, .profileControl, .compass, .depthLegend, .inspector, .benchmark, .sectionMode, .sectionLoading {
   position: absolute;
   z-index: 1;
 }
@@ -58,16 +58,7 @@ button:focus-visible, summary:focus-visible {
 h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 .viewerHeader > p:last-child { color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
 
-.viewControls {
-  top: 1.5rem;
-  right: 1.5rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-
-.viewControls button, .reliefControls button, .slabControl button, .profileControl button, .sectionActions button, .sectionBack, .sectionLoading button {
+.reliefControls button, .slabControl button, .profileControl button, .sectionActions button, .sectionBack, .sectionLoading button {
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--border);
   border-radius: 0.35rem;
@@ -75,15 +66,15 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
   color: var(--text);
   cursor: pointer;
 }
-.viewControls button:hover, .reliefControls button:hover, .slabControl button:hover, .profileControl button:hover, .sectionActions button:hover, .sectionBack:hover, .sectionLoading button:hover { border-color: #86a6ae; }
-.viewControls button[aria-pressed="true"], .reliefControls button[aria-pressed="true"] {
+.reliefControls button:hover, .slabControl button:hover, .profileControl button:hover, .sectionActions button:hover, .sectionBack:hover, .sectionLoading button:hover { border-color: #86a6ae; }
+.reliefControls button[aria-pressed="true"] {
   border-color: #f2bb70;
   background: rgb(76 58 34 / 94%);
   color: #fff4db;
 }
 
 .reliefControls {
-  top: 4.8rem;
+  top: 1.5rem;
   right: 1.5rem;
   display: flex;
   align-items: center;
@@ -102,10 +93,10 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 }
 .reliefControls button { padding: 0.35rem 0.55rem; }
 
-.slabControl { top: 8.35rem; right: 1.5rem; }
+.slabControl { top: 4.8rem; right: 1.5rem; }
 .slabControl button[aria-pressed="true"] { border-color: #d2abeb; color: #f3e2ff; }
 .slabControl button:disabled { opacity: 0.55; cursor: wait; }
-.profileControl { top: 11.6rem; right: 1.5rem; }
+.profileControl { top: 8rem; right: 1.5rem; }
 .profileControl button:disabled { opacity: 0.55; cursor: wait; }
 
 .compass {
@@ -200,7 +191,6 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 .benchmark dl { margin: 0.7rem 0; }
 
 .viewer--section .viewerHeader,
-.viewer--section .viewControls,
 .viewer--section .reliefControls,
 .viewer--section .slabControl,
 .viewer--section .profileControl,
@@ -283,10 +273,9 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 
 @media (max-width: 900px) {
   .viewerHeader { top: 0.8rem; left: 0.8rem; }
-  .viewControls { top: 5.5rem; left: 0.8rem; right: auto; }
-  .reliefControls { top: 8.7rem; left: 0.8rem; right: auto; }
-  .slabControl { top: 12rem; left: 0.8rem; right: auto; }
-  .profileControl { top: 15.2rem; left: 0.8rem; right: auto; }
+  .reliefControls { top: 5.5rem; left: 0.8rem; right: auto; }
+  .slabControl { top: 8.8rem; left: 0.8rem; right: auto; }
+  .profileControl { top: 8.8rem; left: auto; right: 0.8rem; }
   .compass { top: 6rem; right: 0.8rem; }
   .depthLegend {
     left: 0.8rem;
@@ -318,10 +307,9 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.5rem); font-weight: 500; }
 }
 
 @media (max-width: 900px) and (min-height: 750px) {
-  .viewControls { top: 8.4rem; }
-  .reliefControls { top: 11.6rem; }
-  .slabControl { top: 14.9rem; }
-  .profileControl { top: 18.1rem; }
+  .reliefControls { top: 8.4rem; }
+  .slabControl { top: 11.7rem; }
+  .profileControl { top: 11.7rem; }
 }
 
 @media (max-width: 700px) {
