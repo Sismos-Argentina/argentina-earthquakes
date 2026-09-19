@@ -3,14 +3,21 @@ import { CATALOG_SOURCE_COMMIT, type InpresFeature } from "@/lib/data/inpres";
 export default function EventInspector({
   event,
   compact = false,
+  onClose,
 }: {
   event: InpresFeature | null;
   compact?: boolean;
+  onClose?: () => void;
 }) {
   const properties = event?.properties;
   return (
     <aside className={compact ? "inspector inspector--section" : "inspector"} aria-live="polite">
-      <h2>{compact ? "Evento seleccionado" : "Evento"}</h2>
+      <div className="inspectorHeader">
+        <h2>Evento seleccionado</h2>
+        {onClose ? (
+          <button type="button" onClick={onClose} aria-label="Cerrar inspector de evento">×</button>
+        ) : null}
+      </div>
       {properties ? (
         <>
           <dl>

@@ -33,7 +33,16 @@ import {
 } from "@/lib/geo/scene-coordinates";
 import { createGebcoGeometry } from "@/lib/terrain/create-gebco-geometry";
 import { createSlab2Geometry } from "@/lib/slab2/create-slab2-geometry";
+import {
+  catalogFilterBounds,
+  depthPresetRange,
+  matchesCatalogFilters,
+  sameCatalogFilters,
+  type CatalogFilterBounds,
+  type CatalogFilters,
+} from "@/lib/filters/catalog";
 import CuyoSection from "./CuyoSection";
+import DualRangeFilter from "./DualRangeFilter";
 import EventInspector from "./EventInspector";
 import {
   CUYO,
@@ -47,6 +56,7 @@ import {
 } from "@/lib/profile/cuyo";
 
 type ReliefExaggeration = 1 | 5 | 10;
+type ControlPanel = "filters" | "layers" | "information";
 
 type Metrics = {
   decodedBytes?: number;
@@ -75,6 +85,7 @@ type Metrics = {
   slabBuildMs?: number;
   slabVertices?: number;
   slabTriangles?: number;
+  filterMs?: number;
 };
 
 type ViewActions = {
@@ -83,6 +94,8 @@ type ViewActions = {
   openProfile: () => void;
   closeProfile: () => void;
   selectEvent: (feature: InpresFeature) => void;
+  clearSelection: () => void;
+  setFilters: (filters: CatalogFilters) => void;
 };
 
 type TerrainLayer = {
@@ -275,6 +288,9 @@ export default function SeismicViewer() {
   const [inversePanActive, setInversePanActive] = useState(false);
   const [slabSummary, setSlabSummary] = useState<Slab2Artifact["summary"] | null>(null);
   const [count, setCount] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [filterBounds, setFilterBounds] = useState<CatalogFilterBounds | null>(null);
+  const [filters, setFilters] = useState<CatalogFilters | null>(null);
   const [selected, setSelected] = useState<InpresFeature | null>(null);
   const [reliefExaggeration, setReliefExaggeration] =
     useState<ReliefExaggeration>(INITIAL_RELIEF_EXAGGERATION);
@@ -283,6 +299,7 @@ export default function SeismicViewer() {
   const [profileStatus, setProfileStatus] = useState("");
   const [profileEvents, setProfileEvents] = useState<ProjectedEvent[] | null>(null);
   const [profileSamples, setProfileSamples] = useState<ProfileSample[] | null>(null);
+  const [openPanel, setOpenPanel] = useState<ControlPanel | null>(null);
 
   useEffect(() => {
     const host = canvasHost.current;
@@ -294,6 +311,13 @@ export default function SeismicViewer() {
     let catalogReady = false;
     let surfaceReady = false;
     let features: InpresFeature[] = [];
+    let visibleFeatures: InpresFeature[] = [];
+    let catalogPositions: Float32Array | null = null;
+    let catalogColors: Float32Array | null = null;
+    let filteredPositions: Float32Array | null = null;
+    let filteredColors: Float32Array | null = null;
+    let currentFilters: CatalogFilters | null = null;
+    let selectedFeature: InpresFeature | null = null;
     let catalogPoints: THREE.Points | null = null;
     let selectedPoint: THREE.Points | null = null;
     let selectedDepthLine: THREE.Line | null = null;
@@ -375,7 +399,54 @@ export default function SeismicViewer() {
         selectedDepthLine.geometry.computeBoundingSphere();
         selectedDepthLine.visible = true;
       }
+      selectedFeature = feature;
+      setOpenPanel(null);
       setSelected(feature);
+    };
+    const clearSelection = () => {
+      selectedFeature = null;
+      if (selectedPoint) selectedPoint.visible = false;
+      if (selectedDepthLine) selectedDepthLine.visible = false;
+      setSelected(null);
+    };
+    const applyFilters = (nextFilters: CatalogFilters) => {
+      currentFilters = nextFilters;
+      cachedProfile = null;
+      if (!catalogPoints || !catalogPositions || !catalogColors || !filteredPositions || !filteredColors) return;
+
+      const started = performance.now();
+      let visible = 0;
+      for (let index = 0; index < features.length; index++) {
+        const feature = features[index];
+        if (!matchesCatalogFilters(feature, nextFilters)) continue;
+        const source = index * 3;
+        const target = visible * 3;
+        filteredPositions[target] = catalogPositions[source];
+        filteredPositions[target + 1] = catalogPositions[source + 1];
+        filteredPositions[target + 2] = catalogPositions[source + 2];
+        filteredColors[target] = catalogColors[source];
+        filteredColors[target + 1] = catalogColors[source + 1];
+        filteredColors[target + 2] = catalogColors[source + 2];
+        visibleFeatures[visible] = feature;
+        visible++;
+      }
+      visibleFeatures.length = visible;
+
+      const position = catalogPoints.geometry.getAttribute("position") as THREE.BufferAttribute;
+      const color = catalogPoints.geometry.getAttribute("color") as THREE.BufferAttribute;
+      position.needsUpdate = true;
+      color.needsUpdate = true;
+      catalogPoints.geometry.setDrawRange(0, visible);
+      catalogPoints.geometry.computeBoundingSphere();
+
+      if (selectedFeature && !matchesCatalogFilters(selectedFeature, nextFilters)) {
+        clearSelection();
+      }
+      setVisibleCount(visible);
+      setMetrics((previous) => ({
+        ...previous,
+        filterMs: performance.now() - started,
+      }));
     };
     const closeProfile = () => {
       profileGeneration++;
@@ -414,6 +485,7 @@ export default function SeismicViewer() {
         if (disposed || generation !== profileGeneration) return;
         const end = Math.min(next + 1200, features.length);
         for (; next < end; next++) {
+          if (currentFilters && !matchesCatalogFilters(features[next], currentFilters)) continue;
           const projected = projectEvent(features[next]);
           if (projected) result.push(projected);
         }
@@ -435,6 +507,8 @@ export default function SeismicViewer() {
       openProfile,
       closeProfile,
       selectEvent,
+      clearSelection,
+      setFilters: applyFilters,
     };
     setInitialCamera();
 
@@ -614,8 +688,8 @@ export default function SeismicViewer() {
       );
       const hit = raycaster.intersectObject(catalogPoints, false)[0];
       if (hit?.index !== undefined) {
-        const feature = features[hit.index];
-        selectEvent(feature);
+        const feature = visibleFeatures[hit.index];
+        if (feature) selectEvent(feature);
       }
       setMetrics((previous) => ({
         ...previous,
@@ -650,21 +724,26 @@ export default function SeismicViewer() {
 
         const buildStart = performance.now();
         features = parsed.features;
-        const positions = new Float32Array(features.length * 3);
-        const colors = new Float32Array(features.length * 3);
+        const bounds = catalogFilterBounds(features);
+        currentFilters = bounds;
+        catalogPositions = new Float32Array(features.length * 3);
+        catalogColors = new Float32Array(features.length * 3);
         for (let index = 0; index < features.length; index++) {
           const feature = features[index];
           const [longitude, latitude] = feature.geometry.coordinates;
           const depth = feature.properties.profundidad;
           const [x, y, z] = geographicToScene(longitude, latitude, depth);
           const offset = index * 3;
-          positions.set([x, y, z], offset);
-          colors.set(depthColor(depth), offset);
+          catalogPositions.set([x, y, z], offset);
+          catalogColors.set(depthColor(depth), offset);
         }
+        filteredPositions = catalogPositions.slice();
+        filteredColors = catalogColors.slice();
+        visibleFeatures = features.slice();
 
         const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-        geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute("position", new THREE.BufferAttribute(filteredPositions, 3));
+        geometry.setAttribute("color", new THREE.BufferAttribute(filteredColors, 3));
         catalogPoints = new THREE.Points(
           geometry,
           new THREE.PointsMaterial({
@@ -717,6 +796,9 @@ export default function SeismicViewer() {
           heapBefore,
         }));
         setCount(features.length);
+        setVisibleCount(features.length);
+        setFilterBounds(bounds);
+        setFilters(bounds);
         setStatus("Catálogo cargado");
         catalogReady = true;
         markLayerReady();
@@ -892,133 +974,304 @@ export default function SeismicViewer() {
     };
   }, []);
 
+  useEffect(() => {
+    if (filters) views.current?.setFilters(filters);
+  }, [filters]);
+
+  useEffect(() => {
+    const closePanel = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpenPanel(null);
+    };
+    window.addEventListener("keydown", closePanel);
+    return () => window.removeEventListener("keydown", closePanel);
+  }, []);
+
+  const filtersAreDefault = Boolean(
+    filters && filterBounds && sameCatalogFilters(filters, filterBounds),
+  );
+  const filtersActive = Boolean(filters && filterBounds && !filtersAreDefault);
+  const togglePanel = (panel: ControlPanel) => {
+    setOpenPanel((current) => current === panel ? null : panel);
+  };
+
   return (
-    <main className={profileOpen ? "viewer viewer--section" : "viewer"}>
+    <main className={[
+      "viewer",
+      profileOpen ? "viewer--section" : "",
+      selected ? "viewer--has-selection" : "",
+      openPanel ? "viewer--panel-open" : "",
+      openPanel ? `viewer--panel-${openPanel}` : "",
+    ].filter(Boolean).join(" ")}>
       <div
         ref={canvasHost}
         className="scene"
         aria-label="Escena tridimensional de sismos INPRES, relieve GEBCO, cartografía y modelo geofísico Slab2"
       />
 
-      <header className="viewerHeader">
-        <p className="eyebrow">Catálogo INPRES · snapshot 14/09/2026</p>
-        <h1>Sismos Visuales</h1>
-        <p>
-          {status}
-          {count > 0 ? ` · ${count.toLocaleString("es-AR")} eventos` : ""}
-          <br />
-          {surfaceStatus}
-          <br />
-          {slabStatus}
-        </p>
-      </header>
+      <div className="leftDock">
+        <header className="viewerHeader">
+          <p className="eyebrow">Catálogo INPRES · snapshot 14/09/2026</p>
+          <h1>Sismos Visuales</h1>
+          <p className="viewerStatus" aria-live="polite">
+            {count > 0
+              ? `${visibleCount.toLocaleString("es-AR")} de ${count.toLocaleString("es-AR")} eventos visibles`
+              : status}
+          </p>
+        </header>
 
-      <div className="reliefControls" aria-label="Exageración vertical del relieve">
-        <span>Relieve</span>
-        {([1, 5, 10] as const).map((value) => (
+        <div className="filterDock">
           <button
-            key={value}
-            aria-pressed={reliefExaggeration === value}
-            onClick={() => views.current?.setRelief(value)}
+            type="button"
+            className="panelTrigger filterTrigger"
+            aria-expanded={openPanel === "filters"}
+            aria-controls="filters-panel"
+            onClick={() => togglePanel("filters")}
           >
-            {value}×
+            Filtros · {visibleCount.toLocaleString("es-AR")} visibles
+            {filtersActive ? <><i className="activeDot" aria-hidden="true" /><span className="srOnly">Filtros activos</span></> : null}
           </button>
-        ))}
+          {openPanel === "filters" ? (
+            <section id="filters-panel" className="controlPanel filterPanel" aria-labelledby="filters-title">
+              <div className="panelHeader">
+                <div>
+                  <p className="panelEyebrow">Catálogo visible</p>
+                  <h2 id="filters-title">Filtros</h2>
+                </div>
+                <button type="button" className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar filtros">×</button>
+              </div>
+              {filters && filterBounds ? (
+                <div className="catalogFiltersBody">
+                  <fieldset className="filterDates">
+                    <legend>Fecha del catálogo</legend>
+                    <label>
+                      Desde
+                      <input
+                        type="date"
+                        min={filterBounds.dateFrom}
+                        max={filterBounds.dateTo}
+                        value={filters.dateFrom}
+                        onChange={(event) => {
+                          const value = event.currentTarget.value;
+                          if (!value) return;
+                          setFilters((current) => current ? {
+                            ...current,
+                            dateFrom: value,
+                            dateTo: value > current.dateTo ? value : current.dateTo,
+                          } : current);
+                        }}
+                      />
+                    </label>
+                    <label>
+                      Hasta
+                      <input
+                        type="date"
+                        min={filterBounds.dateFrom}
+                        max={filterBounds.dateTo}
+                        value={filters.dateTo}
+                        onChange={(event) => {
+                          const value = event.currentTarget.value;
+                          if (!value) return;
+                          setFilters((current) => current ? {
+                            ...current,
+                            dateFrom: value < current.dateFrom ? value : current.dateFrom,
+                            dateTo: value,
+                          } : current);
+                        }}
+                      />
+                    </label>
+                  </fieldset>
+
+                  <DualRangeFilter
+                    label="Magnitud reportada"
+                    min={filterBounds.magnitudeMin}
+                    max={filterBounds.magnitudeMax}
+                    minValue={filters.magnitudeMin}
+                    maxValue={filters.magnitudeMax}
+                    step={0.1}
+                    onChange={(magnitudeMin, magnitudeMax) => setFilters((current) => current ? {
+                      ...current,
+                      magnitudeMin,
+                      magnitudeMax,
+                    } : current)}
+                  />
+
+                  <div className="depthFilterGroup">
+                    <DualRangeFilter
+                      label="Profundidad catalogada"
+                      min={filterBounds.depthMin}
+                      max={filterBounds.depthMax}
+                      minValue={filters.depthMin}
+                      maxValue={filters.depthMax}
+                      step={1}
+                      unit=" km"
+                      markers={[{ value: 70, label: "70" }, { value: 300, label: "300" }]}
+                      onChange={(depthMin, depthMax) => setFilters((current) => current ? {
+                        ...current,
+                        depthMin,
+                        depthMax,
+                      } : current)}
+                    />
+                    <div className="depthPresets" aria-label="Accesos rápidos de profundidad">
+                      {([
+                        ["shallow", "Superficiales", "0–<70"],
+                        ["intermediate", "Intermedios", "70–<300"],
+                        ["deep", "Profundos", "≥300"],
+                      ] as const).map(([preset, label, range]) => {
+                        const values = depthPresetRange(filterBounds, preset);
+                        const active = filters.depthMin === values.depthMin && filters.depthMax === values.depthMax;
+                        return (
+                          <button
+                            type="button"
+                            key={preset}
+                            aria-pressed={active}
+                            onClick={() => setFilters((current) => current ? { ...current, ...values } : current)}
+                          >
+                            {label}<small>{range} km</small>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="filterFooter">
+                    <span aria-live="polite">
+                      {visibleCount.toLocaleString("es-AR")} de {count.toLocaleString("es-AR")}
+                    </span>
+                    <button type="button" disabled={filtersAreDefault} onClick={() => setFilters(filterBounds)}>
+                      Restablecer
+                    </button>
+                  </div>
+                </div>
+              ) : <p className="panelLoading">Cargando rangos del catálogo…</p>}
+            </section>
+          ) : null}
+        </div>
       </div>
 
-      <div className="slabControl">
-        <button
-          aria-pressed={slabVisible}
-          disabled={!slabSummary}
-          onClick={() => views.current?.toggleSlab()}
-        >
-          Modelo Slab2 {slabVisible ? "visible" : "oculto"}
-        </button>
-      </div>
+      <div className="rightDock">
+        <nav className="viewToolbar" aria-label="Controles de la vista">
+          <button
+            type="button"
+            className="panelTrigger"
+            aria-expanded={openPanel === "layers"}
+            aria-controls="layers-panel"
+            onClick={() => togglePanel("layers")}
+          >
+            Capas · relieve {reliefExaggeration}×{slabVisible ? " · Slab2" : ""}
+          </button>
+          <button
+            type="button"
+            className="panelTrigger panelTrigger--icon"
+            aria-expanded={openPanel === "information"}
+            aria-controls="information-panel"
+            onClick={() => togglePanel("information")}
+          >
+            Información
+          </button>
+          <button
+            type="button"
+            className="panelTrigger"
+            disabled={!visibleCount || !slabSummary || !surfaceStatus.includes("cargados")}
+            onClick={() => views.current?.openProfile()}
+          >
+            Sección Cuyo · 31°S
+          </button>
+        </nav>
 
-      <div className="profileControl">
-        <button disabled={!count || !slabSummary || !surfaceStatus.includes("cargados")} onClick={() => profileOpen ? views.current?.closeProfile() : views.current?.openProfile()} aria-expanded={profileOpen}>
-          {profileOpen ? "Cerrar sección Cuyo" : "Abrir sección Cuyo · 31°S"}
-        </button>
-      </div>
-
-      <div className="compass" aria-label="Orientación dinámica del norte">
-        <span ref={compassNeedle} className="compassNeedle">↑</span>
-        <b>N</b>
-      </div>
-
-      <aside className="depthLegend" aria-label="Referencias de la escena">
-        <strong>Área científica · zoom inicial</strong>
-        <span><i className="legendShallow" />0 ≤ d &lt; 70 km</span>
-        <span><i className="legendIntermediate" />70 ≤ d &lt; 300 km</span>
-        <span><i className="legendDeep" />300 km o más (d ≥ 300)</span>
-        <small>
-          Hipocentros: profundidad hacia abajo (−Y), escala {VERTICAL_EXAGGERATION}×.
-        </small>
-        <small>
-          Doble clic: centrar el mapa · rueda: zoom hacia el cursor · arrastrar: rotar · botón derecho: desplazar.
-        </small>
-        <small aria-live="polite">
-          {inversePanActive
-            ? "Traslación inversa activa · el movimiento también cambia la profundidad."
-            : "Ambos botones + arrastrar: mover la escena en sentido inverso, también en profundidad."}
-        </small>
-        <strong className="terrainTitle">GEBCO 2026</strong>
-        <span><i className="legendLand" />topografía sobre 0 m</span>
-        <span><i className="legendOcean" />batimetría bajo 0 m</span>
-        <small>
-          Relieve {reliefExaggeration}× · nivel del mar 0 km. La exageración afecta sólo la superficie y sus límites.
-        </small>
-        <small>
-          Líneas doradas: IGN. Líneas grises: Natural Earth 5.1.1.
-        </small>
-        <strong className="terrainTitle">USGS Slab2 2018</strong>
-        <span><i className="legendSlab" />superficie modelada</span>
-        <small>
-          Modelo geofísico, no observación. Profundidad Slab2 1×; el control de relieve no la modifica.
-        </small>
-        {slabSummary ? (
-          <small>
-            Profundidad modelada: {slabSummary.depthRangeKm[0]}–{slabSummary.depthRangeKm[1]} km. UNC: {slabSummary.uncertaintyRangeKm[0]}–{slabSummary.uncertaintyRangeKm[1]} km; mediana {slabSummary.uncertaintyMedianKm} km. Referencia vertical exacta INPRES no documentada; superposición aproximada, no clasificación.
-          </small>
+        {openPanel === "layers" ? (
+          <section id="layers-panel" className="controlPanel layersPanel" aria-labelledby="layers-title">
+            <div className="panelHeader">
+              <div><p className="panelEyebrow">Vista 3D</p><h2 id="layers-title">Capas</h2></div>
+              <button type="button" className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar capas">×</button>
+            </div>
+            <div className="layerGroup">
+              <div className="layerHeading"><strong>Relieve GEBCO</strong><span>{reliefExaggeration}× activo</span></div>
+              <div className="segmentedControl" aria-label="Exageración vertical del relieve">
+                {([1, 5, 10] as const).map((value) => (
+                  <button key={value} aria-pressed={reliefExaggeration === value} onClick={() => views.current?.setRelief(value)}>{value}×</button>
+                ))}
+              </div>
+              <small>La exageración modifica sólo la superficie y sus límites; no cambia hipocentros ni Slab2.</small>
+            </div>
+            <div className="layerRow">
+              <div><strong>Modelo Slab2</strong><small>{slabStatus}</small></div>
+              <button aria-pressed={slabVisible} disabled={!slabSummary} onClick={() => views.current?.toggleSlab()}>{slabVisible ? "Visible" : "Oculto"}</button>
+            </div>
+            <div className="layerRow layerRow--status">
+              <div><strong>Contexto cartográfico</strong><small>{surfaceStatus}</small></div>
+              <span>Activo</span>
+            </div>
+          </section>
         ) : null}
-        <small>
-          Contexto GEBCO y cartográfico: 100°O–8°E, 90°S–0°. El límite oriental termina antes de África continental.
-        </small>
+
+        {openPanel === "information" ? (
+          <section id="information-panel" className="controlPanel informationPanel" aria-labelledby="information-title">
+            <div className="panelHeader">
+              <div><p className="panelEyebrow">Lectura y método</p><h2 id="information-title">Información</h2></div>
+              <button type="button" className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar información">×</button>
+            </div>
+            <div className="informationCopy">
+              <p><strong>Interacción.</strong> Doble clic: centrar · rueda: zoom hacia el cursor · arrastrar: rotar · botón derecho: desplazar.</p>
+              <p aria-live="polite"><strong>Traslación.</strong> {inversePanActive ? "Modo inverso activo: el movimiento también cambia la profundidad." : "Ambos botones + arrastrar mueve la escena en sentido inverso, también en profundidad."}</p>
+              <p><strong>Hipocentros INPRES.</strong> Profundidad catalogada hacia abajo (−Y), escala {VERTICAL_EXAGGERATION}×.</p>
+              <p><strong>GEBCO 2026.</strong> Modelo continuo derivado de fuentes heterogéneas; relieve {reliefExaggeration}× y nivel del mar 0 km. Líneas doradas: IGN. Líneas grises: Natural Earth 5.1.1.</p>
+              <p><strong>USGS Slab2 2018.</strong> Modelo geofísico, no observación. Profundidad 1×; el control de relieve no lo modifica.</p>
+              {slabSummary ? <p>Profundidad modelada: {slabSummary.depthRangeKm[0]}–{slabSummary.depthRangeKm[1]} km. UNC: {slabSummary.uncertaintyRangeKm[0]}–{slabSummary.uncertaintyRangeKm[1]} km; mediana {slabSummary.uncertaintyMedianKm} km. Referencia vertical exacta INPRES no documentada; superposición aproximada, no clasificación.</p> : null}
+              <p>Contexto GEBCO y cartográfico: 100°O–8°E, 90°S–0°. El límite oriental termina antes de África continental.</p>
+            </div>
+            <details className="benchmark">
+              <summary>Mediciones de esta sesión</summary>
+              <dl>
+                <dt>GeoJSON recibido</dt><dd>{formatMiB(metrics.decodedBytes)}</dd>
+                <dt>Transferencia INPRES</dt><dd>{formatMiB(metrics.transferBytes)}</dd>
+                <dt>Fetch / parse INPRES</dt><dd>{formatMs(metrics.fetchMs)} / {formatMs(metrics.parseMs)}</dd>
+                <dt>BufferGeometry sismos</dt><dd>{formatMs(metrics.buildMs)}</dd>
+                <dt>GEBCO recibido</dt><dd>{formatMiB(metrics.terrainBytes)}</dd>
+                <dt>Cartografía recibida</dt><dd>{formatMiB(metrics.cartographyBytes)}</dd>
+                <dt>Transferencia superficie</dt><dd>{formatMiB(metrics.surfaceTransferBytes)}</dd>
+                <dt>Fetch / parse superficie</dt><dd>{formatMs(metrics.surfaceFetchMs)} / {formatMs(metrics.surfaceParseMs)}</dd>
+                <dt>Construcción superficie</dt><dd>{formatMs(metrics.surfaceBuildMs)}</dd>
+                <dt>Vértices / triángulos GEBCO</dt><dd>{metrics.terrainVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.terrainTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
+                <dt>Slab2 recibido / transferido</dt><dd>{formatMiB(metrics.slabBytes)} / {formatMiB(metrics.slabTransferBytes)}</dd>
+                <dt>Fetch / parse / geometría Slab2</dt><dd>{formatMs(metrics.slabFetchMs)} / {formatMs(metrics.slabParseMs)} / {formatMs(metrics.slabBuildMs)}</dd>
+                <dt>Nodos válidos / triángulos Slab2</dt><dd>{metrics.slabVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.slabTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
+                <dt>Primer frame completo</dt><dd>{formatMs(metrics.firstRenderMs)}</dd>
+                <dt>Heap antes / después</dt><dd>{formatMiB(metrics.heapBefore)} / {formatMiB(metrics.heapAfter)}</dd>
+                <dt>FPS aprox.</dt><dd>{metrics.fps?.toFixed(0) ?? "—"}</dd>
+                <dt>Último picking</dt><dd>{formatMs(metrics.pickingMs)}</dd>
+                <dt>Último filtrado</dt><dd>{formatMs(metrics.filterMs)}</dd>
+                <dt>Draw calls</dt><dd>{metrics.drawCalls ?? "—"}</dd>
+              </dl>
+              <small>Mediciones orientativas del navegador. Para comparar formalmente usar build de producción y caché fría.</small>
+            </details>
+          </section>
+        ) : null}
+
+        <div className="compass" aria-label="Orientación dinámica del norte">
+          <span ref={compassNeedle} className="compassNeedle">↑</span>
+          <b>N</b>
+        </div>
+      </div>
+
+      <aside className="depthLegend" aria-label="Leyenda de profundidad y capas activas">
+        <strong>Profundidad</strong>
+        <span><i className="legendShallow" />0–&lt;70 km</span>
+        <span><i className="legendIntermediate" />70–&lt;300 km</span>
+        <span><i className="legendDeep" />≥300 km</span>
+        <div className="legendLayers">
+          <small>Capas activas</small>
+          <span><i className="legendLand" />GEBCO · relieve {reliefExaggeration}×</span>
+          {slabVisible ? <span><i className="legendSlab" />Slab2</span> : null}
+        </div>
       </aside>
+
+      {!selected && !profileOpen ? <p className="selectionHint">Seleccioná un sismo para inspeccionarlo</p> : null}
 
       {profileOpen ? profileEvents && profileSamples ? (
         <CuyoSection events={profileEvents} samples={profileSamples} selected={selected} onPick={(event) => views.current?.selectEvent(event)} onClose={() => views.current?.closeProfile()} />
       ) : <div className="sectionLoading" role="status"><button onClick={() => views.current?.closeProfile()}>← Volver al mapa</button><p>{profileStatus || "Preparando sección…"}</p></div> : null}
 
-      {!profileOpen ? <EventInspector event={selected} /> : null}
-
-      <details className="benchmark">
-        <summary>Mediciones de esta sesión</summary>
-        <dl>
-          <dt>GeoJSON recibido</dt><dd>{formatMiB(metrics.decodedBytes)}</dd>
-          <dt>Transferencia INPRES</dt><dd>{formatMiB(metrics.transferBytes)}</dd>
-          <dt>Fetch / parse INPRES</dt><dd>{formatMs(metrics.fetchMs)} / {formatMs(metrics.parseMs)}</dd>
-          <dt>BufferGeometry sismos</dt><dd>{formatMs(metrics.buildMs)}</dd>
-          <dt>GEBCO recibido</dt><dd>{formatMiB(metrics.terrainBytes)}</dd>
-          <dt>Cartografía recibida</dt><dd>{formatMiB(metrics.cartographyBytes)}</dd>
-          <dt>Transferencia superficie</dt><dd>{formatMiB(metrics.surfaceTransferBytes)}</dd>
-          <dt>Fetch / parse superficie</dt><dd>{formatMs(metrics.surfaceFetchMs)} / {formatMs(metrics.surfaceParseMs)}</dd>
-          <dt>Construcción superficie</dt><dd>{formatMs(metrics.surfaceBuildMs)}</dd>
-          <dt>Vértices / triángulos GEBCO</dt><dd>{metrics.terrainVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.terrainTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
-          <dt>Slab2 recibido / transferido</dt><dd>{formatMiB(metrics.slabBytes)} / {formatMiB(metrics.slabTransferBytes)}</dd>
-          <dt>Fetch / parse / geometría Slab2</dt><dd>{formatMs(metrics.slabFetchMs)} / {formatMs(metrics.slabParseMs)} / {formatMs(metrics.slabBuildMs)}</dd>
-          <dt>Nodos válidos / triángulos Slab2</dt><dd>{metrics.slabVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.slabTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
-          <dt>Primer frame completo</dt><dd>{formatMs(metrics.firstRenderMs)}</dd>
-          <dt>Heap antes / después</dt><dd>{formatMiB(metrics.heapBefore)} / {formatMiB(metrics.heapAfter)}</dd>
-          <dt>FPS aprox.</dt><dd>{metrics.fps?.toFixed(0) ?? "—"}</dd>
-          <dt>Último picking</dt><dd>{formatMs(metrics.pickingMs)}</dd>
-          <dt>Draw calls</dt><dd>{metrics.drawCalls ?? "—"}</dd>
-        </dl>
-        <small>
-          Mediciones orientativas del navegador. Para comparar formalmente usar build de producción y caché fría.
-        </small>
-      </details>
+      {!profileOpen && selected ? <EventInspector event={selected} onClose={() => views.current?.clearSelection()} /> : null}
     </main>
   );
 }
