@@ -48,6 +48,8 @@ Con ambos botones del mouse presionados, arrastrar traslada la escena en sentido
 
 El control «Modelo Slab2» dentro de «Capas» activa la superficie modelada sin modificar la profundidad de los hipocentros. Los controles 1×/5×/10× exageran sólo GEBCO. Los artefactos web GEBCO, cartografía y Slab2 ya están incluidos; `npm run dev` no requiere sus fuentes raw. Para regenerar Slab2 con `SISMOS_DATA_DIR`, consultar [la herramienta](tools/slab2/README.md).
 
+«Perfil andino» abre una sección este–oeste de ancho ±50 km que puede desplazarse entre 45°S y 22°S arrastrando la franja sobre el mapa o usando el control de latitud. Cuyo 31°S sigue siendo la posición inicial y la única selección cotejada independientemente; las demás latitudes, incluido el acceso rápido Jujuy 23°S, son exploratorias y se rotulan como tales.
+
 ## Documentación activa
 
 - [Constitución científica y técnica](CLAUDE.md)
@@ -55,6 +57,7 @@ El control «Modelo Slab2» dentro de «Capas» activa la superficie modelada si
 - [Contrato de datos](docs/DATA_CONTRACT.md)
 - [Benchmark inicial](docs/BENCHMARK_PLAN.md)
 - [Sistema de diseño](docs/DESIGN_SYSTEM.md)
+- [Perfil andino interactivo](docs/research/INTERACTIVE_LATITUDE_PROFILE.md)
 - [Manifiesto y checksums](manifests/DATASET_MANIFEST.md)
 - [Hoja de ruta](plans/04-hoja-de-ruta-y-fases.md)
 

@@ -11,3 +11,5 @@ Referencia científica: [auditoría A–M](AUDITORIA_CIENTIFICA_2026-09-17.md), 
 - Perfil inicial 0–350 km con superficie sobre nivel del mar; botón de rango completo conserva los eventos más profundos. Un mismo factor de píxeles/km se aplica a ambos ejes y el canvas tiene dimensiones CSS explícitas sin estiramiento; el contenedor estrecho desplaza el gráfico en lugar de deformarlo. La vista de sección fuerza relieve 1× en la escena 3D.
 
 El archivo [numérico de auditoría](AUDITORIA_CALCULOS_2026-09-17.json) conserva método, sensibilidad y hashes de modelos. Los tests comprueban endpoints, corredor, inversión, interpolación, máscara, clasificación, checksum y pertenencia exacta de IDs. La lectura sobre subducción exige las reservas del informe original.
+
+La interfaz puede trasladar este método por latitud como exploración controlada. Esa extensión no convierte las otras latitudes en secciones validadas ni modifica este contrato: Cuyo 31°S conserva sus endpoints, conteos y hash exactos. El alcance y las reservas de la interacción se documentan en [INTERACTIVE_LATITUDE_PROFILE.md](INTERACTIVE_LATITUDE_PROFILE.md).
