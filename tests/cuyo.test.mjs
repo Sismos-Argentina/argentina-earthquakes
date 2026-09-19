@@ -7,6 +7,8 @@ import geographiclib from "geographiclib-geodesic";
 import {
   CUYO, CUYO_LENGTH_KM, positionAt, corridorEdge, projectToCuyo,
   selectCuyoEvents, classifyDepth, sampleGebco, sampleSlab, sampleCuyoProfile,
+  LATITUDE_PROFILE, clampProfileLatitude, createLatitudeProfile,
+  positionAtProfile, projectToProfile, sampleProfile,
 } from "../src/lib/profile/cuyo.ts";
 
 test("WGS84: endpoints, dirección, inversión y ambos lados del corredor", () => {
@@ -36,6 +38,21 @@ test("WGS84: endpoints, dirección, inversión y ambos lados del corredor", () =
   assert.ok(projectToCuyo(after.longitude, after.latitude).alongKm > CUYO_LENGTH_KM);
 });
 
+test("el perfil móvil conserva la geodesia y alcanza Jujuy sin salir del dominio", () => {
+  assert.equal(clampProfileLatitude(-50), LATITUDE_PROFILE.minLatitude);
+  assert.equal(clampProfileLatitude(-20), LATITUDE_PROFILE.maxLatitude);
+  assert.equal(clampProfileLatitude(-23.12), -23);
+  const jujuy = createLatitudeProfile(-23);
+  for (const [alongKm, expected] of [[0, jujuy.a], [jujuy.lengthKm, jujuy.b]]) {
+    const point = positionAtProfile(jujuy, alongKm);
+    assert.ok(Math.abs(point.longitude - expected.longitude) < 0.000001);
+    assert.ok(Math.abs(point.latitude - expected.latitude) < 0.000001);
+    const projected = projectToProfile(jujuy, point.longitude, point.latitude);
+    assert.ok(Math.abs(projected.alongKm - alongKm) < 0.001);
+    assert.ok(projected.crossKm < 0.001);
+  }
+});
+
 test("artefactos reales: perfil muestreado a 1× conserva profundidad, UNC y huecos CLP", async () => {
   const [gebco, slab] = await Promise.all([
     readFile(new URL("../public/data/generated/gebco-2026-scientific.json", import.meta.url), "utf8").then(JSON.parse),
@@ -49,6 +66,10 @@ test("artefactos reales: perfil muestreado a 1× conserva profundidad, UNC y hue
   assert.ok(samples.some(({slab}) => slab && slab.depthKm > 100 && slab.uncertaintyKm > 0));
   assert.ok(samples.some(({elevationMeters}) => elevationMeters !== null && elevationMeters < 0));
   assert.ok(samples.some(({elevationMeters}) => elevationMeters !== null && elevationMeters > 0));
+
+  const jujuy = sampleProfile(gebco, slab, createLatitudeProfile(-23));
+  assert.ok(jujuy.some(({elevationMeters}) => elevationMeters !== null));
+  assert.ok(jujuy.some(({slab: value}) => value !== null));
 });
 
 test("clasificación sin superposición a 70 y 300 km", () => {

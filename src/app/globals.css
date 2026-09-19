@@ -299,6 +299,30 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
   border: 1px solid #567078;
   border-radius: 0.45rem 0.45rem 0 0;
 }
+.profileMapDragLayer {
+  position: absolute;
+  top: 6.3rem;
+  right: 1.5rem;
+  z-index: 6;
+  width: min(36vw, 520px);
+  height: 148px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.profileMapHandle {
+  position: absolute;
+  left: 0.45rem;
+  width: calc(100% - 0.9rem);
+  height: 1.65rem;
+  transform: translateY(-50%);
+  border: 0;
+  background: linear-gradient(transparent calc(50% - 1px), #f2bb70 calc(50% - 1px), #f2bb70 calc(50% + 1px), transparent calc(50% + 1px));
+  color: #fff4db;
+  cursor: ns-resize;
+  pointer-events: auto;
+  touch-action: none;
+}
+.profileMapHandle span { display: inline-block; padding: 0.18rem 0.42rem; border: 1px solid #f2bb70; border-radius: 999px; background: rgb(23 36 42 / 94%); font-size: 0.68rem; font-weight: 700; }
 
 .sectionMode, .sectionLoading {
   inset: 0;
@@ -325,6 +349,16 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
 .sectionContextCopy { align-self: center; max-width: 40rem; }
 .sectionContextCopy p { margin: 0.75rem 0; font-size: 0.96rem; line-height: 1.45; }
 .sectionContextCopy small, .sectionMapSlot small { color: var(--muted); }
+.profileLatitudeControl { display: grid; gap: 0.3rem; margin-top: 0.8rem; padding: 0.55rem 0.65rem; border: 1px solid #29434a; border-radius: 0.4rem; background: rgb(11 26 32 / 72%); }
+.profileLatitudeControl label { color: #d8e7e1; font-size: 0.78rem; font-weight: 600; }
+.profileLatitudeControl input { width: 100%; accent-color: #f2bb70; cursor: ew-resize; }
+.profileLatitudeControl > div { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; color: var(--muted); font-size: 0.68rem; }
+.profileLatitudeControl output { color: #fff4db; font-size: 0.82rem; font-weight: 700; }
+.profilePresets { justify-content: flex-start !important; }
+.profilePresets button { padding: 0.3rem 0.45rem; border: 1px solid var(--border); border-radius: 0.3rem; background: #10252c; color: var(--text); cursor: pointer; }
+.profilePresets button[aria-pressed="true"] { border-color: #f2bb70; background: rgb(76 58 34 / 94%); color: #fff4db; }
+.sectionContextCopy .profileValidation { margin: 0.55rem 0 0; color: #efcc91; font-size: 0.74rem; }
+.sectionContextCopy .profileValidation--audited { color: #a9d7b0; }
 .sectionRoute { display: flex; flex-wrap: wrap; gap: 0.4rem; color: #e6cf9d; font-size: 0.82rem; }
 .sectionRoute span { color: var(--muted); }
 .sectionMapSlot { display: flex; flex-direction: column; justify-content: flex-end; gap: 0.15rem; padding: 0.45rem 0.65rem; border: 1px solid var(--border); border-radius: 0.45rem; background: #10252c; font-size: 0.75rem; }
@@ -332,8 +366,10 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
 .sectionPrimary { display: flex; flex: 1 0 auto; flex-direction: column; min-height: 270px; border: 1px solid var(--border); border-radius: 0.45rem; background: #0b1a20; }
 .sectionPrimaryHeading { display: flex; justify-content: space-between; gap: 0.6rem; padding: 0.65rem 0.85rem; border-bottom: 1px solid #29434a; }
 .sectionPrimaryHeading span { color: var(--muted); font-size: 0.75rem; }
-.sectionPlot { flex: 1; min-height: 100px; overflow: auto; }
+.sectionPlot { position: relative; flex: 1; min-height: 100px; overflow: auto; }
 .sectionPlot canvas { display: block; cursor: crosshair; max-width: none; }
+.sectionPrimary--updating .sectionPlot canvas { opacity: 0.28; }
+.sectionPlotStatus { position: sticky; top: 45%; left: 50%; z-index: 1; width: fit-content; max-width: calc(100% - 2rem); transform: translateX(-50%); padding: 0.45rem 0.65rem; border: 1px solid #567078; border-radius: 0.35rem; background: rgb(8 22 28 / 94%); color: #d8e7e1; font-size: 0.76rem; }
 .sectionAxis { display: flex; justify-content: space-between; gap: 1rem; padding: 0.3rem 0.85rem 0.5rem; color: var(--muted); font-size: 0.75rem; }
 .sectionBottom { display: grid; grid-template-columns: minmax(0, 1fr) min(24vw, 330px); gap: 0.8rem; }
 .sectionReference { min-width: 0; }
@@ -369,6 +405,7 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
     max-height: 44dvh;
   }
   .viewer--section .scene { top: 6.1rem; right: 0.8rem; width: 38vw; }
+  .profileMapDragLayer { top: 6.1rem; right: 0.8rem; width: 38vw; }
   .sectionMode { padding: 0.8rem; }
   .sectionContext { grid-template-columns: minmax(0, 1fr) 38vw; }
   .sectionBottom { grid-template-columns: minmax(0, 1fr) min(34vw, 280px); }
@@ -395,6 +432,7 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
   .selectionHint { display: none; }
   .inspector { left: 0.7rem; right: 0.7rem; bottom: 0.7rem; width: auto; max-height: 45dvh; }
   .viewer--section .scene { display: none; }
+  .profileMapDragLayer { display: none; }
   .sectionModeHeader { align-items: flex-start; flex-wrap: wrap; gap: 0.65rem; }
   .sectionModeTag { display: none; }
   .sectionContext { display: flex; flex-direction: column; min-height: 0; }

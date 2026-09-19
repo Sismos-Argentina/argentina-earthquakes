@@ -45,12 +45,14 @@ import CuyoSection from "./CuyoSection";
 import DualRangeFilter from "./DualRangeFilter";
 import EventInspector from "./EventInspector";
 import {
-  CUYO,
-  CUYO_LENGTH_KM,
-  corridorEdge,
-  positionAt,
-  projectEvent,
-  sampleCuyoProfile,
+  CUYO_PROFILE,
+  LATITUDE_PROFILE,
+  corridorEdgeForProfile,
+  createLatitudeProfile,
+  positionAtProfile,
+  projectEventToProfile,
+  sampleProfile,
+  type ProfileDefinition,
   type ProjectedEvent,
   type ProfileSample,
 } from "@/lib/profile/cuyo";
@@ -96,6 +98,7 @@ type ViewActions = {
   selectEvent: (feature: InpresFeature) => void;
   clearSelection: () => void;
   setFilters: (filters: CatalogFilters) => void;
+  setProfileLatitude: (latitude: number) => void;
 };
 
 type TerrainLayer = {
@@ -122,6 +125,52 @@ function formatMiB(value: number | undefined) {
   return value === undefined
     ? "no disponible"
     : `${(value / 1048576).toFixed(1)} MiB`;
+}
+
+function ProfileMapHandle({
+  latitude,
+  onChange,
+}: {
+  latitude: number;
+  onChange: (latitude: number) => void;
+}) {
+  const dragging = useRef(false);
+  const position = (LATITUDE_PROFILE.maxLatitude - latitude)
+    / (LATITUDE_PROFILE.maxLatitude - LATITUDE_PROFILE.minLatitude) * 100;
+  const update = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const bounds = event.currentTarget.parentElement?.getBoundingClientRect();
+    if (!bounds) return;
+    const ratio = Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height));
+    onChange(LATITUDE_PROFILE.maxLatitude
+      - ratio * (LATITUDE_PROFILE.maxLatitude - LATITUDE_PROFILE.minLatitude));
+  };
+  return (
+    <div className="profileMapDragLayer" aria-hidden="true">
+      <button
+        type="button"
+        className="profileMapHandle"
+        style={{ top: `${position}%` }}
+        tabIndex={-1}
+        onPointerDown={(event) => {
+          event.preventDefault();
+          dragging.current = true;
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (dragging.current) update(event);
+        }}
+        onPointerUp={(event) => {
+          if (!dragging.current) return;
+          update(event);
+          dragging.current = false;
+          event.currentTarget.releasePointerCapture(event.pointerId);
+        }}
+        onPointerCancel={() => { dragging.current = false; }}
+      >
+        <span>↕ {Math.abs(latitude).toFixed(latitude % 1 === 0 ? 0 : 2)}°S</span>
+      </button>
+    </div>
+  );
 }
 
 function depthColor(depthKm: number): [number, number, number] {
@@ -152,22 +201,22 @@ function createSeaLevel(bbox: [number, number, number, number]) {
   return sea;
 }
 
-function createCuyoFootprint() {
+function createProfileFootprint(profile: ProfileDefinition) {
   const vertices: number[] = [];
   const center: number[] = [];
   const borders: number[] = [];
-  const steps = Math.ceil(CUYO_LENGTH_KM / CUYO.sampleStepKm);
+  const steps = Math.ceil(profile.lengthKm / profile.sampleStepKm);
   const add = (point: { longitude: number; latitude: number }, array: number[]) => {
     const [x, , z] = geographicToScene(point.longitude, point.latitude, 0);
     array.push(x, 0, z);
   };
   for (let i = 0; i <= steps; i++) {
-    const s = CUYO_LENGTH_KM * i / steps;
-    const left = corridorEdge(s, -1);
-    const right = corridorEdge(s, 1);
+    const s = profile.lengthKm * i / steps;
+    const left = corridorEdgeForProfile(profile, s, -1);
+    const right = corridorEdgeForProfile(profile, s, 1);
     add(left, vertices); add(right, vertices);
     add(left, borders); add(right, borders);
-    add(positionAt(s), center);
+    add(positionAtProfile(profile, s), center);
   }
   const footprint = new THREE.Group();
   const positions: number[] = [];
@@ -178,7 +227,7 @@ function createCuyoFootprint() {
   }
   const fill = new THREE.Mesh(
     new THREE.BufferGeometry().setAttribute("position", new THREE.Float32BufferAttribute(positions, 3)),
-    new THREE.MeshBasicMaterial({ color: 0xe6cf9d, transparent: true, opacity: 0.22, depthTest: false, depthWrite: false, side: THREE.DoubleSide }),
+    new THREE.MeshBasicMaterial({ color: 0xe6cf9d, transparent: true, opacity: 0.34, depthTest: false, depthWrite: false, side: THREE.DoubleSide }),
   );
   fill.renderOrder = 9;
   footprint.add(fill);
@@ -299,6 +348,7 @@ export default function SeismicViewer() {
   const [profileStatus, setProfileStatus] = useState("");
   const [profileEvents, setProfileEvents] = useState<ProjectedEvent[] | null>(null);
   const [profileSamples, setProfileSamples] = useState<ProfileSample[] | null>(null);
+  const [profileDefinition, setProfileDefinition] = useState<ProfileDefinition>(CUYO_PROFILE);
   const [openPanel, setOpenPanel] = useState<ControlPanel | null>(null);
 
   useEffect(() => {
@@ -325,9 +375,11 @@ export default function SeismicViewer() {
     let slabMesh: THREE.Mesh | null = null;
     let scientificTerrain: GebcoArtifact | null = null;
     let profileSlab: Slab2Artifact | null = null;
-    let cachedProfile: ProjectedEvent[] | null = null;
+    let cachedProfile: { latitude: number; events: ProjectedEvent[]; samples: ProfileSample[] } | null = null;
     let profileTimer: ReturnType<typeof setTimeout> | null = null;
+    let profileDebounce: ReturnType<typeof setTimeout> | null = null;
     let profileGeneration = 0;
+    let currentProfile = CUYO_PROFILE;
     let slabEnabled = false;
     let beforeProfile: { camera: THREE.Vector3; target: THREE.Vector3; relief: ReliefExaggeration } | null = null;
     let currentRelief: ReliefExaggeration = INITIAL_RELIEF_EXAGGERATION;
@@ -365,7 +417,7 @@ export default function SeismicViewer() {
     controls.zoomToCursor = true;
     controls.minDistance = 30;
     controls.maxDistance = 70000;
-    const footprint = createCuyoFootprint();
+    const footprint = createProfileFootprint(CUYO_PROFILE);
     scene.add(footprint);
 
     const setInitialCamera = () => {
@@ -451,6 +503,7 @@ export default function SeismicViewer() {
     const closeProfile = () => {
       profileGeneration++;
       if (profileTimer) clearTimeout(profileTimer);
+      if (profileDebounce) clearTimeout(profileDebounce);
       footprint.visible = false;
       setProfileOpen(false);
       if (beforeProfile) {
@@ -461,23 +514,20 @@ export default function SeismicViewer() {
         beforeProfile = null;
       }
     };
-    const openProfile = () => {
+    const moveFootprint = (profile: ProfileDefinition) => {
+      const [, , defaultZ] = geographicToScene(-67, CUYO_PROFILE.latitude, 0);
+      const [, , nextZ] = geographicToScene(-67, profile.latitude, 0);
+      footprint.position.z = nextZ - defaultZ;
+    };
+    const calculateProfile = (profile: ProfileDefinition) => {
       if (!features.length || !scientificTerrain || !profileSlab) return;
-      if (beforeProfile) return;
-      beforeProfile = { camera: camera.position.clone(), target: controls.target.clone(), relief: currentRelief };
-      setRelief(1);
-      footprint.visible = true;
-      setProfileOpen(true);
-      const [x, , z] = geographicToScene(-67, -31, 0);
-      controls.target.set(x, -30, z);
-      camera.position.set(x, 950, z + 650);
-      controls.update();
-      if (cachedProfile) {
-        setProfileEvents(cachedProfile);
+      if (cachedProfile?.latitude === profile.latitude) {
+        setProfileEvents(cachedProfile.events);
+        setProfileSamples(cachedProfile.samples);
         setProfileStatus("");
         return;
       }
-      setProfileStatus("Calculando selección geodésica WGS84…");
+      setProfileStatus(`Calculando selección geodésica WGS84 a ${Math.abs(profile.latitude).toFixed(2)}°S…`);
       const generation = ++profileGeneration;
       const result: ProjectedEvent[] = [];
       let next = 0;
@@ -486,20 +536,49 @@ export default function SeismicViewer() {
         const end = Math.min(next + 1200, features.length);
         for (; next < end; next++) {
           if (currentFilters && !matchesCatalogFilters(features[next], currentFilters)) continue;
-          const projected = projectEvent(features[next]);
+          const projected = projectEventToProfile(features[next], profile);
           if (projected) result.push(projected);
         }
         if (next < features.length) {
           profileTimer = setTimeout(processChunk, 0);
         } else {
-          cachedProfile = result;
+          const samples = sampleProfile(scientificTerrain!, profileSlab!, profile);
+          cachedProfile = { latitude: profile.latitude, events: result, samples };
           setProfileEvents(result);
-          setProfileSamples(sampleCuyoProfile(scientificTerrain!, profileSlab!));
+          setProfileSamples(samples);
+          if (selectedFeature && !result.some(({ feature }) => feature.properties.id === selectedFeature?.properties.id)) {
+            clearSelection();
+          }
           setProfileStatus("");
           profileTimer = null;
         }
       };
       profileTimer = setTimeout(processChunk, 0);
+    };
+    const setProfileLatitude = (latitude: number) => {
+      const nextProfile = createLatitudeProfile(latitude);
+      currentProfile = nextProfile;
+      moveFootprint(nextProfile);
+      setProfileDefinition(nextProfile);
+      setProfileStatus("Moviendo perfil…");
+      profileGeneration++;
+      if (profileTimer) clearTimeout(profileTimer);
+      if (profileDebounce) clearTimeout(profileDebounce);
+      profileDebounce = setTimeout(() => calculateProfile(nextProfile), 160);
+    };
+    const openProfile = () => {
+      if (!features.length || !scientificTerrain || !profileSlab) return;
+      if (beforeProfile) return;
+      beforeProfile = { camera: camera.position.clone(), target: controls.target.clone(), relief: currentRelief };
+      setRelief(1);
+      moveFootprint(currentProfile);
+      footprint.visible = true;
+      setProfileOpen(true);
+      const [x, , z] = geographicToScene(-67, (LATITUDE_PROFILE.minLatitude + LATITUDE_PROFILE.maxLatitude) / 2, 0);
+      controls.target.set(x, -30, z);
+      camera.position.set(x, 3300, z + 1200);
+      controls.update();
+      calculateProfile(currentProfile);
     };
     views.current = {
       setRelief,
@@ -509,6 +588,7 @@ export default function SeismicViewer() {
       selectEvent,
       clearSelection,
       setFilters: applyFilters,
+      setProfileLatitude,
     };
     setInitialCamera();
 
@@ -589,6 +669,7 @@ export default function SeismicViewer() {
       raycaster.setFromCamera(pointer, camera);
     };
     const handleDoubleClick = (event: MouseEvent) => {
+      if (beforeProfile) return;
       // Recentrar conserva distancia y orientación. La superficie visible da
       // la ubicación horizontal; fuera de GEBCO se usa el plano del mar.
       setRayFromPointer(event);
@@ -940,6 +1021,7 @@ export default function SeismicViewer() {
       disposed = true;
       fetchController.abort();
       if (profileTimer) clearTimeout(profileTimer);
+      if (profileDebounce) clearTimeout(profileDebounce);
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
@@ -1174,7 +1256,7 @@ export default function SeismicViewer() {
             disabled={!visibleCount || !slabSummary || !surfaceStatus.includes("cargados")}
             onClick={() => views.current?.openProfile()}
           >
-            Sección Cuyo · 31°S
+            Perfil andino · {Math.abs(profileDefinition.latitude).toFixed(profileDefinition.latitude % 1 === 0 ? 0 : 2)}°S
           </button>
         </nav>
 
@@ -1267,8 +1349,24 @@ export default function SeismicViewer() {
 
       {!selected && !profileOpen ? <p className="selectionHint">Seleccioná un sismo para inspeccionarlo</p> : null}
 
+      {profileOpen ? (
+        <ProfileMapHandle
+          latitude={profileDefinition.latitude}
+          onChange={(latitude) => views.current?.setProfileLatitude(latitude)}
+        />
+      ) : null}
+
       {profileOpen ? profileEvents && profileSamples ? (
-        <CuyoSection events={profileEvents} samples={profileSamples} selected={selected} onPick={(event) => views.current?.selectEvent(event)} onClose={() => views.current?.closeProfile()} />
+        <CuyoSection
+          profile={profileDefinition}
+          events={profileEvents}
+          samples={profileSamples}
+          selected={selected}
+          status={profileStatus}
+          onLatitudeChange={(latitude) => views.current?.setProfileLatitude(latitude)}
+          onPick={(event) => views.current?.selectEvent(event)}
+          onClose={() => views.current?.closeProfile()}
+        />
       ) : <div className="sectionLoading" role="status"><button onClick={() => views.current?.closeProfile()}>← Volver al mapa</button><p>{profileStatus || "Preparando sección…"}</p></div> : null}
 
       {!profileOpen && selected ? <EventInspector event={selected} onClose={() => views.current?.clearSelection()} /> : null}
