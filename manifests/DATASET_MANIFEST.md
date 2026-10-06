@@ -150,3 +150,33 @@ Checksum SHA-256: `ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad35138a
 ## Política de artefactos web
 
 Los artefactos finales se evaluarán individualmente. Este manifiesto no decide si deben versionarse o generarse durante build/deploy. `public/data/generated/` no está ignorado globalmente.
+
+## Selección histórica para el prototipo de competencia — 06/10/2026
+
+Fuente: exports y WebP existentes de `inpres-sismos`, commit
+`c5634cac3bb3d3757ed79dfd897b58c128fb5798`. No se modificó el proveedor.
+Se seleccionaron 1894 San Juan, 1944 San Juan, 1977 Caucete y 2015 El Galpón,
+cinco fotografías por evento: 20 originales representados por 40 derivados
+480/1600 WebP existentes, 4.244.722 bytes en total. No son imágenes nuevas ni un
+nuevo dataset sísmico. Las exportaciones históricas conservan sus fechas y hashes
+en el manifiesto por archivo.
+
+- Contenido curado: `src/data/competition-history.json`.
+- Procedencia, paths proveedor/producto, bytes, SHA-256, evento, foto y derechos:
+  `public/data/generated/historical/media-manifest.json`.
+- Fotos: `public/data/generated/historical/fotos_historicas/`.
+- Curación reproducible: `tools/prepare-competition-history.mjs`.
+- Snapshot instrumental sin actualizar: `src/data/catalog-snapshot.json`.
+- Presets con evidencia EDA y muestras geodésicas web separadas:
+  `src/data/competition-presets.json`; herramienta `tools/prepare-competition-presets.mjs`.
+
+Los textos se derivan del catálogo histórico INPRES; Mercalli es intensidad.
+La afirmación de mayor magnitud para 1894 se atribuye a INPRES y no recibe un valor
+instrumental inventado. No se vincularon automáticamente eventos históricos y
+registros instrumentales. Los presets usan otra selección y snapshot respecto del EDA.
+
+**Límite de publicación:** autoría y licencia de las 20 fotografías no confirmadas.
+Cada entrada tiene crédito visible sin autor inventado y licencia pendiente.
+Disponibilidad pública no equivale a permiso de reutilización. Antes de publicar
+medios, confirmar autorización y atribución por imagen. El prototipo no ofrece un
+selector sólo texto; conserva un fallback interno cuando una imagen falla.

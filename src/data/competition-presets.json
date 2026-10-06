@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "eda": {
+    "date": "2026-09-18",
+    "events": 80524,
+    "catalogSha256": "839a061f9877df6ed596b1bb0c73f3471d352add046dbf56a20d7f47f84c32f6",
+    "evidence": "docs/research/eda-2026-09-19/latitude_scan_0_5deg.csv",
+    "evidenceSha256": "63dfd45b28dcaceaa875dac1ec900fe497a3d960d5f672aa9dc5360f80ff3dc2",
+    "evidenceHashEncoding": "UTF-8, LF",
+    "method": "WGS84 a azimutal equidistante local; distancia a segmento, ±50 km"
+  },
+  "web": {
+    "date": "2026-09-14",
+    "events": 80470,
+    "sha256": "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82",
+    "method": "Distancia a geodésica WGS84, ±50 km; extremos 73°O–61°O"
+  },
+  "stops": [
+    {
+      "id": "north",
+      "latitude": -24.5,
+      "title": "Norte · otra profundidad",
+      "observation": "Buscá la concentración de puntos intermedios. En esta franja, la profundidad mediana es mayor que en las siguientes paradas.",
+      "prompt": "Leé el eje vertical: la profundidad aumenta hacia abajo.",
+      "eda": {
+        "n": 4668,
+        "medianKm": 190,
+        "changeJS": 0.6477466664780293
+      },
+      "web": {
+        "n": 4649,
+        "medianKm": 190,
+        "shallow": 333,
+        "intermediate": 4308,
+        "deep": 8
+      }
+    },
+    {
+      "id": "transition",
+      "latitude": -27,
+      "title": "Transición · poblaciones distintas",
+      "observation": "Ahora aparecen juntos puntos superficiales, intermedios y un grupo profundo hacia el este. La mediana por sí sola no describe toda la distribución.",
+      "prompt": "Recorré el eje horizontal hacia B para encontrar los eventos más profundos.",
+      "eda": {
+        "n": 1880,
+        "medianKm": 40,
+        "changeJS": 0.3699452831035172
+      },
+      "web": {
+        "n": 1880,
+        "medianKm": 40,
+        "shallow": 1054,
+        "intermediate": 787,
+        "deep": 39
+      }
+    },
+    {
+      "id": "cuyo",
+      "latitude": -30.5,
+      "title": "Cuyo · la distribución cambia",
+      "observation": "La mezcla de puntos superficiales e intermedios cambia otra vez. Mover el perfil revela distribuciones distintas; este recorrido no establece su causa.",
+      "prompt": "Compará las bandas y la mediana con el norte. Después mové vos la franja.",
+      "eda": {
+        "n": 3488,
+        "medianKm": 91,
+        "changeJS": 0.3861774851622778
+      },
+      "web": {
+        "n": 3490,
+        "medianKm": 91,
+        "shallow": 1702,
+        "intermediate": 1783,
+        "deep": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+ID,Hallazgo,Evidencia,Robustez,Interés visual,Necesita bibliografía,Posible uso
+H01,"Corte efectivo cerca de M 2,5 y Mc mayor en Salta/Jujuy","80.469/80.524 en M>=2,5; Mc local 3,1 al norte","Alta internamente; método inicial",Medio,Sí,"Umbral honesto para comparaciones"
+H02,"La geometría longitud-profundidad cambia en latitudes no elegidas previamente","Máximos JS robustos en 24,5; 30,5; 27-28; 23 y 32,5°S","Alta dentro del corredor; depende de ancho y bin",Muy alto,Sí,"Recorrido norte-sur y selección de perfiles"
+H03,"Población profunda concentrada cerca de 27-29°S y 63°O","131 eventos >=500 km; mediana 27,11°S y 63,32°O","Alta descriptiva; extremos a verificar",Muy alto,Sí,"Lente de profundidad extrema"
+H04,"La relación nominal con DEP cambia de signo y magnitud norte-sur","Delta z mediana -98,6 km a 27°S y +54,4 km a 24,5°S","Alta numérica; baja como explicación física",Muy alto,Sí,"Mostrar límites del modelo y comparación"
+H05,"Las provincias tienen huellas de profundidad distintas","Jujuy P50 221 km; Mendoza 31 km; Santiago 25,7% profunda","Media-alta; sesgada por completitud y n",Alto,Sí,"Selector provincial descriptivo"
+H06,"Enero de 2021 contiene una concentración espacio-temporal excepcional en San Juan","98 eventos por celda y día; varios días consecutivos","Alta como conteo; no declusterizada",Alto,Sí,"Candidato a secuencia contextualizada"
+H07,"El catálogo no es temporalmente estacionario","4,5-4,9k por año en 2012-17; pico 7.532 en 2021; 3.949 en 2025","Alta descriptiva; causa no resuelta",Medio,Sí,"Explicar límites de tendencias"

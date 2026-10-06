@@ -1,0 +1,132 @@
+fecha,hora,timestamp,longitude,latitude,depth_km,magnitude,provincia,sentido,source_row,candidate_reason
+05/04/2018,01:11:56,2018-04-05 01:11:56,-69.13,-33.89,750.0,3.3,MENDOZA,No,48328,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/07/2013,13:33:41,2013-07-09 13:33:41,-64.848,-29.079,700.0,3.8,CATAMARCA,No,71079,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+06/03/2012,08:54:24,2012-03-06 08:54:24,-66.75,-32.413,695.0,3.4,SAN LUIS,No,77348,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+22/01/2012,02:58:02,2012-01-22 02:58:02,-58.51,-41.639,681.0,5.3,ATLANTICO SUR,No,77917,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/05/2018,23:21:13,2018-05-16 23:21:13,-62.647,-28.875,680.0,3.5,SANTIAGO DEL ESTERO,No,47659,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+08/03/2024,06:29:55,2024-03-08 06:29:55,-67.063,-29.998,680.0,4.3,LA RIOJA,No,10652,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+10/01/2023,16:47:04,2023-01-10 16:47:04,-63.433,-27.779,677.0,4.9,SANTIAGO DEL ESTERO,Si,17120,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/05/2023,12:53:54,2023-05-02 12:53:54,-62.686,-28.692,669.0,3.6,SANTIAGO DEL ESTERO,No,15349,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/08/2018,12:04:40,2018-08-16 12:04:40,-62.675,-27.802,666.0,3.9,SANTIAGO DEL ESTERO,No,46250,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/12/2013,09:35:22,2013-12-16 09:35:22,-62.219,-27.943,664.0,4.5,SANTIAGO DEL ESTERO,No,68934,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/05/2012,02:07:12,2012-05-28 02:07:12,-63.138,-28.155,662.0,6.4,SANTIAGO DEL ESTERO,No,76328,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+25/07/2011,13:45:38,2011-07-25 13:45:38,-63.152,-27.485,660.0,4.7,SANTIAGO DEL ESTERO,No,80405,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/06/2012,04:30:54,2012-06-02 04:30:54,-63.338,-22.317,658.0,5.7,SALTA,No,76262,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+20/06/2013,21:06:10,2013-06-20 21:06:10,-63.267,-27.01,655.0,4.8,SANTIAGO DEL ESTERO,No,71292,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/04/2015,09:41:29,2015-04-28 09:41:29,-63.093,-27.752,650.0,4.6,SANTIAGO DEL ESTERO,No,62604,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+27/03/2020,14:42:43,2020-03-27 14:42:43,-63.062,-28.877,646.0,5.4,SANTIAGO DEL ESTERO,Si,37087,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+19/12/2014,10:41:49,2014-12-19 10:41:49,-63.521,-26.906,645.0,4.3,SANTIAGO DEL ESTERO,No,64131,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+15/04/2013,06:20:17,2013-04-15 06:20:17,-63.23,-27.618,644.0,4.1,SANTIAGO DEL ESTERO,No,72151,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+26/05/2017,12:17:57,2017-05-26 12:17:57,-63.886,-27.317,641.0,3.3,SANTIAGO DEL ESTERO,No,52507,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+20/01/2023,19:09:31,2023-01-20 19:09:31,-63.207,-26.873,637.0,6.4,SANTIAGO DEL ESTERO,Si,16988,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+01/01/2013,09:21:19,2013-01-01 09:21:19,-64.017,-26.907,636.0,4.5,SANTIAGO DEL ESTERO,No,73389,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/01/2020,18:11:18,2020-01-23 18:11:18,-63.14,-27.106,636.0,5.0,SANTIAGO DEL ESTERO,No,38056,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/09/2011,10:47:01,2011-09-02 10:47:01,-63.019,-28.638,635.0,6.9,SANTIAGO DEL ESTERO,Si,79937,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/05/2012,08:50:49,2012-05-28 08:50:49,-63.373,-28.139,635.0,5.7,SANTIAGO DEL ESTERO,No,76324,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+10/02/2013,02:33:14,2013-02-10 02:33:14,-66.501,-26.424,635.0,4.2,CATAMARCA,No,72895,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+05/08/2023,04:19:59,2023-08-05 04:19:59,-63.266,-28.35,635.0,6.1,SANTIAGO DEL ESTERO,Si,13868,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+17/01/2015,15:41:36,2015-01-17 15:41:36,-63.569,-22.519,633.0,5.6,SALTA,No,63767,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+01/03/2024,15:06:08,2024-03-01 15:06:08,-63.039,-28.834,630.0,4.3,SANTIAGO DEL ESTERO,No,10731,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+20/07/2018,07:24:50,2018-07-20 07:24:50,-63.239,-28.164,629.0,5.6,SANTIAGO DEL ESTERO,Si,46691,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+18/11/2014,18:15:55,2014-11-18 18:15:55,-63.007,-27.99,627.0,5.2,SANTIAGO DEL ESTERO,No,64538,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+27/12/2025,07:40:43,2025-12-27 07:40:43,-63.143,-28.324,625.0,5.2,SANTIAGO DEL ESTERO,No,3038,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+15/09/2013,16:29:15,2013-09-15 16:29:15,-63.187,-27.887,624.0,3.6,SANTIAGO DEL ESTERO,No,70250,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+24/01/2023,15:36:54,2023-01-24 15:36:54,-63.172,-26.902,622.0,6.1,SANTIAGO DEL ESTERO,Si,16931,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+14/06/2012,01:47:38,2012-06-14 01:47:38,-63.88,-23.086,618.0,4.6,SALTA,No,76109,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+06/10/2016,04:36:21,2016-10-06 04:36:21,-62.923,-28.832,616.0,4.1,SANTIAGO DEL ESTERO,No,55440,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+03/06/2012,05:21:42,2012-06-03 05:21:42,-63.284,-26.728,615.0,4.9,SANTIAGO DEL ESTERO,No,76251,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+24/12/2017,07:43:49,2017-12-24 07:43:49,-63.342,-27.469,615.0,4.2,SANTIAGO DEL ESTERO,No,49797,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+04/10/2011,00:44:30,2011-10-04 00:44:30,-63.191,-28.657,614.0,4.3,SANTIAGO DEL ESTERO,No,79508,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+29/09/2015,12:26:40,2015-09-29 12:26:40,-63.124,-27.092,614.0,4.6,SANTIAGO DEL ESTERO,No,60547,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+17/11/2021,18:38:46,2021-11-17 18:38:46,-63.27,-26.502,614.0,5.4,SANTIAGO DEL ESTERO,No,25184,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+21/12/2021,19:34:11,2021-12-21 19:34:11,-63.191,-28.562,613.0,4.0,SANTIAGO DEL ESTERO,No,24478,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+12/03/2018,12:29:06,2018-03-12 12:29:06,-63.247,-26.644,612.0,3.8,SANTIAGO DEL ESTERO,No,48709,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+08/11/2011,00:12:41,2011-11-08 00:12:41,-26.264,-39.603,610.0,5.9,OCEANO ATLANTICO SUR,No,78965,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+11/05/2012,16:26:21,2012-05-11 16:26:21,-63.659,-23.702,610.0,4.2,SALTA,No,76499,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/08/2012,04:53:08,2012-08-09 04:53:08,-63.933,-22.016,610.0,4.3,SALTA,No,75420,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+03/07/2025,03:13:00,2025-07-03 03:13:00,-63.432,-27.407,610.0,4.7,SANTIAGO DEL ESTERO,No,5200,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+29/07/2026,00:39:00,2026-07-29 00:39:00,-63.489,-27.491,610.0,3.3,SANTIAGO DEL ESTERO,No,576,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+06/06/2012,06:35:27,2012-06-06 06:35:27,-63.081,-27.593,609.0,4.4,SANTIAGO DEL ESTERO,No,76219,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/08/2020,00:43:06,2020-08-16 00:43:06,-62.869,-27.665,609.0,4.2,SANTIAGO DEL ESTERO,No,34564,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+31/10/2023,09:20:11,2023-10-31 09:20:11,-63.215,-27.237,607.0,4.4,SANTIAGO DEL ESTERO,No,12486,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+17/01/2014,03:17:10,2014-01-17 03:17:10,-63.221,-27.187,606.0,3.8,SANTIAGO DEL ESTERO,No,68441,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+24/06/2026,05:56:00,2026-06-24 05:56:00,-62.927,-26.992,606.0,4.5,SANTIAGO DEL ESTERO,No,935,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+10/03/2025,23:28:00,2025-03-10 23:28:00,-64.103,-23.08,605.0,4.8,SALTA,No,6233,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+08/11/2016,20:30:16,2016-11-08 20:30:16,-63.789,-27.282,604.0,4.7,SANTIAGO DEL ESTERO,No,54989,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/09/2017,18:44:56,2017-09-16 18:44:56,-63.99,-22.824,604.0,4.2,SALTA,No,51146,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/07/2025,16:11:00,2025-07-09 16:11:00,-63.394,-27.393,604.0,4.9,SANTIAGO DEL ESTERO,No,5140,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/08/2023,11:22:37,2023-08-23 11:22:37,-63.34,-27.049,603.0,5.8,SANTIAGO DEL ESTERO,Si,13561,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+11/08/2019,15:44:02,2019-08-11 15:44:02,-63.16,-28.223,602.0,4.3,SANTIAGO DEL ESTERO,No,40845,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/10/2016,13:38:07,2016-10-02 13:38:07,-63.373,-27.292,601.0,4.2,SANTIAGO DEL ESTERO,No,55488,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+25/03/2018,11:28:28,2018-03-25 11:28:28,-63.234,-27.001,601.0,5.5,SANTIAGO DEL ESTERO,No,48516,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/09/2017,18:44:57,2017-09-16 18:44:57,-64.018,-22.925,599.0,3.4,SALTA,No,51145,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+10/06/2021,11:16:04,2021-06-10 11:16:04,-63.454,-27.245,599.0,4.3,SANTIAGO DEL ESTERO,No,28316,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+10/05/2022,05:41:59,2022-05-10 05:41:59,-63.262,-27.234,598.0,5.3,SANTIAGO DEL ESTERO,No,21686,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/02/2019,21:13:22,2019-02-28 21:13:22,-63.196,-28.337,597.0,5.4,SANTIAGO DEL ESTERO,No,43358,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+01/05/2022,06:19:08,2022-05-01 06:19:08,-63.245,-27.835,597.0,4.2,SANTIAGO DEL ESTERO,No,21870,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+22/11/2012,10:07:06,2012-11-22 10:07:06,-64.11,-23.099,596.0,5.9,SALTA,No,73921,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+18/04/2014,04:46:55,2014-04-18 04:46:55,-62.874,-27.746,596.0,5.2,SANTIAGO DEL ESTERO,No,67182,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/11/2015,11:49:33,2015-11-23 11:49:33,-64.01,-22.357,596.0,4.8,SALTA,No,59714,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+05/09/2016,20:23:49,2016-09-05 20:23:49,-63.586,-22.945,596.0,4.7,SALTA,No,55805,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/10/2016,13:43:44,2016-10-02 13:43:44,-63.371,-27.325,595.0,4.5,SANTIAGO DEL ESTERO,No,55487,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/09/2017,18:44:57,2017-09-16 18:44:57,-64.056,-22.835,595.0,4.1,SALTA,No,51144,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/01/2025,07:30:00,2025-01-09 07:30:00,-63.151,-28.404,595.0,3.0,SANTIAGO DEL ESTERO,No,6841,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/04/2026,17:32:00,2026-04-23 17:32:00,-63.208,-28.555,595.0,4.5,SANTIAGO DEL ESTERO,No,1637,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/03/2018,01:42:07,2018-03-02 01:42:07,-63.833,-22.101,594.0,5.5,SALTA,Si,48872,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/08/2019,13:53:47,2019-08-09 13:53:47,-63.769,-23.442,593.0,3.2,SALTA,No,40878,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+21/03/2021,11:17:14,2021-03-21 11:17:14,-64.235,-19.399,593.0,5.2,BOLIVIA,No,29925,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+06/01/2026,06:53:17,2026-01-06 06:53:17,-63.318,-27.272,592.0,4.1,SANTIAGO DEL ESTERO,No,2911,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+30/10/2014,18:51:11,2014-10-30 18:51:11,-63.987,-22.86,591.0,4.7,SALTA,No,64802,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+11/11/2016,20:35:34,2016-11-11 20:35:34,-63.727,-27.33,591.0,3.9,SANTIAGO DEL ESTERO,No,54951,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+06/12/2023,08:35:52,2023-12-06 08:35:52,-63.299,-27.249,591.0,3.7,SANTIAGO DEL ESTERO,No,11879,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+20/12/2012,12:00:12,2012-12-20 12:00:12,-63.941,-23.001,590.0,5.2,SALTA,No,73532,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+24/12/2019,13:43:26,2019-12-24 13:43:26,-63.247,-27.07,590.0,6.1,SANTIAGO DEL ESTERO,Si,38496,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/09/2011,15:07:58,2011-09-02 15:07:58,-63.17,-28.936,589.0,4.5,SANTIAGO DEL ESTERO,No,79936,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/10/2025,18:37:52,2025-10-02 18:37:52,-63.241,-27.047,588.0,5.8,SANTIAGO DEL ESTERO,No,4169,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+05/04/2026,14:44:00,2026-04-05 14:44:00,-64.002,-22.406,587.0,3.9,SALTA,No,1872,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+22/02/2013,09:02:02,2013-02-22 09:02:02,-63.0,-27.89,586.0,6.1,SANTIAGO DEL ESTERO,Si,72873,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/08/2012,04:53:06,2012-08-09 04:53:06,-61.643,-23.399,585.0,4.8,FORMOSA,No,75421,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+07/08/2017,10:26:01,2017-08-07 10:26:01,-64.058,-23.016,585.0,3.8,SALTA,No,51669,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/07/2014,22:22:01,2014-07-28 22:22:01,-64.032,-23.775,584.0,4.2,SALTA,No,65964,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+05/03/2012,04:46:01,2012-03-05 04:46:01,-63.089,-28.371,583.0,6.0,SANTIAGO DEL ESTERO,No,77359,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/06/2012,04:52:48,2012-06-02 04:52:48,-63.687,-22.331,583.0,6.5,SALTA,No,76261,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+24/11/2023,12:29:54,2023-11-24 12:29:54,-63.083,-27.207,583.0,4.2,SANTIAGO DEL ESTERO,No,12067,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+25/03/2024,13:14:16,2024-03-25 13:14:16,-63.415,-25.923,583.0,4.6,SANTIAGO DEL ESTERO,No,10428,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+26/02/2021,00:02:14,2021-02-26 00:02:14,-63.194,-27.799,582.0,3.7,SANTIAGO DEL ESTERO,No,30352,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/10/2023,21:13:10,2023-10-09 21:13:10,-63.213,-23.559,580.0,5.2,SALTA,No,12828,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/11/2020,00:30:29,2020-11-23 00:30:29,-63.027,-28.589,579.0,4.7,SANTIAGO DEL ESTERO,No,32672,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+12/02/2023,16:44:07,2023-02-12 16:44:07,-63.898,-22.196,578.0,4.1,SALTA,No,16628,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/08/2024,12:09:25,2024-08-23 12:09:25,-62.631,-28.076,578.0,3.1,SANTIAGO DEL ESTERO,No,8526,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+14/04/2020,22:15:27,2020-04-14 22:15:27,-62.862,-27.105,577.0,5.5,SANTIAGO DEL ESTERO,No,36758,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/09/2015,21:05:18,2015-09-28 21:05:18,-63.165,-27.096,576.0,4.5,SANTIAGO DEL ESTERO,No,60555,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+27/06/2023,17:18:46,2023-06-27 17:18:46,-63.135,-22.343,576.0,4.4,SALTA,No,14437,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+24/10/2012,19:05:46,2012-10-24 19:05:46,-64.169,-23.159,575.0,4.4,SALTA,No,74334,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/07/2022,14:49:11,2022-07-09 14:49:11,-63.235,-27.321,574.0,3.5,SANTIAGO DEL ESTERO,No,20587,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+30/05/2012,23:18:09,2012-05-30 23:18:09,-64.82,-22.63,572.0,3.5,SALTA,No,76295,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+19/05/2021,12:06:51,2021-05-19 12:06:51,-62.843,-28.405,571.0,5.2,SANTIAGO DEL ESTERO,No,28748,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+15/09/2016,10:54:44,2016-09-15 10:54:44,-64.333,-23.197,570.0,3.6,SALTA,No,55688,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/04/2018,10:40:34,2018-04-02 10:40:34,-63.418,-20.679,570.0,6.8,BOLIVIA,No,48360,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+01/05/2014,20:44:13,2014-05-01 20:44:13,-63.44,-27.06,569.0,4.5,SANTIAGO DEL ESTERO,No,67015,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+17/08/2019,22:50:16,2019-08-17 22:50:16,-63.921,-19.476,569.0,4.8,BOLIVIA,No,40728,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+23/03/2019,05:11:18,2019-03-23 05:11:18,-63.817,-22.805,568.0,4.8,SALTA,No,43009,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+22/01/2020,14:43:24,2020-01-22 14:43:24,-63.386,-22.952,567.0,4.4,SALTA,No,38073,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+18/10/2021,06:12:45,2021-10-18 06:12:45,-62.533,-28.486,566.0,3.5,SANTIAGO DEL ESTERO,No,25788,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+05/11/2016,06:01:19,2016-11-05 06:01:19,-63.534,-26.992,560.0,3.5,SANTIAGO DEL ESTERO,No,55039,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+20/04/2019,20:59:05,2019-04-20 20:59:05,-63.128,-28.556,560.0,3.8,SANTIAGO DEL ESTERO,No,42515,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+05/05/2024,18:59:31,2024-05-05 18:59:31,-63.86,-22.42,558.0,3.7,SALTA,No,9950,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+03/02/2016,10:29:47,2016-02-03 10:29:47,-65.532,-24.294,557.0,3.7,JUJUY,No,58655,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+22/01/2020,14:50:15,2020-01-22 14:50:15,-63.569,-23.062,553.0,4.5,SALTA,No,38072,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+04/11/2025,00:56:43,2025-11-04 00:56:43,-63.406,-22.357,552.0,2.7,SALTA,No,3722,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+09/08/2019,13:53:42,2019-08-09 13:53:42,-62.966,-23.327,551.0,4.3,SALTA,No,40879,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/02/2024,20:12:17,2024-02-02 20:12:17,-64.075,-22.274,550.0,4.2,SALTA,No,11094,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+14/01/2024,06:54:10,2024-01-14 06:54:10,-63.854,-22.223,544.0,3.8,SALTA,No,11342,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+11/11/2025,12:00:00,2025-11-11 12:00:00,-62.544,-25.086,541.0,4.2,CHACO,No,3617,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+02/04/2023,21:06:40,2023-04-02 21:06:40,-64.019,-24.113,537.0,2.7,SALTA,No,15801,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+16/04/2019,14:01:03,2019-04-16 14:01:03,-63.264,-28.353,535.0,5.2,SANTIAGO DEL ESTERO,No,42571,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+28/04/2021,15:58:43,2021-04-28 15:58:43,-63.869,-22.383,532.0,4.6,SALTA,No,29143,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+26/04/2025,03:22:00,2025-04-26 03:22:00,-63.941,-23.324,529.0,4.2,SALTA,No,5779,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+03/07/2015,09:13:49,2015-07-03 09:13:49,-67.389,-25.984,524.0,3.3,CATAMARCA,No,61724,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+15/10/2013,11:09:32,2013-10-15 11:09:32,-63.808,-28.519,515.0,3.8,SANTIAGO DEL ESTERO,No,69859,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+29/09/2019,02:21:28,2019-09-29 02:21:28,-64.194,-23.317,510.0,4.5,SALTA,No,39952,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+20/12/2016,21:35:26,2016-12-20 21:35:26,-58.513,-28.235,504.0,4.2,CORRIENTES,No,54378,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar
+01/06/2019,11:56:28,2019-06-01 11:56:28,-64.35,-23.903,501.0,3.1,JUJUY,No,41923,profundidad catalogada ≥500 km; verificar evento y solución antes de interpretar

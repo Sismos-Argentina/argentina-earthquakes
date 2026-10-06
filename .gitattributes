@@ -1,0 +1,5 @@
+# JSON generado con checksum de bytes reproducible en Windows y Linux.
+src/data/catalog-snapshot.json text eol=lf
+src/data/competition-history.json text eol=lf
+src/data/competition-presets.json text eol=lf
+public/data/generated/historical/media-manifest.json text eol=lf

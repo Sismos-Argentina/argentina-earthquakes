@@ -11,6 +11,7 @@ import {
   summarizeProfile,
 } from "@/lib/profile/cuyo";
 import EventInspector from "./EventInspector";
+import GuidedDiscovery from "@/components/story/GuidedDiscovery";
 
 const LEFT = 56;
 const TOP = 21;
@@ -53,7 +54,7 @@ function drawSegmented(
 }
 
 export default function CuyoSection({
-  profile, events, samples, selected, status, onLatitudeChange, onPick, onClose,
+  profile, events, samples, selected, status, onLatitudeChange, onPick, onClose, guidedIndex = null, onGuideChange,
 }: {
   profile: ProfileDefinition;
   events: ProjectedEvent[];
@@ -63,6 +64,8 @@ export default function CuyoSection({
   onLatitudeChange: (latitude: number) => void;
   onPick: (event: InpresFeature) => void;
   onClose: () => void;
+  guidedIndex?: number | null;
+  onGuideChange?: (index: number | null) => void;
 }) {
   const frame = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -70,7 +73,7 @@ export default function CuyoSection({
   const [showSlab, setShowSlab] = useState(true);
   const [fullDepth, setFullDepth] = useState(false);
   const summary = useMemo(() => summarizeProfile(events, profile), [events, profile]);
-  const maxDepth = fullDepth ? summary.fullDepthKm : profile.initialDepthKm;
+  const maxDepth = fullDepth || guidedIndex !== null ? summary.fullDepthKm : profile.initialDepthKm;
   const scale = profilePixelsPerKm(availableWidth, profile.lengthKm);
   const width = Math.ceil(LEFT + profile.lengthKm * scale + 18);
   const height = Math.ceil(TOP + (ABOVE_SEA_KM + maxDepth) * scale + 38);
@@ -97,6 +100,13 @@ export default function CuyoSection({
     context.font = "11px Arial";
     context.lineWidth = 1;
 
+    // Bandas descriptivas; no representan superficies ni límites geológicos.
+    for (const [from, to, color] of [[0, 70, "rgba(245,169,87,.055)"], [70, 300, "rgba(82,199,222,.055)"], [300, maxDepth, "rgba(184,148,237,.06)"]] as const) {
+      if (from >= maxDepth) continue;
+      context.fillStyle = color;
+      context.fillRect(LEFT, y(from), profile.lengthKm * scale, (Math.min(to, maxDepth) - from) * scale);
+    }
+
     for (let depth = 0; depth <= maxDepth; depth += 50) {
       context.strokeStyle = depth === 0 ? "#649dad" : "#29434a";
       context.beginPath(); context.moveTo(LEFT, y(depth)); context.lineTo(x(profile.lengthKm), y(depth)); context.stroke();
@@ -108,6 +118,13 @@ export default function CuyoSection({
       context.beginPath(); context.moveTo(x(distance), y(0)); context.lineTo(x(distance), y(maxDepth)); context.stroke();
       context.fillStyle = "#b5c9c9"; context.textAlign = "center";
       context.fillText(`${distance}`, x(distance), height - 9);
+    }
+    for (const boundary of [70, 300]) {
+      if (boundary > maxDepth) continue;
+      context.strokeStyle = "#b3c6cc"; context.setLineDash([5, 5]);
+      context.beginPath(); context.moveTo(LEFT, y(boundary)); context.lineTo(x(profile.lengthKm), y(boundary)); context.stroke();
+      context.setLineDash([]); context.fillStyle = "#edf4f1"; context.textAlign = "right";
+      context.fillText(`${boundary} km`, x(profile.lengthKm) - 5, y(boundary) - 5);
     }
     context.fillStyle = "#d6e5e0";
     context.textAlign = "left";
@@ -122,7 +139,7 @@ export default function CuyoSection({
 
     if (showSlab) {
       // Cada par adyacente válido es independiente: CLP/nodata corta la banda.
-      context.fillStyle = "rgba(222,215,196,.24)";
+      context.fillStyle = "rgba(222,215,196,.12)";
       for (let index = 1; index < samples.length; index++) {
         const a = samples[index - 1], b = samples[index];
         if (!a.slab || !b.slab) continue;
@@ -133,8 +150,9 @@ export default function CuyoSection({
         context.lineTo(x(a.alongKm), y(a.slab.depthKm + a.slab.uncertaintyKm));
         context.fill();
       }
-      context.strokeStyle = "#eee3ca"; context.lineWidth = 2;
+      context.strokeStyle = "#c9c2b1"; context.lineWidth = 1.2; context.setLineDash([7, 4]);
       drawSegmented(context, samples, (sample) => sample.slab?.depthKm ?? null, x, y);
+      context.setLineDash([]);
     }
 
     // Superficie modelada GEBCO: elevación positiva hacia arriba respecto de 0.
@@ -189,10 +207,11 @@ export default function CuyoSection({
 
       <div className="sectionContext">
         <div className="sectionContextCopy">
+          {guidedIndex !== null && onGuideChange ? <GuidedDiscovery index={guidedIndex} events={events} status={status} onChange={onGuideChange} /> : null}
           <div className="sectionRoute"><b>A · Chile</b><span>→ Andes → {regionLabel(profile.latitude)} →</span><b>B · interior continental</b></div>
-          <p><strong>{status ? "Recalculando hipocentros" : `${summary.total.toLocaleString("es-AR")} hipocentros`}</strong> del catálogo dentro de una franja de <strong>±{profile.halfWidthKm} km</strong>. Se proyectan sobre A–B; no ocurrieron todos sobre esa línea.</p>
+          {guidedIndex === null ? <p><strong>{status ? "Recalculando hipocentros" : `${summary.total.toLocaleString("es-AR")} hipocentros`}</strong> del catálogo dentro de una franja de <strong>±{profile.halfWidthKm} km</strong>. Se proyectan sobre A–B; no ocurrieron todos sobre esa línea.</p> : <p className="guideProjectionNote">Los eventos de la franja se proyectan sobre A–B; no ocurrieron todos en esa línea.</p>}
           <small>A (−73°, {formatLatitude(profile.latitude)}) → B (−61°, {formatLatitude(profile.latitude)}) · {profile.lengthKm.toFixed(1)} km sobre WGS84</small>
-          <div className="profileLatitudeControl">
+          <div className="profileLatitudeControl" hidden={guidedIndex !== null}>
             <label htmlFor="profile-latitude">Mover perfil norte–sur</label>
             <input
               id="profile-latitude"
@@ -218,8 +237,8 @@ export default function CuyoSection({
         </div>
         <div className="sectionMapSlot" aria-label="Contexto espacial: Chile, Argentina, perfil A–B y corredor de 100 km">
           <div className="sectionMiniDiagram">A · Chile ━━━ Andes ━━━ {regionLabel(profile.latitude)} ━━━ B<br />Franja seleccionada: 50 km a cada lado de A–B</div>
-          <span>Arrastrá la franja hacia el norte o el sur</span>
-          <small>El gráfico se recalcula al soltar. También podés usar el control de latitud.</small>
+          <span>{guidedIndex === null ? "Arrastrá la franja hacia el norte o el sur" : "El corte y su muestra cambian con cada parada"}</span>
+          <small>{guidedIndex === null ? "También podés usar el control de latitud." : "Norte → transición → Cuyo. El perfil conserva la escala 1×."}</small>
         </div>
       </div>
 
@@ -230,9 +249,16 @@ export default function CuyoSection({
         </div>
         <div className="sectionPlot" ref={frame}>
           {status ? <div className="sectionPlotStatus" role="status">{status}</div> : null}
+          {!status && !events.length ? <p className="sectionEmpty" role="status">No hay hipocentros en esta franja con los filtros actuales. Mové el perfil o restablecé los filtros al volver al mapa.</p> : null}
           <canvas ref={canvas} width={Math.round(width * dpr)} height={Math.round(height * dpr)} style={{ width, height }} onClick={handlePick} role="img" aria-label={`Perfil de ${summary.total} eventos, superficie GEBCO y curva Slab2; distancia horizontal y profundidad en kilómetros a escala 1 a 1`} />
         </div>
         <div className="sectionAxis"><span>Profundidad catalogada / modelada (km) ↓</span><span>Distancia desde A (km) → · escala efectiva 1×</span></div>
+        <div className="depthBandSummary" aria-label="Conteos por clasificación descriptiva de profundidad">
+          <span>Superficial · &lt;70 km <b>{status ? "…" : summary.superficial.toLocaleString("es-AR")}</b></span>
+          <span>Intermedia · 70–&lt;300 km <b>{status ? "…" : summary.intermedio.toLocaleString("es-AR")}</b></span>
+          <span>Profunda · ≥300 km <b>{status ? "…" : summary.profundo.toLocaleString("es-AR")}</b></span>
+          <small>Bandas descriptivas; no son límites de corteza y manto. En móvil, desplazá horizontalmente el gráfico para recorrer A–B.</small>
+        </div>
       </div>
 
       <div className="sectionBottom">
@@ -246,7 +272,8 @@ export default function CuyoSection({
           </div>
           <div className="sectionActions">
             <button aria-pressed={showSlab} onClick={() => setShowSlab(!showSlab)}>DEP ± UNC {showSlab ? "visible" : "oculto"}</button>
-            <button aria-pressed={fullDepth} onClick={() => setFullDepth(!fullDepth)}>{fullDepth ? `Volver a 0–${profile.initialDepthKm} km` : `Rango completo · ${summary.outsideInitialDepth} fuera de ${profile.initialDepthKm} km`}</button>
+            {guidedIndex === null ? <button aria-pressed={fullDepth} onClick={() => setFullDepth(!fullDepth)}>{fullDepth ? `Volver a 0–${profile.initialDepthKm} km` : `Rango completo · ${summary.outsideInitialDepth} fuera de ${profile.initialDepthKm} km`}</button> : <span>Rango completo durante el recorrido</span>}
+            <button disabled={!events.length || Boolean(status)} onClick={() => onPick(events[Math.floor(events.length / 2)].feature)}>Inspeccionar un evento de la franja</button>
           </div>
           <div className="sectionDetails">
             <details>

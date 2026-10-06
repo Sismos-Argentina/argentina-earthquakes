@@ -13,3 +13,11 @@ La investigación no bloquea el primer vertical slice salvo que revele un riesgo
 - cartografía territorial oficial argentina.
 
 La nota sobre metadata individual de INPRES se conservó en `../archive/2026-09-pre-mvp/research/inpres.md`. Es trabajo postconcurso y no bloquea el MVP.
+
+## EDA del catálogo
+
+La primera entrega reproducible del análisis exploratorio profundo está en
+[`docs/research/eda-2026-09-19/REPORT.md`](../docs/research/eda-2026-09-19/REPORT.md).
+Incluye auditoría de calidad, completitud diagnóstica, barrido latitudinal,
+relación nominal con Slab2, perfiles provinciales y candidatos de anomalías y
+secuencias. No modifica el frontend ni fija una narrativa final.

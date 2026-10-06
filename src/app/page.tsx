@@ -1,5 +1,5 @@
-import SeismicViewer from "@/components/seismic/SeismicViewer";
+import CompetitionExperience from "@/components/story/CompetitionExperience";
 
 export default function Home() {
-  return <SeismicViewer />;
+  return <CompetitionExperience />;
 }
