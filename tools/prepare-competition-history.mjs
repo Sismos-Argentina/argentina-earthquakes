@@ -41,18 +41,26 @@ const extraPhotos = {
   "1894-10-27": [
     { id: "79d1934c", alt: "Fotografía de archivo: edificios derrumbados y escombros del establecimiento de fundición de Malimán, San Juan, en 1894." },
     { id: "fa7a69a8", alt: "Fotografía de archivo: una persona junto a una grieta visible en el terreno de Mogna, San Juan, en 1894." },
+    { id: "c6dbad85", alt: "Fotografía de archivo: muros sin techo, vigas caídas, barriles y escombros entre la vegetación en Angaco, San Juan, en 1894." },
+    { id: "eb4a64e3", alt: "Fotografía de archivo: terreno irregular con grietas y vegetación en Angaco, San Juan, en 1894; INPRES la titula Licuefacción, Angaco." },
   ],
   "1944-01-15": [
     { id: "e7e276bc", alt: "Fotografía de archivo: fachada de la Casa de Sarmiento con daños y escombros junto a la vereda en San Juan, en 1944." },
     { id: "4b59c268", alt: "Fotografía de archivo: cúpula dañada de la iglesia Santo Domingo, muros incompletos y vegetación en San Juan, en 1944." },
+    { id: "4163d2c9", alt: "Fotografía de archivo: calle céntrica con fachadas derrumbadas, vigas inclinadas y montones de escombros en San Juan, en 1944." },
+    { id: "746f39b6", alt: "Fotografía de archivo: tribuna del estadio con gradas y muros derrumbados, junto a árboles en San Juan después del terremoto de 1944." },
   ],
   "1977-11-23": [
     { id: "035e79cc", alt: "Fotografía de archivo: estructura de una bodega con losas y columnas dañadas e inclinadas después del terremoto de Caucete de 1977." },
     { id: "6d794f70", alt: "Fotografía de archivo: dos personas frente a escaleras y estructuras derrumbadas de la Escuela Normal después del terremoto de Caucete de 1977." },
+    { id: "81380b82", alt: "Fotografía de archivo: detalle de un riel sobre terreno agrietado y piedras, publicado en la galería del terremoto de Caucete de 1977." },
+    { id: "de061e8a", alt: "Fotografía de archivo: tanques cilíndricos con grietas y partes caídas, junto a barriles en el suelo después del terremoto de Caucete de 1977." },
   ],
   "2015-10-17": [
     { id: "1b024eb6", alt: "Fotografía de archivo: escombros y chapas caídas junto a una calle, árboles y viviendas en El Galpón, Salta, en 2015." },
     { id: "acd873a9", alt: "Fotografía de archivo: automóvil parcialmente cubierto por una estructura de techo caída, muros y escombros en El Galpón, Salta, en 2015." },
+    { id: "73427a3d", alt: "Fotografía de archivo: vivienda de paredes verdes con un muro derrumbado, árboles y una pila de ladrillos en El Galpón, Salta, en 2015." },
+    { id: "d4bf6b0b", alt: "Fotografía de archivo: otra vista de una vivienda dañada, con muros incompletos, techos caídos y escombros en El Galpón, Salta, en 2015." },
   ],
 };
 for (const chosen of selection) {

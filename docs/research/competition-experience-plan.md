@@ -23,27 +23,28 @@ WGS84. Sus muestras deben calcularse y presentarse por separado.
 
 Selección histórica: 1894 (afirmación de mayor magnitud atribuida a INPRES, sin
 valor instrumental), 1944 y 1977 (requeridos), 2015 (contraste del norte).
-Tres imágenes por evento según la ampliación solicitada, con derivados 480/1600 WebP existentes, texto alternativo,
-fuente, hash y fallback sólo texto. Los derechos no están confirmados: condición
+Cinco imágenes por evento según la ampliación solicitada, con derivados 480/1600 WebP existentes, texto alternativo,
+fuente, hash y fallback interno ante errores de imagen. Los derechos no están confirmados: condición
 pendiente antes de cualquier publicación pública de las fotografías.
 
 La referencia visual aportada por el usuario es la sección de modelos de
 [Motorola Signature Swarovski](https://www.motorola.com.ar/motorola-signature-swarovski/p).
-Se adopta un escenario fijo mediante `position: sticky`, fundidos según el scroll
-nativo y controles manuales accesibles; sin copiar contenido ni imágenes de Motorola.
-Tras la segunda revisión del usuario, cada escena ocupa al menos `520svh`:
-cinco tramos iguales alternan foto completa / fundido / foto completa / fundido /
-foto completa. La última dispone del mismo tiempo propio que las demás. Cada
-imagen y su fondo son opacos al completar el fundido, eliminando la mezcla
-residual con la anterior. Los botones llevan al comienzo del tramo de su foto.
-Los fundidos quedan siempre activos sin selector ni almacenamiento de preferencias
-por solicitud expresa; `prefers-reduced-motion` conserva navegación instantánea
-y elimina desplazamientos, zooms y damping, pero permite esta mezcla de opacidad.
-Los cuatro casos más la pregunta equivalen a unas 21,8 alturas de ventana.
-Esto supera el objetivo inicial de 3–5 pantallas y la primera iteración de
-7,4 en escritorio / 6,8 en móvil. El aumento responde a la solicitud explícita
-de más espacio para ver las transiciones; el salto y la navegación directa
-permanecen visibles. La auditoría registra el costo sin recortar lo solicitado.
+La revisión vigente sustituye el scroll fotográfico de las primeras iteraciones
+por una secuencia automática: 5 s de imagen completa y 1,2 s de fundido CSS,
+con vuelta de la última a la primera. Se mantienen únicamente imagen actual y
+siguiente, cargadas cuando su escenario está cerca de la ventana. El timer
+espera la carga de ambas; el fondo opaco permanece cubierto durante la mezcla.
+«Pausar fotos» congela incluso un fundido en curso y se conserva entre casos.
+Los casos fuera de foco y una pestaña oculta dejan de avanzar. No hay selector
+sólo texto, contador ni botones de selección de fotos.
+
+Cada caso ocupa al menos 100svh, con scroll nativo exclusivamente entre casos;
+el contenido largo móvil puede ampliar su altura. Se retira el sticky de 520svh.
+Los cuatro casos y la pregunta vuelven a unas cinco pantallas de escritorio,
+sujetas a la altura real del texto. La referencia se usa para el tratamiento
+visual, sin copiar contenido ni imágenes de Motorola. No se añade librería.
+Los fundidos quedan siempre activos por solicitud expresa; movimiento reducido
+conserva navegación instantánea y elimina desplazamientos, zooms y damping.
 
 Lectura del mapa desde arriba: GEBCO ya era opaco. El catálogo se dibuja a través
 del relieve con `depthTest: false`, por lo que 80.470 puntos opacos de 3 px tapaban

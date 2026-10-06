@@ -467,19 +467,21 @@ select:focus-visible { outline: 2px solid #f2bb70; outline-offset: 3px; }
 .storySkip span { margin-left: 0.7rem; }
 .textButton { background: transparent; border-color: transparent; color: #d6e5e0; }
 .textButton:hover { border-color: #627377; }
-.archiveScene { position: relative; min-height: 520svh; background: #071014; }
-.archiveStage { position: sticky; top: 0; min-height: 100svh; display: grid; align-items: center; padding: 7rem 6vw; isolation: isolate; overflow: hidden; }
-.archiveFrame { position: absolute; inset: 0; background: #071014; transition: opacity 180ms linear; }
+.archiveScene { position: relative; min-height: 100svh; background: #071014; }
+.archiveStage { position: relative; min-height: 100svh; display: grid; align-items: center; padding: 7rem 6vw; isolation: isolate; overflow: hidden; }
+.archiveFrame { position: absolute; inset: 0; background: #071014; }
+.archiveFrame--incoming { opacity: 0; }
+.archiveFrame--fading { animation: archivePhotoFade var(--photo-fade-duration, 1200ms) ease-in-out both; }
+@keyframes archivePhotoFade { from { opacity: 0; } to { opacity: 1; } }
 .archiveFrame[aria-hidden="true"] { pointer-events: none; }
-.archiveImage--portrait { object-fit: contain; background: #071014; }
 .photoNavigation { display: flex; gap: 0.4rem; align-items: center; margin-top: 1rem; }
-.photoNavigation span { color: #bbc8c7; font-size: 0.7rem; margin-right: 0.5rem; }
-.photoNavigation button { min-height: 44px; min-width: 44px; border: 1px solid #627377; background: #102127; color: #d8e7e1; cursor: pointer; }
+.photoNavigation button { min-height: 44px; padding: 0.55rem 0.8rem; border: 1px solid #627377; background: #102127; color: #d8e7e1; cursor: pointer; }
 .photoNavigation button[aria-pressed="true"] { border-color: #d7bd8d; color: #fff4db; background: #3a3428; }
 .archiveScene:focus, .questionScene:focus { outline: none; }
 .archiveFigure { position: absolute; z-index: -1; inset: 0 0 0 30%; margin: 0; overflow: hidden; }
 .archiveFigure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #071014 0%, rgb(7 16 20 / 72%) 20%, rgb(7 16 20 / 12%) 65%), linear-gradient(0deg, #071014, transparent 25%, transparent 75%, rgb(7 16 20 / 30%)); }
 .archiveImage { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(0.3); transform: scale(1.015); transition: transform 1600ms ease; }
+.archiveImage--portrait { object-fit: contain; background: #071014; }
 .archiveScene--active .archiveImage { transform: scale(1); }
 .archiveImageGate { width: 100%; height: 100%; }
 .archiveFigure figcaption { position: absolute; z-index: 2; right: 3vw; bottom: 6rem; max-width: 31rem; padding: 0.7rem; background: rgb(7 16 20 / 91%); font-size: 0.7rem; line-height: 1.5; color: #cad7d5; }
@@ -548,7 +550,7 @@ button:disabled { cursor: default; opacity: 0.45; }
   .storyHeaderActions { gap: 0.1rem; }
   .storyHeaderActions button { font-size: 0.67rem; padding: 0.5rem; }
   .storySkip span { margin-left: 0.2rem; }
-  .archiveScene { min-height: 520svh; }
+  .archiveScene { min-height: 100svh; }
   .archiveStage { min-height: 100svh; display: flex; align-items: flex-start; padding: calc(4.2rem + 34svh) 1.25rem 6rem; }
   .archiveFigure { inset: 4.2rem 0 auto; height: 32svh; }
   .archiveFigure::after { background: linear-gradient(0deg, #071014 1%, rgb(7 16 20 / 10%) 85%, #071014); }
@@ -584,4 +586,4 @@ button:disabled { cursor: default; opacity: 0.45; }
 }
 /* Fundidos siempre activos por solicitud editorial; el movimiento geométrico
    y el scroll programado siguen respetando la preferencia del sistema. */
-.competitionExperience .archiveFrame { transition-duration: 180ms !important; }
+.competitionExperience .archiveFrame--fading { animation-duration: var(--photo-fade-duration, 1200ms) !important; }

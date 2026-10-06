@@ -67,6 +67,7 @@ El control «Modelo Slab2» dentro de «Capas» activa la superficie modelada si
 - [Experiencia de competencia: decisión y alcance](docs/research/competition-experience-plan.md)
 - [Auditoría final del prototipo](docs/research/competition-experience-review.md)
 - [Diagnóstico de actualización del catálogo](docs/research/catalog-refresh-diagnosis.md)
+- [Revisión de calidad del catálogo y controles del mapa](docs/research/catalog-quality-and-map-controls-review.md)
 - [Hoja de ruta](plans/04-hoja-de-ruta-y-fases.md)
 
 Los planes y marcadores de posición anteriores se preservan en [el archivo histórico](archive/2026-09-pre-mvp/README.md); no definen el MVP vigente.
@@ -74,10 +75,12 @@ Los planes y marcadores de posición anteriores se preservan en [el archivo hist
 ## Prototipo local de competencia
 
 La entrada opcional recorre San Juan 1894, San Juan 1944, Caucete 1977 y El Galpón
-2015. Cada capítulo contiene tres fotografías curadas del proveedor, pausas y
-fundidos vinculados al scroll nativo en una escena de `520svh`; los controles
-manuales recorren esas mismas fotos. «Saltar introducción» abre el
-mapa; «Sólo texto» permite prescindir de las fotos. Los fundidos están activos;
+2015. Cada capítulo contiene cinco fotografías curadas del proveedor. Cambian
+solas: 5 segundos de lectura y un fundido de 1,2 segundos, también de la última
+a la primera. «Pausar fotos» congela la secuencia y el fundido en curso; la pausa
+se conserva entre casos. Sólo avanza el caso activo con la pestaña visible.
+El scroll nativo pasa al siguiente caso (mínimo 100svh; el texto móvil puede
+ocupar más). «Saltar introducción» abre el mapa. Los fundidos están activos;
 la preferencia de movimiento reducido del sistema evita desplazamientos y zooms.
 El mapa permanece montado al volver a la historia: filtros, cámara
 y capas se conservan. El recorrido guiado restablece los filtros deliberadamente

@@ -17,12 +17,18 @@ const subscribeMotion = (notify: () => void) => {
   return () => preference.removeEventListener("change", notify);
 };
 const readMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const subscribeVisibility = (notify: () => void) => {
+  document.addEventListener("visibilitychange", notify);
+  return () => document.removeEventListener("visibilitychange", notify);
+};
+const readVisibility = () => document.visibilityState === "visible";
 
 export default function CompetitionExperience() {
   const [state, setState] = useState<StoryState>({ mode: "history", guideIndex: null });
   const [mapStarted, setMapStarted] = useState(false);
   const [activeScene, setActiveScene] = useState(0);
-  const [imagesEnabled, setImagesEnabled] = useState(true);
+  const [photosPaused, setPhotosPaused] = useState(false);
+  const pageVisible = useSyncExternalStore(subscribeVisibility, readVisibility, () => false);
   const reducedMotion = useSyncExternalStore(subscribeMotion, readMotion, () => false);
   const sections = useRef<(HTMLElement | null)[]>([]);
   const shell = useRef<HTMLDivElement>(null);
@@ -71,12 +77,12 @@ export default function CompetitionExperience() {
         <header className="storyHeader">
           <a className="storyBrand" href="#history-0" onClick={(e) => { e.preventDefault(); go(0); }}>SISMOS VISUALES<span>Memoria / profundidad</span></a>
           <div className="storyHeaderActions">
-            <button className="textButton" aria-pressed={!imagesEnabled} onClick={() => setImagesEnabled(!imagesEnabled)}>{imagesEnabled ? "Sólo texto" : "Ver fotografías"}</button>
             <button className="storySkip" onClick={() => dispatch("skip")}>Saltar introducción <span aria-hidden="true">↗</span></button>
           </div>
         </header>
         {history.scenes.map((scene, index) => <HistoricalChapter key={scene.id} scene={scene} index={index}
-          active={activeScene === index} imagesEnabled={imagesEnabled} reducedMotion={reducedMotion}
+          active={activeScene === index} photosRunning={!photosPaused && pageVisible} photosPaused={photosPaused}
+          togglePhotos={() => setPhotosPaused((paused) => !paused)}
           register={(el) => { sections.current[index] = el; }} go={go} />)}
         <section id="central-question" data-scene={history.scenes.length} ref={(el) => { sections.current[history.scenes.length] = el; }}
           tabIndex={-1} className="questionScene" aria-labelledby="central-question-title">

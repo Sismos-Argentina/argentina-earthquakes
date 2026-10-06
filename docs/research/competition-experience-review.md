@@ -1,3 +1,42 @@
+> Estado vigente después de la tercera revisión: cinco fotos por caso, avance
+> automático (5 s + 1,2 s), pausa persistente, sin sólo texto ni botones de fotos.
+> Scroll nativo entre casos de al menos 100svh. La sección final documenta esta
+> versión; las anteriores conservan la evidencia de las iteraciones previas.
+
+## Tercera revisión: fotos automáticas y pausa (versión vigente)
+
+- Cinco fotos por caso, 20 fotos y 40 variantes WebP existentes del proveedor;
+  4.244.722 bytes, fuentes, créditos y SHA-256 por archivo. Se inspeccionaron las
+  ocho fotos añadidas antes de redactar sus textos alternativos.
+- Se retiran «Sólo texto», contador y botones numerados. Un único control de
+  pausa/reanudación por caso conserva el estado entre casos y al volver del mapa.
+- Imagen completa durante 5 s y fundido CSS de 1,2 s. Actual y siguiente se
+  precargan cerca de la ventana; el timer espera su carga. La base opaca evita
+  el fundido a negro. Los fallos conservan un fallback interno.
+- Scroll nativo entre casos de al menos 100svh, sin sticky prolongado. En
+  1280×900 cada caso midió 900 px; El Galpón en 390×844 midió 909,23 px por su
+  texto. No hubo overflow horizontal y sus botones midieron al menos 44 px.
+- Prueba real de un ciclo completo de 1944: Calle céntrica → Tribuna → Catedral
+  → Casa de Sarmiento → Cúpula → Calle céntrica. Todas las fotos estaban cargadas
+  y completas en cada muestra. Los otros tres casos permanecieron sin avanzar.
+- Pausa en medio de un fundido: opacidad 0,740361 y estado `paused`, idénticos
+  después de 7 s. Cambiar a 1944 conservó la pausa; reanudar permitió el ciclo.
+  El CSS mantuvo 1,2 s de fundido con movimiento reducido del sistema.
+- Se comprueba scroll entre casos, salto al mapa de 80.470 eventos y regreso a
+  historia conservando el filtro profundo de 278 eventos. Sin errores de consola
+  observados. La suspensión por pestaña oculta está implementada mediante
+  `visibilitychange`; no se ensayó el cambio de pestaña en un dispositivo físico.
+- Suite 17/17, lint, TypeScript y build estático exitosos. Se retiró la prueba
+  del algoritmo de scroll eliminado; la secuencia automática se verificó en
+  el navegador. El catálogo instrumental y los presets mantienen sus hashes.
+- Evidencia fuera del repositorio: `19-automatic-photos-desktop.jpg`,
+  `20-paused-fade-desktop.jpg`, `21-automatic-1944-desktop.jpg`,
+  `22-automatic-photos-mobile.jpg` y `automatic-photo-cycle.json`.
+- La nueva [revisión de calidad y controles](catalog-quality-and-map-controls-review.md)
+  rastrea el registro M8 del 29/01/2019 hasta la ficha oficial. Sus propuestas de
+  anotación y ergonomía no alteran datos ni controles actuales. Proveedor limpio,
+  sin push, PR ni deploy. Los derechos de las fotografías siguen pendientes.
+
 # Auditoría crítica del prototipo de competencia
 
 6 de octubre de 2026. Revisión posterior a la implementación y al recorrido real

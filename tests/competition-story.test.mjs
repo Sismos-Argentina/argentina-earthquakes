@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { navigateStory, storyScrollBehavior } from "../src/lib/story/navigation.ts";
-import { photoPosition, photoOpacity, photoScrollProgress } from "../src/lib/story/photographs.ts";
 import { createLatitudeProfile, selectProfileEvents, summarizeProfile } from "../src/lib/profile/cuyo.ts";
 
 const root = new URL("../", import.meta.url);
@@ -25,7 +24,7 @@ test("prólogo cronológico: 1944, Caucete 1977 y norte con Mercalli y fuente", 
     assert.ok(scene.mercalli.grado_principal);
     assert.equal(new URL(scene.sourceUrl).hostname, "contenidos.inpres.gob.ar");
     assert.ok(scene.sourceDescription.length > 30);
-    assert.equal(scene.photos.length, 3);
+    assert.equal(scene.photos.length, 5);
     assert.ok(scene.photos.every((p) => p.alt.length > 60));
     assert.equal("magnitude" in scene, false);
   }
@@ -57,9 +56,9 @@ test("movimiento reducido usa cortes directos en la navegación", async () => {
   assert.match(css, /transition-duration: 0s !important/);
 });
 
-test("manifiesto: 12 fotos curadas, variantes íntegras y referencias locales completas", async () => {
-  assert.equal(manifest.media.length, 24);
-  assert.equal(new Set(manifest.media.map((m) => m.photoId)).size, 12);
+test("manifiesto: 20 fotos curadas, variantes íntegras y referencias locales completas", async () => {
+  assert.equal(manifest.media.length, 40);
+  assert.equal(new Set(manifest.media.map((m) => m.photoId)).size, 20);
   assert.equal(manifest.provenance.providerCommit, history.provenance.providerCommit);
   for (const m of manifest.media) {
     assert.ok(m.file.startsWith("public/data/generated/historical/fotos_historicas/"));
@@ -77,37 +76,6 @@ test("manifiesto: 12 fotos curadas, variantes íntegras y referencias locales co
   }
   const files = await readdir(new URL("public/data/generated/historical/fotos_historicas/", root), { recursive: true });
   assert.equal(files.filter((f) => f.endsWith(".webp")).length, manifest.media.length);
-});
-
-test("scroll fotográfico: cada foto tiene su tramo completo, incluida la última", () => {
-  assert.equal(photoPosition(100, 1600, 1000, 3), 0);
-  assert.equal(photoPosition(-300, 1600, 1000, 3), 1);
-  assert.equal(photoPosition(-2000, 1600, 1000, 3), 2);
-  assert.equal(photoPosition(-30, 1600, 1000, 3), 0);
-  assert.equal(photoPosition(-120, 1600, 1000, 3), 0);
-  assert.ok(Math.abs(photoPosition(-180, 1600, 1000, 3) - 0.5) < 1e-12);
-  assert.equal(photoPosition(-270, 1600, 1000, 3), 1);
-  assert.ok(Math.abs(photoPosition(-420, 1600, 1000, 3) - 1.5) < 1e-12);
-  for (const top of [-480, -510, -540, -570, -600]) {
-    assert.equal(photoPosition(top, 1600, 1000, 3), 2);
-  }
-  assert.equal(photoPosition(-570, 1600, 1000, 3), 2);
-  assert.equal(photoPosition(-500, 1600, 1400, 3), 2);
-  assert.equal(photoPosition(-100, 1000, 1000, 1), 0);
-  assert.equal(photoOpacity(0.5, 0), 1);
-  assert.equal(photoOpacity(0.5, 1), 0.5);
-  assert.equal(photoScrollProgress(2, 3), 0.8);
-  assert.equal(photoScrollProgress(0, 1), 0);
-  for (const index of [0, 1, 2]) {
-    const progress = photoScrollProgress(index, 3);
-    assert.equal(photoPosition(-600 * progress, 1600, 1000, 3), index);
-    assert.equal(photoPosition(-600 * (progress + 0.1), 1600, 1000, 3), index);
-  }
-  for (const position of [0, .2, .8, 1, 1.3, 1.9, 2]) {
-    const uncoveredBackground = [0,1,2].reduce((n,i) => n * (1 - photoOpacity(position,i)),1);
-    assert.equal(uncoveredBackground, 0);
-    if (Number.isInteger(position)) assert.equal(photoOpacity(position, position), 1);
-  }
 });
 
 test("presets seleccionados contra CSV EDA y snapshot identificados", async () => {

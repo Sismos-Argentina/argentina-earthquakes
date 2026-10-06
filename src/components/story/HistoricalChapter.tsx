@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import history from "@/data/competition-history.json";
-import { photoOpacity, photoPosition, photoScrollProgress } from "@/lib/story/photographs";
-import { storyScrollBehavior } from "@/lib/story/navigation";
+import { PHOTO_FADE_MS, PHOTO_HOLD_MS } from "@/lib/story/photographs";
 
 type Scene = typeof history.scenes[number];
 type Photo = Scene["photos"][number];
 
-function ArchiveImage({ photo, enabled }: { photo: Photo; enabled: boolean }) {
+function ArchiveImage({ photo, onReady }: { photo: Photo; onReady: (id: string) => void }) {
   const [failed, setFailed] = useState(false);
   const [nearby, setNearby] = useState(false);
   const gate = useRef<HTMLDivElement>(null);
@@ -22,54 +21,46 @@ function ArchiveImage({ photo, enabled }: { photo: Photo; enabled: boolean }) {
   }, []);
   // WebP preoptimizado, srcset local compatible con export estático.
   // eslint-disable-next-line @next/next/no-img-element
-  const image = nearby && enabled ? <img className={`archiveImage${photo.width < photo.height ? " archiveImage--portrait" : ""}`} src={photo.src}
+  const image = nearby ? <img className={`archiveImage${photo.width < photo.height ? " archiveImage--portrait" : ""}`} src={photo.src}
     srcSet={`${photo.thumbnail} 480w, ${photo.src} ${photo.width}w`} sizes="(max-width: 700px) 100vw, 68vw"
-    width={photo.width} height={photo.height} loading="lazy" decoding="async" alt={photo.alt} onError={() => setFailed(true)} /> : null;
-  return <div className="archiveImageGate" ref={gate}>{!enabled || failed
+    width={photo.width} height={photo.height} loading="eager" decoding="async" alt={photo.alt}
+    onLoad={() => onReady(photo.id)} onError={() => { setFailed(true); onReady(photo.id); }} /> : null;
+  return <div className="archiveImageGate" ref={gate}>{failed
     ? <div className="archiveFallback">Archivo histórico · {photo.title}<span>La narración continúa en texto.</span></div> : image}</div>;
 }
 
-export default function HistoricalChapter({ scene, index, active, imagesEnabled, reducedMotion, register, go }: {
-  scene: Scene; index: number; active: boolean; imagesEnabled: boolean; reducedMotion: boolean;
+export default function HistoricalChapter({ scene, index, active, photosRunning, photosPaused, togglePhotos, register, go }: {
+  scene: Scene; index: number; active: boolean; photosRunning: boolean; photosPaused: boolean; togglePhotos: () => void;
   register: (el: HTMLElement | null) => void; go: (index: number) => void;
 }) {
-  const section = useRef<HTMLElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState(0);
-  const currentPhoto = Math.round(position);
+  const [currentPhoto, setCurrentPhoto] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [readyPhotos, setReadyPhotos] = useState<Set<string>>(() => new Set());
+  const nextPhoto = (currentPhoto + 1) % scene.photos.length;
   const photo = scene.photos[currentPhoto];
-  const choosePhoto = (photoIndex: number) => {
-    if (!section.current || !stage.current) return;
-    const bounds = section.current.getBoundingClientRect();
-    const travel = Math.max(0, bounds.height - stage.current.getBoundingClientRect().height);
-    window.scrollTo({ top: window.scrollY + bounds.top + travel * photoScrollProgress(photoIndex, scene.photos.length),
-      behavior: storyScrollBehavior(reducedMotion) });
-  };
+  const running = active && photosRunning;
+  const markReady = useCallback((id: string) => {
+    setReadyPhotos((previous) => previous.has(id) ? previous : new Set(previous).add(id));
+  }, []);
   useEffect(() => {
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const bounds = section.current?.getBoundingClientRect();
-      if (bounds && stage.current) setPosition(photoPosition(bounds.top, bounds.height, stage.current.getBoundingClientRect().height, scene.photos.length));
-    };
-    const onScroll = () => {
-      if (!frame) frame = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    const resize = new ResizeObserver(onScroll);
-    if (stage.current) resize.observe(stage.current);
-    return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
-  }, [scene.photos.length]);
+    // Sólo la escena activa avanza y únicamente cuando ambas imágenes están listas.
+    if (!running || fading || scene.photos.length < 2 || !readyPhotos.has(photo.id) || !readyPhotos.has(scene.photos[nextPhoto].id)) return;
+    const timer = window.setTimeout(() => setFading(true), PHOTO_HOLD_MS);
+    return () => window.clearTimeout(timer);
+  }, [running, fading, readyPhotos, photo.id, nextPhoto, scene.photos]);
   return <section id={`history-${index}`} data-scene={index} tabIndex={-1}
-    ref={(el) => { section.current = el; register(el); }} className={`archiveScene${active ? " archiveScene--active" : ""}`} aria-labelledby={`scene-title-${index}`}
+    ref={register} className={`archiveScene${active ? " archiveScene--active" : ""}`} aria-labelledby={`scene-title-${index}`}
     onKeyDown={(e) => { if (e.target !== e.currentTarget) return; if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); go(index + 1); } else if ((e.key === "ArrowUp" || e.key === "ArrowLeft") && index > 0) { e.preventDefault(); go(index - 1); } }}>
-    <div className="archiveStage" ref={stage}>
+    <div className="archiveStage">
       <figure className="archiveFigure" aria-label={`Archivo fotográfico de ${scene.place}, ${scene.date.slice(0,4)}`}>
-        {scene.photos.map((p,i) => <div key={p.id} className="archiveFrame" aria-hidden={currentPhoto !== i}
-          style={{ opacity: photoOpacity(position, i), transform: reducedMotion ? "none" : `translateY(${(i - position) * 8}px)` }}>
-          <ArchiveImage photo={p} enabled={imagesEnabled} />
+        {[currentPhoto, ...(scene.photos.length > 1 ? [nextPhoto] : [])].map((i) => <div key={scene.photos[i].id}
+          data-photo-id={scene.photos[i].id} className={`archiveFrame${i !== currentPhoto ? " archiveFrame--incoming" : ""}${i !== currentPhoto && fading ? " archiveFrame--fading" : ""}`}
+          aria-hidden={currentPhoto !== i} style={{ "--photo-fade-duration": `${PHOTO_FADE_MS}ms`, animationPlayState: running ? "running" : "paused" } as React.CSSProperties}
+          onAnimationEnd={(event) => {
+            if (event.target !== event.currentTarget || event.animationName !== "archivePhotoFade" || i === currentPhoto) return;
+            setCurrentPhoto(nextPhoto); setFading(false);
+          }}>
+          <ArchiveImage photo={scene.photos[i]} onReady={markReady} />
         </div>)}
         <figcaption><span>{photo.title} · {photo.credit}</span><a href={scene.galleryUrl} target="_blank" rel="noreferrer">Ver archivo INPRES ↗</a></figcaption>
       </figure>
@@ -81,11 +72,10 @@ export default function HistoricalChapter({ scene, index, active, imagesEnabled,
         <p className="mercalliLabel">Intensidad máxima reportada · <strong>{scene.mercalli.grado_principal} Mercalli</strong></p>
         <p className="sceneNote">{scene.note}</p>
         <a className="catalogSource" href={scene.sourceUrl} target="_blank" rel="noreferrer">Relato del catálogo histórico INPRES ↗</a>
-        <nav className="photoNavigation" aria-label={`Fotografías de ${scene.place}, ${scene.date.slice(0,4)}`}>
-          <span>Archivo · {currentPhoto + 1} / {scene.photos.length}</span>
-          {scene.photos.map((p,i) => <button key={p.id} aria-label={`Ver fotografía ${i + 1}: ${p.title}`} aria-pressed={currentPhoto === i} onClick={() => choosePhoto(i)}>{String(i + 1).padStart(2,"0")}</button>)}
-        </nav>
-        {index === 0 ? <p className="storyInstruction">El scroll revela las fotografías y el siguiente capítulo. También podés elegir una foto o usar las flechas cuando la escena tiene foco.</p> : null}
+        <div className="photoNavigation"><button aria-pressed={photosPaused} onClick={togglePhotos}>
+          <span aria-hidden="true">{photosPaused ? "▶" : "Ⅱ"}</span> {photosPaused ? "Reanudar fotos" : "Pausar fotos"}
+        </button></div>
+        {index === 0 ? <p className="storyInstruction">Las fotos cambian solas. Deslizá para pasar al siguiente caso.</p> : null}
         <div className="sceneNavigation"><button disabled={index === 0} onClick={() => go(index - 1)}>← Anterior</button><button onClick={() => go(index + 1)}>{index === history.scenes.length - 1 ? "Del archivo al catálogo →" : "Continuar →"}</button></div>
       </div>
       <span className="archiveYear" aria-hidden="true">{scene.date.slice(0,4)}</span>
