@@ -44,6 +44,8 @@ import {
 import CuyoSection from "./CuyoSection";
 import DualRangeFilter from "./DualRangeFilter";
 import EventInspector from "./EventInspector";
+import presets from "@/data/competition-presets.json";
+import snapshot from "@/data/catalog-snapshot.json";
 import {
   CUYO_PROFILE,
   LATITUDE_PROFILE,
@@ -99,6 +101,8 @@ type ViewActions = {
   clearSelection: () => void;
   setFilters: (filters: CatalogFilters) => void;
   setProfileLatitude: (latitude: number) => void;
+  startGuidedProfile: (latitude: number, bounds: CatalogFilters) => void;
+  setReducedMotion: (value: boolean) => void;
 };
 
 type TerrainLayer = {
@@ -324,7 +328,13 @@ function transferSizeFor(urls: string[]): number | undefined {
     : undefined;
 }
 
-export default function SeismicViewer() {
+export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHistory, onStartGuide, reducedMotion = false }: {
+  guidedIndex?: number | null;
+  onGuideChange?: (index: number | null) => void;
+  onHistory?: () => void;
+  onStartGuide?: () => void;
+  reducedMotion?: boolean;
+}) {
   const canvasHost = useRef<HTMLDivElement>(null);
   const compassNeedle = useRef<HTMLSpanElement>(null);
   const views = useRef<ViewActions | null>(null);
@@ -350,6 +360,7 @@ export default function SeismicViewer() {
   const [profileSamples, setProfileSamples] = useState<ProfileSample[] | null>(null);
   const [profileDefinition, setProfileDefinition] = useState<ProfileDefinition>(CUYO_PROFILE);
   const [openPanel, setOpenPanel] = useState<ControlPanel | null>(null);
+  const appliedGuide = useRef<number | null>(null);
 
   useEffect(() => {
     const host = canvasHost.current;
@@ -412,7 +423,7 @@ export default function SeismicViewer() {
     scene.add(sun);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
+    controls.enableDamping = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     controls.screenSpacePanning = true;
     controls.zoomToCursor = true;
     controls.minDistance = 30;
@@ -421,9 +432,9 @@ export default function SeismicViewer() {
     scene.add(footprint);
 
     const setInitialCamera = () => {
-      const [x, , z] = geographicToScene(-66, -39, 0);
+      const [x, , z] = geographicToScene(-67, -31, 0);
       controls.target.set(x, -100, z);
-      camera.position.set(x, 4800, z + 4300);
+      camera.position.set(x, 3800, z + 3800);
       controls.update();
     };
     const setRelief = (value: ReliefExaggeration) => {
@@ -589,6 +600,15 @@ export default function SeismicViewer() {
       clearSelection,
       setFilters: applyFilters,
       setProfileLatitude,
+      setReducedMotion: (value) => { controls.enableDamping = !value; },
+      startGuidedProfile: (latitude, bounds) => {
+        setOpenPanel(null);
+        clearSelection();
+        applyFilters(bounds);
+        setFilters(bounds);
+        setProfileLatitude(latitude);
+        openProfile();
+      },
     };
     setInitialCamera();
 
@@ -831,6 +851,9 @@ export default function SeismicViewer() {
             size: 3,
             sizeAttenuation: false,
             vertexColors: true,
+            // Lectura del volumen a través del relieve: conserva xyz hipocentral.
+            depthTest: false,
+            depthWrite: false,
           }),
         );
         catalogPoints.renderOrder = 5;
@@ -1060,6 +1083,22 @@ export default function SeismicViewer() {
     if (filters) views.current?.setFilters(filters);
   }, [filters]);
 
+  useEffect(() => { views.current?.setReducedMotion(reducedMotion); }, [reducedMotion]);
+
+  useEffect(() => {
+    if (guidedIndex === null) {
+      if (appliedGuide.current !== null) views.current?.closeProfile();
+      appliedGuide.current = null;
+      return;
+    }
+    if (!count || !slabSummary || !surfaceStatus.includes("cargados") || !filterBounds || appliedGuide.current === guidedIndex) return;
+    const stop = presets.stops[guidedIndex];
+    if (!stop) return;
+    appliedGuide.current = guidedIndex;
+    // Los números narrativos corresponden a la muestra completa, no a un filtro anterior.
+    views.current?.startGuidedProfile(stop.latitude, filterBounds);
+  }, [guidedIndex, count, slabSummary, surfaceStatus, filterBounds]);
+
   useEffect(() => {
     const closePanel = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpenPanel(null);
@@ -1079,6 +1118,7 @@ export default function SeismicViewer() {
   return (
     <main className={[
       "viewer",
+      guidedIndex !== null ? "viewer--guided" : "",
       profileOpen ? "viewer--section" : "",
       selected ? "viewer--has-selection" : "",
       openPanel ? "viewer--panel-open" : "",
@@ -1099,7 +1139,10 @@ export default function SeismicViewer() {
               ? `${visibleCount.toLocaleString("es-AR")} de ${count.toLocaleString("es-AR")} eventos visibles`
               : status}
           </p>
+          <p className="viewerSnapshot">{snapshot.events.toLocaleString("es-AR")} registros · INPRES / inpres-sismos · {snapshot.sourceCommit.slice(0,7)}</p>
         </header>
+
+        {onHistory ? <nav className="experienceLinks" aria-label="Historia y recorrido"><button onClick={onHistory}>← Volver a la historia</button><button onClick={onStartGuide}>Recorrido guiado</button></nav> : null}
 
         <div className="filterDock">
           <button
@@ -1337,9 +1380,11 @@ export default function SeismicViewer() {
 
       <aside className="depthLegend" aria-label="Leyenda de profundidad y capas activas">
         <strong>Profundidad</strong>
-        <span><i className="legendShallow" />0–&lt;70 km</span>
-        <span><i className="legendIntermediate" />70–&lt;300 km</span>
-        <span><i className="legendDeep" />≥300 km</span>
+        <span><i className="legendShallow" />Superficial · &lt;70 km</span>
+        <span><i className="legendIntermediate" />Intermedia · 70–&lt;300 km</span>
+        <span><i className="legendDeep" />Profunda · ≥300 km</span>
+        <small>Clasificación descriptiva</small>
+        <small>Hipocentros visibles a través del relieve</small>
         <div className="legendLayers">
           <small>Capas activas</small>
           <span><i className="legendLand" />GEBCO · relieve {reliefExaggeration}×</span>
@@ -1363,11 +1408,13 @@ export default function SeismicViewer() {
           samples={profileSamples}
           selected={selected}
           status={profileStatus}
+          guidedIndex={guidedIndex}
+          onGuideChange={onGuideChange}
           onLatitudeChange={(latitude) => views.current?.setProfileLatitude(latitude)}
           onPick={(event) => views.current?.selectEvent(event)}
-          onClose={() => views.current?.closeProfile()}
+          onClose={() => { onGuideChange?.(null); views.current?.closeProfile(); }}
         />
-      ) : <div className="sectionLoading" role="status"><button onClick={() => views.current?.closeProfile()}>← Volver al mapa</button><p>{profileStatus || "Preparando sección…"}</p></div> : null}
+      ) : <div className="sectionLoading" role="status"><button onClick={() => { onGuideChange?.(null); views.current?.closeProfile(); }}>← Volver al mapa</button><p>{profileStatus || "Preparando sección…"}</p></div> : null}
 
       {!profileOpen && selected ? <EventInspector event={selected} onClose={() => views.current?.clearSelection()} /> : null}
     </main>

@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "provider": "Sismos-Argentina/inpres-sismos",
+    "providerCommit": "c5634cac3bb3d3757ed79dfd897b58c128fb5798",
+    "catalogGeneratedAt": "2026-09-19T06:56:52.676858+00:00",
+    "photosGeneratedAt": "2026-09-19T06:55:31.152749+00:00",
+    "inputs": [
+      {
+        "file": "data/exports/sismos_historicos.json",
+        "sha256": "e4c526bf69b3ab4a9a5a699845a67eb5b5a6b8e6a4ac8099cb4e3148015ba452"
+      },
+      {
+        "file": "data/exports/fotos_historicas.json",
+        "sha256": "a30559b01ce88fe0bb4877744c3394a736cd76a28a1f4b7e46488215845ca692"
+      },
+      {
+        "file": "data/sismos_historicos.csv",
+        "sha256": "8850589cb05edbd2e77857d7b1eef7602fdd085af0c82b2c73489f50770dee04"
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "3d548743f3926c79",
+      "date": "1894-10-27",
+      "place": "San Juan",
+      "title": "Un recuerdo en el archivo",
+      "text": "Afectó el noroeste de San Juan y causó daños también en La Rioja.",
+      "note": "INPRES lo describe como el terremoto de mayor magnitud de la historia argentina. Este catálogo no aporta una magnitud instrumental numérica.",
+      "sourceDescription": "El terremoto de mayor magnitud de la historia en Argentina, afectó el noroeste de San Juan, causó daños y víctimas en San Juan y La Rioja. Daños menores en Catamarca, Córdoba, San Luís y Mendoza. La intensidad máxima fue de IX en la escala Mercalli.",
+      "mercalli": {
+        "grado_principal": "IX",
+        "valor_principal": 9,
+        "grado_minimo": "IX",
+        "valor_minimo": 9,
+        "grado_maximo": "IX",
+        "valor_maximo": 9,
+        "escala_reportada": "Mercalli",
+        "es_estimada": false
+      },
+      "sourceUrl": "http://contenidos.inpres.gob.ar/sismologia/historicos",
+      "galleryUrl": "http://contenidos.inpres.gob.ar/alumnos/terrem_s-juan-1894",
+      "photos": [
+        {
+          "id": "f1889208",
+          "title": "Angaco",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-1600.webp",
+          "width": 1600,
+          "height": 1108,
+          "alt": "Fotografía de archivo: muros derrumbados, vigas expuestas y escombros en Angaco, San Juan, en 1894.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "79d1934c",
+          "title": "Establecimiento de fundición, Malimán-San Juan 1894",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1894-10-27-san-juan/03-establecimiento-de-fundicion-maliman-san-juan-1894-79d1934c-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1894-10-27-san-juan/03-establecimiento-de-fundicion-maliman-san-juan-1894-79d1934c-1600.webp",
+          "width": 1600,
+          "height": 1112,
+          "alt": "Fotografía de archivo: edificios derrumbados y escombros del establecimiento de fundición de Malimán, San Juan, en 1894.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "fa7a69a8",
+          "title": "Grieta, Mogna",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1894-10-27-san-juan/04-grieta-mogna-fa7a69a8-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1894-10-27-san-juan/04-grieta-mogna-fa7a69a8-1600.webp",
+          "width": 1600,
+          "height": 1105,
+          "alt": "Fotografía de archivo: una persona junto a una grieta visible en el terreno de Mogna, San Juan, en 1894.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        }
+      ]
+    },
+    {
+      "id": "c4fe42da674db210",
+      "date": "1944-01-15",
+      "place": "San Juan",
+      "title": "La memoria de una ciudad",
+      "text": "El catálogo registra destrucción en San Juan y daños en el norte de Mendoza.",
+      "note": "La intensidad describe los efectos reportados en superficie.",
+      "sourceDescription": "Destruyó la provincia de San Juan y departamentos vecinos. Causó alrededor de 10.000 muertos sobre una población de 90.000 habitantes. También ocasionó daños en el norte de la provincia de Mendoza. La intensidad máxima del terremoto fue de IX grados de la escala Mercalli.",
+      "mercalli": {
+        "grado_principal": "IX",
+        "valor_principal": 9,
+        "grado_minimo": "IX",
+        "valor_minimo": 9,
+        "grado_maximo": "IX",
+        "valor_maximo": 9,
+        "escala_reportada": "Mercalli",
+        "es_estimada": false
+      },
+      "sourceUrl": "http://contenidos.inpres.gob.ar/sismologia/historicos",
+      "galleryUrl": "http://contenidos.inpres.gob.ar/alumnos/terrem_s-juan-44",
+      "photos": [
+        {
+          "id": "7dd69738",
+          "title": "Catedral",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1944-01-15-san-juan/03-catedral-7dd69738-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1944-01-15-san-juan/03-catedral-7dd69738-1600.webp",
+          "width": 1600,
+          "height": 1050,
+          "alt": "Fotografía de archivo: fachada dañada de la Catedral de San Juan y escombros junto a la calle después del terremoto de 1944.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "e7e276bc",
+          "title": "Casa de Sarmiento",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1944-01-15-san-juan/02-casa-de-sarmiento-e7e276bc-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1944-01-15-san-juan/02-casa-de-sarmiento-e7e276bc-1600.webp",
+          "width": 1600,
+          "height": 1023,
+          "alt": "Fotografía de archivo: fachada de la Casa de Sarmiento con daños y escombros junto a la vereda en San Juan, en 1944.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "4b59c268",
+          "title": "Cúpula de la iglesia Sto Domingo",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1944-01-15-san-juan/04-cupula-de-la-iglesia-sto-domingo-4b59c268-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1944-01-15-san-juan/04-cupula-de-la-iglesia-sto-domingo-4b59c268-1600.webp",
+          "width": 1365,
+          "height": 966,
+          "alt": "Fotografía de archivo: cúpula dañada de la iglesia Santo Domingo, muros incompletos y vegetación en San Juan, en 1944.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        }
+      ]
+    },
+    {
+      "id": "ca8b65a135da7d16",
+      "date": "1977-11-23",
+      "place": "Caucete, San Juan",
+      "title": "La huella vuelve a aparecer",
+      "text": "El terremoto destruyó construcciones de Caucete y afectó otros departamentos de San Juan y el norte de Mendoza.",
+      "note": "Una fotografía conserva efectos visibles; no muestra la profundidad del hipocentro.",
+      "sourceDescription": "Destruyó las construcciones del Dpto. Caucete, la duración del terremoto superó largamente el minuto en su fase destructiva. Causó la muerte de 65 personas y más de 300 heridos graves. Afectó los departamentos de 25 de Mayo, Sarmiento, Pocito y norte de Mendoza, donde las construcciones de adobe fueron destruidas en más de un 50%. La intensidad máxima del sismo fue IX grados Mercalli.",
+      "mercalli": {
+        "grado_principal": "IX",
+        "valor_principal": 9,
+        "grado_minimo": "IX",
+        "valor_minimo": 9,
+        "grado_maximo": "IX",
+        "valor_maximo": 9,
+        "escala_reportada": "Mercalli",
+        "es_estimada": false
+      },
+      "sourceUrl": "http://contenidos.inpres.gob.ar/sismologia/historicos",
+      "galleryUrl": "http://contenidos.inpres.gob.ar/alumnos/terrem_caucete-77",
+      "photos": [
+        {
+          "id": "008290c6",
+          "title": "Construcción de adobe",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/01-construccion-de-adobe-008290c6-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/01-construccion-de-adobe-008290c6-1600.webp",
+          "width": 1381,
+          "height": 922,
+          "alt": "Fotografía de archivo: construcción de adobe derrumbada, árboles y escombros en Caucete después del terremoto de 1977.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "035e79cc",
+          "title": "Bodega",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/02-bodega-035e79cc-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/02-bodega-035e79cc-1600.webp",
+          "width": 1600,
+          "height": 1423,
+          "alt": "Fotografía de archivo: estructura de una bodega con losas y columnas dañadas e inclinadas después del terremoto de Caucete de 1977.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "6d794f70",
+          "title": "Escuela Normal",
+          "thumbnail": "/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/04-escuela-normal-6d794f70-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/04-escuela-normal-6d794f70-1600.webp",
+          "width": 1312,
+          "height": 1600,
+          "alt": "Fotografía de archivo: dos personas frente a escaleras y estructuras derrumbadas de la Escuela Normal después del terremoto de Caucete de 1977.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        }
+      ]
+    },
+    {
+      "id": "9740ab562051191c",
+      "date": "2015-10-17",
+      "place": "El Galpón, Salta",
+      "title": "La historia también está al norte",
+      "text": "INPRES documenta viviendas dañadas, demolidas y apuntaladas en El Galpón.",
+      "note": "Estos son algunos de los terremotos que recordamos. Bajo esa memoria, un catálogo de más de 80.000 eventos permite mirar otra dimensión: la profundidad.",
+      "sourceDescription": "Terremoto en El Galpón, Salta. Se reportó 1 muerto y 30 heridos. Hubo 170 viviendas dañadas, 20 debieron ser demolidas y otras apuntaladas. La intensidad fue de VII grados en la escala Mercalli.",
+      "mercalli": {
+        "grado_principal": "VII",
+        "valor_principal": 7,
+        "grado_minimo": "VII",
+        "valor_minimo": 7,
+        "grado_maximo": "VII",
+        "valor_maximo": 7,
+        "escala_reportada": "Mercalli",
+        "es_estimada": false
+      },
+      "sourceUrl": "http://contenidos.inpres.gob.ar/sismologia/historicos",
+      "galleryUrl": "http://contenidos.inpres.gob.ar/alumnos/terrem_el-galpon",
+      "photos": [
+        {
+          "id": "d75bfc2b",
+          "title": "El Galpón. Salta",
+          "thumbnail": "/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/01-el-galpon-salta-d75bfc2b-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/01-el-galpon-salta-d75bfc2b-1600.webp",
+          "width": 1170,
+          "height": 658,
+          "alt": "Fotografía de archivo: viviendas con muros dañados y escombros en una calle de El Galpón, Salta, después del terremoto de 2015.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "1b024eb6",
+          "title": "El Galpón. Salta",
+          "thumbnail": "/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/03-el-galpon-salta-1b024eb6-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/03-el-galpon-salta-1b024eb6-1600.webp",
+          "width": 728,
+          "height": 500,
+          "alt": "Fotografía de archivo: escombros y chapas caídas junto a una calle, árboles y viviendas en El Galpón, Salta, en 2015.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        },
+        {
+          "id": "acd873a9",
+          "title": "El Galpón. Salta",
+          "thumbnail": "/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/05-el-galpon-salta-acd873a9-480.webp",
+          "src": "/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/05-el-galpon-salta-acd873a9-1600.webp",
+          "width": 624,
+          "height": 468,
+          "alt": "Fotografía de archivo: automóvil parcialmente cubierto por una estructura de techo caída, muros y escombros en El Galpón, Salta, en 2015.",
+          "credit": "Archivo INPRES · autor y licencia pendientes de verificación"
+        }
+      ]
+    }
+  ]
+}

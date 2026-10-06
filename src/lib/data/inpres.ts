@@ -1,8 +1,8 @@
-export const CATALOG_URL =
-  "/data/generated/inpres-2026-09-14.geojson";
-export const CATALOG_EVENTS = 80470;
-export const CATALOG_SOURCE_COMMIT =
-  "81e230c782972a2996a32f1ef21d56a2ef22e2e7";
+import snapshot from "../../data/catalog-snapshot.json";
+
+export const CATALOG_URL = snapshot.url;
+export const CATALOG_EVENTS = snapshot.events;
+export const CATALOG_SOURCE_COMMIT = snapshot.sourceCommit;
 
 export type InpresProperties = {
   id: string; // ID hash derivado por inpres-sismos, no ID oficial INPRES.

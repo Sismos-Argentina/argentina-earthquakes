@@ -19,3 +19,33 @@ b85e7211e0842d21026de6d9f5fae4544a18f6291d74fac0023784f13bce45c8  slab2/sam_slab
 a3856e102bdc7272df3093996aea2c1c4e1120750438af67e5d1edb5faaccc09  generated/slab2-sam-2018-scientific.json
 183dc06a6a66832022976162f5e2a5e207075cd6feaf6d875170520a50e304b6  ign/provincia.json
 8fd4a0df2c3616837fdcadac5a9534ebcb0821c1de80bdb415c2fe33855c7a17  ign/pais.json
+
+# Artefactos del prototipo de competencia 2026-10-06; rutas relativas al producto
+9a14a03ef07196b1e1b0a800e49d11058c5cdbd9b0462235ccdfe80f9042a481  src/data/catalog-snapshot.json
+64cc24f4951a30b2fd9d3963ad3769d0103ebb9dc756587e6c838741a7bc69ef  src/data/competition-history.json
+eca14f896e5a3064d0d49e333f14a363e9c49336fc92d9345eb022f3f998443d  src/data/competition-presets.json
+7d0f3dc5029b273123e6189449ed96b75c3410a89fea649e4b6faaa532c68c71  public/data/generated/historical/media-manifest.json
+73fc0bd16fa26fbcd07f75cc70836cfe50e599d0611f40f1a1c218db1f031b52  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-480.webp
+b4f5d592dceae133af2896a2f93744b569884f59db6d4ece54cd57aff673e4ee  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-1600.webp
+7b09cb565fbdcc2a9d163658edcbc25f16ada29fb7fcaebcdaa29187b83f88c6  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/03-establecimiento-de-fundicion-maliman-san-juan-1894-79d1934c-480.webp
+96ba4c516c38a73b7c5c6e1936730173b30df36adb2392000ee79ac67bd1babd  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/03-establecimiento-de-fundicion-maliman-san-juan-1894-79d1934c-1600.webp
+8ef8b53a26bd8603ac98bd91fd309affb78c2f44f7961b33e19ba10124a91e59  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/04-grieta-mogna-fa7a69a8-480.webp
+fe1d041feef61c81a4f350bb986ab8e8b9a8ebd7ece3772a61e09d812a233071  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/04-grieta-mogna-fa7a69a8-1600.webp
+189e52667dc338925832409cb0bd22a965c9e8f03508c1b6528bc2307a72cb4b  public/data/generated/historical/fotos_historicas/1944-01-15-san-juan/03-catedral-7dd69738-480.webp
+1f0a1f6cc2419c7148966832bb39722499662d7a539d2dfbbb3a446f31f2b16c  public/data/generated/historical/fotos_historicas/1944-01-15-san-juan/03-catedral-7dd69738-1600.webp
+214be1e7b080b893cf511e0e046069dcdb8c56a6715f7ae0eec452c94a5307bb  public/data/generated/historical/fotos_historicas/1944-01-15-san-juan/02-casa-de-sarmiento-e7e276bc-480.webp
+6e5074af7339165941585d019fbbe0a379fbaa84983adde0036d04b49a282dfd  public/data/generated/historical/fotos_historicas/1944-01-15-san-juan/02-casa-de-sarmiento-e7e276bc-1600.webp
+5cb698bffd59a08b7eaec6679d4a55f7347fc5cc883e099b9d576fc2a576be64  public/data/generated/historical/fotos_historicas/1944-01-15-san-juan/04-cupula-de-la-iglesia-sto-domingo-4b59c268-480.webp
+434d1c0a49e3b20329ccb0ffdb108185fe8e90d875403487515ef292a4fbdef2  public/data/generated/historical/fotos_historicas/1944-01-15-san-juan/04-cupula-de-la-iglesia-sto-domingo-4b59c268-1600.webp
+bdd4a7f5b8b76136c4975fd18e5ad9f8056d745c6c1dd9db703d085e7a740c01  public/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/01-construccion-de-adobe-008290c6-480.webp
+fbb496184c5da413817bf93b91e736eeefc62e0b44eb5a9a5127cb6bee01e090  public/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/01-construccion-de-adobe-008290c6-1600.webp
+0a436c57563d14db7c2e57ae256823c5f0eee916665fc016637aa4835350037f  public/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/02-bodega-035e79cc-480.webp
+9b13e40992fea420edab418ca8be18c001ccf93b7020719bef8b5a82ffba0db4  public/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/02-bodega-035e79cc-1600.webp
+ac99971e9f8406f846e58906c6443b011f26e2575f5bc521cc832d813e1d502d  public/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/04-escuela-normal-6d794f70-480.webp
+57d4ee9d2f15bb0245152f427ef7fd521cd53d9fd0faa881b7751cfac0b8779f  public/data/generated/historical/fotos_historicas/1977-11-23-caucete-san-juan/04-escuela-normal-6d794f70-1600.webp
+62bbc2b700ca27b8cc5606cfe96f76c7b115946c0677a867109868690b2bf885  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/01-el-galpon-salta-d75bfc2b-480.webp
+a4e62a7e9c89bc021b0c315717653b118ea8a096616385a8344e80859d1dce10  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/01-el-galpon-salta-d75bfc2b-1600.webp
+3b6854edbc3d4af055d918c3123a2e961f225b7faba60843ac9a44129ab29162  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/03-el-galpon-salta-1b024eb6-480.webp
+dd11557fa72a7044274a85cad3ae80ca542febfc431a07c270a4d115726fed59  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/03-el-galpon-salta-1b024eb6-1600.webp
+673aba86ef9f9d67fb281f971e2eb5bf6648346e2fb1ccb757c9059e23c28246  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/05-el-galpon-salta-acd873a9-480.webp
+364e56f070d8eecc70bfc0d747af4e2740bf9393f8181eb90d258454e9e226e8  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/05-el-galpon-salta-acd873a9-1600.webp

@@ -15,7 +15,7 @@ Visualización científica e interactiva de los sismos catalogados en Argentina 
 
 - Node.js 20.9 o superior y npm.
 - WebGL en el navegador.
-- Sin servicios pagos ni variables obligatorias. El repositorio hermano `../inpres-sismos` permite preparar los datos sin red; si no está presente, el script descarga el snapshot fijado desde GitHub Raw.
+- Sin servicios pagos ni variables obligatorias en ejecución. Se necesita el artefacto web fijado o el export original con el checksum esperado; el repositorio hermano `../inpres-sismos` puede aportarlo. No se descarga un catálogo automáticamente.
 
 ```bash
 npm install
@@ -23,6 +23,11 @@ npm run dev
 ```
 
 Abrir [http://localhost:3000](http://localhost:3000). `predev` verifica el export y genera el artefacto web automáticamente. La primera preparación y descarga del navegador procesan aproximadamente 41 MB; pueden tardar.
+
+Si ya existe el artefacto web con el hash fijado, se reutiliza sin red. Si falta,
+`SISMOS_INPRES_GEOJSON` permite proporcionar el export original. Sólo cuando se
+autorice obtener ese mismo snapshot, `SISMOS_ALLOW_PINNED_DOWNLOAD=1` habilita su
+descarga desde el commit fijado. Esta opción no sigue `main` ni actualiza datos.
 
 ```bash
 npm run lint
@@ -59,6 +64,48 @@ El control «Modelo Slab2» dentro de «Capas» activa la superficie modelada si
 - [Sistema de diseño](docs/DESIGN_SYSTEM.md)
 - [Perfil andino interactivo](docs/research/INTERACTIVE_LATITUDE_PROFILE.md)
 - [Manifiesto y checksums](manifests/DATASET_MANIFEST.md)
+- [Experiencia de competencia: decisión y alcance](docs/research/competition-experience-plan.md)
+- [Auditoría final del prototipo](docs/research/competition-experience-review.md)
+- [Diagnóstico de actualización del catálogo](docs/research/catalog-refresh-diagnosis.md)
 - [Hoja de ruta](plans/04-hoja-de-ruta-y-fases.md)
 
 Los planes y marcadores de posición anteriores se preservan en [el archivo histórico](archive/2026-09-pre-mvp/README.md); no definen el MVP vigente.
+
+## Prototipo local de competencia
+
+La entrada opcional recorre San Juan 1894, San Juan 1944, Caucete 1977 y El Galpón
+2015. Cada capítulo contiene tres fotografías curadas del proveedor, fundidos
+vinculados al scroll nativo y controles manuales. «Saltar introducción» abre el
+mapa; «Opciones» permite sólo texto y sigue por defecto el movimiento reducido
+del sistema. El mapa permanece montado al volver a la historia: filtros, cámara
+y capas se conservan. El recorrido guiado restablece los filtros deliberadamente
+para reproducir sus muestras completas; esto se indica en la tarjeta.
+
+Los tres cortes (24,5°S, 27°S y 30,5°S) usan el perfil real. Los candidatos provienen
+del EDA de 80.524 eventos hasta 18/09/2026; sus muestras web se recalcularon con
+los 80.470 eventos hasta 14/09/2026 y el método geodésico WGS84 del producto.
+Además del snapshot, cambia el método de selección respecto del EDA: no atribuir
+las diferencias de conteos exclusivamente a registros nuevos. Las bandas
+<70 / 70–<300 / ≥300 km son descriptivas y no representan corteza y manto.
+En 3D los puntos son visibles a través del relieve, conservando su posición y
+profundidad; la leyenda declara esta convención. El perfil conserva escala 1×.
+
+Los assets históricos seleccionados ya están incluidos (24 WebP: 12 fotos en dos
+resoluciones, 2,33 MB). No se copió el archivo fotográfico completo ni un nuevo
+catálogo científico. Su regeneración es una tarea de curación manual, no del build:
+
+```bash
+node tools/prepare-competition-history.mjs
+node --experimental-strip-types tools/prepare-competition-presets.mjs
+```
+
+La primera herramienta exige el proveedor en el commit histórico `c5634ca` y sólo
+lee sus exports/medios. La segunda lee el CSV EDA existente y el artefacto web
+fijado. No realizan scraping. Las fotografías próximas a cada escena se cargan
+bajo demanda; el catálogo se prepara al llegar al último capítulo o al saltar.
+Todos los recursos de la experiencia se sirven desde el mismo origen.
+
+**Derechos:** cada fotografía muestra «Archivo INPRES · autor y licencia pendientes
+de verificación». El manifiesto por archivo registra fuente, export, hash y
+`license: pending-review`. Este prototipo es local: hace falta confirmar permiso,
+autoría y crédito por imagen o elegir sólo texto antes de publicar sus medios.

@@ -20,12 +20,23 @@ const sourceSha256 =
 const sourceUrl = `https://raw.githubusercontent.com/Sismos-Argentina/inpres-sismos/${sourceCommit}/data/exports/sismos.geojson`;
 const expectedCount = 80470;
 const expectedInvalidLocations = 31;
+const webSha256 = "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82";
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
 async function loadSource() {
+  // Reutilizar el artefacto web fijado permite probar/build sin red ni drift.
+  try {
+    const webBytes = await readFile(output);
+    if (sha256(webBytes) === webSha256) {
+      console.log("Snapshot web local verificado: 80.470 eventos, 14/09/2026.");
+      process.exit(0);
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
   const customPath = process.env.SISMOS_INPRES_GEOJSON;
   const inputPath = customPath ? path.resolve(customPath) : localSource;
 
@@ -34,12 +45,15 @@ async function loadSource() {
     if (customPath || sha256(bytes) === sourceSha256) {
       return { bytes, origin: inputPath };
     }
-    console.log("El export local cambió; descargando el snapshot fijado.");
+    console.log("El export local cambió; el snapshot web no se actualiza automáticamente.");
   } catch (error) {
     if (customPath || error.code !== "ENOENT") throw error;
-    console.log("No se encontró el export local; descargando el snapshot fijado.");
+    console.log("No se encontró el export local fijado.");
   }
 
+  if (process.env.SISMOS_ALLOW_PINNED_DOWNLOAD !== "1") {
+    throw new Error("Falta el snapshot local verificado. No se descargan datos automáticamente. Ver README para preparar el snapshot fijado con autorización explícita.");
+  }
   const response = await fetch(sourceUrl);
   if (!response.ok) {
     throw new Error(`Descarga INPRES fallida: HTTP ${response.status}`);
