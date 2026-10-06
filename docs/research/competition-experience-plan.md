@@ -31,16 +31,28 @@ La referencia visual aportada por el usuario es la sección de modelos de
 [Motorola Signature Swarovski](https://www.motorola.com.ar/motorola-signature-swarovski/p).
 Se adopta un escenario fijo mediante `position: sticky`, fundidos según el scroll
 nativo y controles manuales accesibles; sin copiar contenido ni imágenes de Motorola.
-Tras la revisión del usuario, cada escena fotográfica ocupa al menos `420svh`:
-el 40% del recorrido sticky deja fotos completas y el 60% hace dos fundidos con
-aceleración/desaceleración suave. La foto anterior permanece opaca debajo de la
-que entra para evitar descubrir el fondo oscuro. Los botones recorren el mismo
-scroll y la elección de movimiento se conserva al recargar esta pestaña.
-Los cuatro casos más la pregunta equivalen a unas 17,8 alturas de ventana.
+Tras la segunda revisión del usuario, cada escena ocupa al menos `520svh`:
+cinco tramos iguales alternan foto completa / fundido / foto completa / fundido /
+foto completa. La última dispone del mismo tiempo propio que las demás. Cada
+imagen y su fondo son opacos al completar el fundido, eliminando la mezcla
+residual con la anterior. Los botones llevan al comienzo del tramo de su foto.
+Los fundidos quedan siempre activos sin selector ni almacenamiento de preferencias
+por solicitud expresa; `prefers-reduced-motion` conserva navegación instantánea
+y elimina desplazamientos, zooms y damping, pero permite esta mezcla de opacidad.
+Los cuatro casos más la pregunta equivalen a unas 21,8 alturas de ventana.
 Esto supera el objetivo inicial de 3–5 pantallas y la primera iteración de
 7,4 en escritorio / 6,8 en móvil. El aumento responde a la solicitud explícita
 de más espacio para ver las transiciones; el salto y la navegación directa
 permanecen visibles. La auditoría registra el costo sin recortar lo solicitado.
+
+Lectura del mapa desde arriba: GEBCO ya era opaco. El catálogo se dibuja a través
+del relieve con `depthTest: false`, por lo que 80.470 puntos opacos de 3 px tapaban
+parte del territorio. Se modifica sólo la presentación de los puntos: tamaño
+1,5–2,3 px y opacidad 0,32–0,70, interpolados suavemente con la inclinación de cámara.
+La vista cenital prioriza relieve; la vista lateral recupera presencia del volumen.
+Se conservan xyz hipocentrales, colores de profundidad, conteos, filtros e inspector.
+Es una mejora de legibilidad dentro del MVP; no una transformación del catálogo
+ni una inferencia científica. GEBCO, Slab2 y los presets permanecen intactos.
 
 Validación: suite existente como línea base (11 pruebas pasan), muestras web
 recalculadas, integridad de assets, pruebas de navegación, lint, TypeScript,

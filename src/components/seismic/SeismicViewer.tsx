@@ -650,6 +650,15 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       if (disposed) return;
       animationFrame = requestAnimationFrame(animate);
       controls.update();
+      if (catalogPoints) {
+        // Desde arriba, priorizar el relieve; de costado, recuperar el volumen.
+        // Cambia sólo la presentación: xyz, filtros y selección se conservan.
+        const tilt = Math.min(1, controls.getPolarAngle() / (Math.PI / 3));
+        const prominence = tilt * tilt * (3 - 2 * tilt);
+        const material = catalogPoints.material as THREE.PointsMaterial;
+        material.size = 1.5 + 0.8 * prominence;
+        material.opacity = 0.32 + 0.38 * prominence;
+      }
       if (compassNeedle.current) {
         compassNeedle.current.style.transform = `rotate(${controls.getAzimuthalAngle()}rad)`;
       }
@@ -848,9 +857,11 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         catalogPoints = new THREE.Points(
           geometry,
           new THREE.PointsMaterial({
-            size: 3,
+            size: 1.5,
             sizeAttenuation: false,
             vertexColors: true,
+            transparent: true,
+            opacity: 0.32,
             // Lectura del volumen a través del relieve: conserva xyz hipocentral.
             depthTest: false,
             depthWrite: false,

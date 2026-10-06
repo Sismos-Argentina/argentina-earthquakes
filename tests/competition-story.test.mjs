@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { navigateStory, storyScrollBehavior } from "../src/lib/story/navigation.ts";
-import { photoPosition, photoOpacity } from "../src/lib/story/photographs.ts";
+import { photoPosition, photoOpacity, photoScrollProgress } from "../src/lib/story/photographs.ts";
 import { createLatitudeProfile, selectProfileEvents, summarizeProfile } from "../src/lib/profile/cuyo.ts";
 
 const root = new URL("../", import.meta.url);
@@ -79,26 +79,34 @@ test("manifiesto: 12 fotos curadas, variantes íntegras y referencias locales co
   assert.equal(files.filter((f) => f.endsWith(".webp")).length, manifest.media.length);
 });
 
-test("scroll fotográfico: pausas, fundidos sin fondo descubierto y cortes reducidos", () => {
+test("scroll fotográfico: cada foto tiene su tramo completo, incluida la última", () => {
   assert.equal(photoPosition(100, 1600, 1000, 3), 0);
   assert.equal(photoPosition(-300, 1600, 1000, 3), 1);
   assert.equal(photoPosition(-2000, 1600, 1000, 3), 2);
   assert.equal(photoPosition(-30, 1600, 1000, 3), 0);
-  assert.ok(Math.abs(photoPosition(-120, 1600, 1000, 3) - 7/27) < 1e-12);
-  assert.ok(Math.abs(photoPosition(-150, 1600, 1000, 3) - 0.5) < 1e-12);
+  assert.equal(photoPosition(-120, 1600, 1000, 3), 0);
+  assert.ok(Math.abs(photoPosition(-180, 1600, 1000, 3) - 0.5) < 1e-12);
   assert.equal(photoPosition(-270, 1600, 1000, 3), 1);
-  assert.ok(Math.abs(photoPosition(-450, 1600, 1000, 3) - 1.5) < 1e-12);
+  assert.ok(Math.abs(photoPosition(-420, 1600, 1000, 3) - 1.5) < 1e-12);
+  for (const top of [-480, -510, -540, -570, -600]) {
+    assert.equal(photoPosition(top, 1600, 1000, 3), 2);
+  }
   assert.equal(photoPosition(-570, 1600, 1000, 3), 2);
   assert.equal(photoPosition(-500, 1600, 1400, 3), 2);
   assert.equal(photoPosition(-100, 1000, 1000, 1), 0);
-  assert.equal(photoOpacity(0.5, 0, false), 1);
-  assert.equal(photoOpacity(0.5, 1, false), 0.5);
-  assert.equal(photoOpacity(0.5, 0, true), 0);
-  assert.equal(photoOpacity(0.5, 1, true), 1);
+  assert.equal(photoOpacity(0.5, 0), 1);
+  assert.equal(photoOpacity(0.5, 1), 0.5);
+  assert.equal(photoScrollProgress(2, 3), 0.8);
+  assert.equal(photoScrollProgress(0, 1), 0);
+  for (const index of [0, 1, 2]) {
+    const progress = photoScrollProgress(index, 3);
+    assert.equal(photoPosition(-600 * progress, 1600, 1000, 3), index);
+    assert.equal(photoPosition(-600 * (progress + 0.1), 1600, 1000, 3), index);
+  }
   for (const position of [0, .2, .8, 1, 1.3, 1.9, 2]) {
-    const uncoveredBackground = [0,1,2].reduce((n,i) => n * (1 - photoOpacity(position,i,false)),1);
+    const uncoveredBackground = [0,1,2].reduce((n,i) => n * (1 - photoOpacity(position,i)),1);
     assert.equal(uncoveredBackground, 0);
-    assert.equal([0,1,2].reduce((n,i) => n + photoOpacity(position,i,true),0),1);
+    if (Number.isInteger(position)) assert.equal(photoOpacity(position, position), 1);
   }
 });
 

@@ -27,12 +27,13 @@ histórica y el catálogo instrumental son conjuntos diferentes, no enlaces even
 por evento. Mercalli describe efectos y no magnitud instrumental.
 
 La ampliación solicitada a tres fotos por caso y más recorrido tiene un costo:
-cuatro escenas de `420svh` más la pregunta equivalen a aproximadamente 17,8
+cuatro escenas de `520svh` más la pregunta equivalen a aproximadamente 21,8
 ventanas de scroll. La primera iteración ocupaba 7,4 en escritorio y dejaba
 apenas 270 px por cambio a 1280×900. La revisión pidió más espacio para mirar
-el fundido: ahora son 864 px por cambio, con pausas de fotos completas.
-En 390×844 se midieron 802 px por fundido en 1944, usando la altura real del
-sticky. Esto excede el objetivo inicial de 3–5 pantallas. La barra cronológica,
+el fundido y luego un tramo propio para la última foto: ahora cada foto completa
+y cada fundido dispone de una quinta parte del recorrido sticky (756 px en
+1280×900 si el sticky mide una ventana). La altura real del sticky se mide
+también en móvil. Esto excede el objetivo inicial de 3–5 pantallas. La barra cronológica,
 los botones y el salto mitigan la longitud, pero no la eliminan. El tono conserva
 respeto: no hay audio, sacudidas ni flashes.
 
@@ -46,8 +47,10 @@ del color. El inspector muestra atributos del registro seleccionado.
 
 Los fundidos fotográficos añaden continuidad visual, pero no evidencia científica.
 El scroll es nativo: no hay interceptación de la rueda ni autoavance temporizado.
-El escenario fijo mezcla fotos contiguas; con movimiento reducido sólo una foto
-tiene opacidad 1 y no hay transición. Los controles manuales mantienen acceso a
+El escenario fijo mezcla fotos contiguas. Por solicitud posterior del usuario,
+los fundidos permanecen activos sin selector; el movimiento reducido del sistema
+elimina desplazamientos y zooms, y hace instantánea la navegación programada.
+Los controles manuales mantienen acceso a
 las tres fotos. La animación puede distraer si se prolonga antes de la pregunta.
 
 ## 4. ¿Qué afirmaciones tienen respaldo directo?
@@ -91,7 +94,9 @@ con un grupo profundo; puede ocultarlo si se lee sola. «80.470 visibles» expre
 registros habilitados por filtros, no todos los puntos dentro del encuadre.
 
 En 3D los hipocentros se dibujan a través del relieve, preservando xyz; la leyenda
-lo declara. La densidad y el relieve claro debilitan la separación de colores.
+lo declara. Ahora se suavizan al mirar desde arriba para leer mejor el territorio
+y recuperan presencia de costado. Las zonas densas todavía superponen eventos:
+la opacidad no es una métrica de densidad y la perspectiva puede dificultar el color.
 El perfil es más útil para leer profundidad que la vista general. Durante el
 recálculo se conserva el gráfico anterior con un estado de carga: puede confundirse
 brevemente con la nueva latitud si el visitante ignora el aviso. Iniciar el tour
@@ -115,8 +120,9 @@ con la aclaración científica más larga, no cabe entero en una sola ventana.
 
 Se verificó el navegador de escritorio con viewport móvil; no un teléfono físico,
 gestos táctiles de hardware, lector de pantalla ni GPU móvil. El navegador tenía
-`prefers-reduced-motion: reduce` real: se comprobó el modo predeterminado y luego
-la activación explícita de fundidos. No se cambió la preferencia del sistema.
+`prefers-reduced-motion: reduce` real: en la iteración anterior se probó el selector.
+La solicitud posterior lo elimina y deja los fundidos activos; se conserva la
+reducción de movimiento geométrico. No se cambió la preferencia del sistema.
 
 ## 8. ¿Qué falta para publicar las fotografías?
 
@@ -200,7 +206,9 @@ Mostrar la fecha permite evaluar esta limitación sin prometer datos actuales.
   botón principal 12,17:1 y texto de nota sobre fondo sólido 11,16:1; no se
   certifica contraste de cada píxel sobre fotos ni de todos los puntos densos.
 - Alternativa sólo texto: cero imágenes y 12 fallbacks; la narración continúa.
-  Movimiento reducido: transición 0 s, opacidades discretas. En la corrección,
+  En la primera corrección, movimiento reducido: transición 0 s, opacidades discretas.
+  Esa alternativa fotográfica fue reemplazada por fundidos siempre activos a pedido
+  del usuario; continúa la reducción de movimiento geométrico. En la primera corrección,
   fundido móvil observado con opacidades 1/0,496/0 y escenario en top=0:
   la capa base opaca evita el oscurecimiento de la mezcla anterior. No se alteró URL de navegación;
   la base no tenía persistencia de filtros/perfil en query/hash.
@@ -211,7 +219,7 @@ Mostrar la fecha permite evaluar esta limitación sin prometer datos actuales.
 - Producto/proveedor separados; `.artifacts/` ajeno excluido. No hubo push, PR,
   deploy, Discord, dataset científico nuevo ni modificación de producción.
 
-## Corrección del recorrido fotográfico solicitada por el usuario
+## Primera corrección del recorrido fotográfico (`3cf7ffc`)
 
 La primera iteración (`ba68ab1`) no tenía suficiente recorrido para apreciar
 los cambios y los botones cambiaban de foto sin transición. Además, dos capas
@@ -235,6 +243,50 @@ No se cambió el snapshot, los presets, medios ni el proveedor. Evidencia nueva
 en `../competition-evidence/`: `09-scroll-fade-fixed-desktop.jpg`,
 `10-scroll-second-fade-fixed-desktop.jpg` y `11-scroll-fade-fixed-mobile.jpg`.
 Las demás recomendaciones de la auditoría siguen pendientes de decisión.
+
+## Segunda corrección: mapa legible, fundidos activos y cierre de cada foto
+
+El usuario pidió retirar el selector de fundidos, mejorar el mapa visto desde
+arriba y dar más scroll propio a la última foto. Se eliminó el selector y su
+almacenamiento; los fundidos están activos desde el inicio y después de recargar.
+La preferencia de movimiento reducido del sistema continúa quitando desplazamientos,
+zoom y damping; por la nueva decisión editorial permite los fundidos de opacidad.
+
+La primera corrección mantenía las capas opacas, pero las imágenes interiores
+tenían opacidad 0,9 incluso al terminar: todavía dejaban ver un 10% de la foto
+anterior. Ahora imagen y fondo son opacos. Cinco tramos iguales en cada escena
+de `520svh` dan el mismo recorrido a las tres fotos completas y a los dos fundidos.
+Elegir la tercera foto lleva al comienzo de su tramo, en el 80% del recorrido,
+en lugar de saltar directamente al final.
+
+En el build estático servido en `3001`, a 827×884, se verificaron las últimas
+fotos de 1894, 1944 y 1977: imagen cargada y opaca, con unos 743 px propios.
+Tras avanzar otros 530 px en 1944 seguía siendo la tercera foto, limpia, con
+212 px restantes y el sticky en top=0. En 390×844, 1944 conservó 704 px y
+El Galpón 696 px propios; imagen y capa con opacidad 1, sin overflow horizontal.
+El primer fundido funcionó sin selector con `data-reduced-motion=true`, mezcla
+1/0,501/0 y transición de 180 ms. Son ensayos de viewport, no de teléfono físico.
+
+GEBCO ya era opaco; eran los puntos del catálogo los que cubrían demasiado
+territorio desde arriba. Se redujeron tamaño y opacidad con la inclinación,
+conservando su presencia de costado. Comparación visual de la misma vista cenital
+antes/después y revisión lateral. Continúan los 80.470 eventos, el filtro profundo
+dio 278 y restablecer volvió a 80.470. Se seleccionó desde la escena el registro
+`a246d7f132eb1d9c`, 25/11/2019, Mendoza, 110 km, magnitud reportada 2,6.
+No se cambian coordenadas, fuente, snapshot, muestras ni datos del proveedor.
+La superposición de zonas densas sigue existiendo; esto no introduce una agregación
+ni una escala cuantitativa de densidad. La presentación no certifica rendimiento móvil.
+
+Pruebas 18/18, lint y TypeScript pasaron. El build restringido compiló pero
+falló dos veces con `spawn EPERM` al iniciar su verificador; repetir el comando
+local con permiso para sus subprocesos completó TypeScript y el export estático.
+No se omitió el verificador. Capturas nuevas en `../competition-evidence/`:
+`13-map-from-above-before.jpg`, `14-fades-always-active.jpg`,
+`15-last-photo-clean-desktop.jpg`, `16-last-photo-clean-mobile.jpg`,
+`17-map-from-above-soft-points.jpg` y `18-map-lateral-soft-points.jpg`.
+El mayor recorrido lleva el prólogo a unas 21,8 ventanas; los botones de avance,
+la cronología y el salto permanecen disponibles. Derechos y las demás mejoras
+de la auditoría siguen pendientes. Cambios locales, sin push, PR, deploy ni Discord.
 
 La tarea local cumple su alcance. La presentación pública y las mejoras de esta
 tabla siguen pendientes de decisiones distintas; no se las declara terminadas.

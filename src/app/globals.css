@@ -461,21 +461,15 @@ a:focus-visible { outline: 2px solid #f2bb70; outline-offset: 4px; }
 .storyBrand { color: var(--archive-paper); font-size: 0.85rem; font-weight: 700; text-decoration: none; letter-spacing: 0.12em; }
 .storyBrand span { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.65rem; font-weight: 400; letter-spacing: 0.04em; }
 .storyHeaderActions { display: flex; gap: 1rem; align-items: center; }
-.storyPreferences { position: relative; color: #d6e5e0; font-size: 0.78rem; }
-.storyPreferences summary { cursor: pointer; min-height: 44px; padding: 0.85rem 0.5rem; }
-.storyPreferences > div { position: absolute; top: 100%; right: 0; width: 15rem; padding: 0.75rem; border: 1px solid var(--border); background: #102127; }
-.storyPreferences label { display: flex; gap: 0.6rem; align-items: center; min-height: 44px; }
-.storyPreferences small { display: block; color: var(--muted); line-height: 1.5; }
-.storyPreferences select { width: 100%; min-height: 44px; padding: 0.4rem; margin-bottom: 0.6rem; border: 1px solid var(--border); background: #071014; color: var(--text); font: inherit; }
 select:focus-visible { outline: 2px solid #f2bb70; outline-offset: 3px; }
 .storySkip, .storyPrimary, .sceneNavigation button, .guidedDiscovery button, .experienceLinks button, .textButton { min-height: 44px; border: 1px solid #627377; border-radius: 3px; padding: 0.65rem 1rem; background: #102127; color: var(--text); font: inherit; cursor: pointer; }
 .storySkip { background: #e6dbc7; color: #122025; border-color: #e6dbc7; }
 .storySkip span { margin-left: 0.7rem; }
 .textButton { background: transparent; border-color: transparent; color: #d6e5e0; }
 .textButton:hover { border-color: #627377; }
-.archiveScene { position: relative; min-height: 420svh; background: #071014; }
+.archiveScene { position: relative; min-height: 520svh; background: #071014; }
 .archiveStage { position: sticky; top: 0; min-height: 100svh; display: grid; align-items: center; padding: 7rem 6vw; isolation: isolate; overflow: hidden; }
-.archiveFrame { position: absolute; inset: 0; transition: opacity 180ms linear; }
+.archiveFrame { position: absolute; inset: 0; background: #071014; transition: opacity 180ms linear; }
 .archiveFrame[aria-hidden="true"] { pointer-events: none; }
 .archiveImage--portrait { object-fit: contain; background: #071014; }
 .photoNavigation { display: flex; gap: 0.4rem; align-items: center; margin-top: 1rem; }
@@ -485,8 +479,8 @@ select:focus-visible { outline: 2px solid #f2bb70; outline-offset: 3px; }
 .archiveScene:focus, .questionScene:focus { outline: none; }
 .archiveFigure { position: absolute; z-index: -1; inset: 0 0 0 30%; margin: 0; overflow: hidden; }
 .archiveFigure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #071014 0%, rgb(7 16 20 / 72%) 20%, rgb(7 16 20 / 12%) 65%), linear-gradient(0deg, #071014, transparent 25%, transparent 75%, rgb(7 16 20 / 30%)); }
-.archiveImage { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0.72; filter: saturate(0.3); transform: scale(1.015); transition: opacity 900ms ease, transform 1600ms ease; }
-.archiveScene--active .archiveImage { opacity: 0.9; transform: scale(1); }
+.archiveImage { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; filter: saturate(0.3); transform: scale(1.015); transition: transform 1600ms ease; }
+.archiveScene--active .archiveImage { transform: scale(1); }
 .archiveImageGate { width: 100%; height: 100%; }
 .archiveFigure figcaption { position: absolute; z-index: 2; right: 3vw; bottom: 6rem; max-width: 31rem; padding: 0.7rem; background: rgb(7 16 20 / 91%); font-size: 0.7rem; line-height: 1.5; color: #cad7d5; }
 .archiveFigure figcaption span, .archiveFigure figcaption a { display: block; }
@@ -554,7 +548,7 @@ button:disabled { cursor: default; opacity: 0.45; }
   .storyHeaderActions { gap: 0.1rem; }
   .storyHeaderActions button { font-size: 0.67rem; padding: 0.5rem; }
   .storySkip span { margin-left: 0.2rem; }
-  .archiveScene { min-height: 420svh; }
+  .archiveScene { min-height: 520svh; }
   .archiveStage { min-height: 100svh; display: flex; align-items: flex-start; padding: calc(4.2rem + 34svh) 1.25rem 6rem; }
   .archiveFigure { inset: 4.2rem 0 auto; height: 32svh; }
   .archiveFigure::after { background: linear-gradient(0deg, #071014 1%, rgb(7 16 20 / 10%) 85%, #071014); }
@@ -588,8 +582,6 @@ button:disabled { cursor: default; opacity: 0.45; }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; animation-duration: 0s !important; animation-iteration-count: 1 !important; }
   .archiveImage, .archiveScene--active .archiveImage { transform: none; }
 }
-/* Únicamente tras elección explícita; el modo predeterminado sigue al sistema. */
-.competitionExperience[data-motion-choice="full"] .archiveImage { transition-duration: 900ms, 1600ms !important; transform: scale(1.015); }
-.competitionExperience[data-motion-choice="full"] .archiveFrame { transition-duration: 180ms !important; }
-.competitionExperience[data-motion-choice="full"] .archiveScene--active .archiveImage { transform: scale(1); }
-.competitionExperience[data-motion-choice="full"] .experienceShell { transition-duration: 700ms !important; }
+/* Fundidos siempre activos por solicitud editorial; el movimiento geométrico
+   y el scroll programado siguen respetando la preferencia del sistema. */
+.competitionExperience .archiveFrame { transition-duration: 180ms !important; }

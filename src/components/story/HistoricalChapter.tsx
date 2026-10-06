@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import history from "@/data/competition-history.json";
-import { photoOpacity, photoPosition } from "@/lib/story/photographs";
+import { photoOpacity, photoPosition, photoScrollProgress } from "@/lib/story/photographs";
 import { storyScrollBehavior } from "@/lib/story/navigation";
 
 type Scene = typeof history.scenes[number];
@@ -42,7 +42,7 @@ export default function HistoricalChapter({ scene, index, active, imagesEnabled,
     if (!section.current || !stage.current) return;
     const bounds = section.current.getBoundingClientRect();
     const travel = Math.max(0, bounds.height - stage.current.getBoundingClientRect().height);
-    window.scrollTo({ top: window.scrollY + bounds.top + travel * photoIndex / (scene.photos.length - 1),
+    window.scrollTo({ top: window.scrollY + bounds.top + travel * photoScrollProgress(photoIndex, scene.photos.length),
       behavior: storyScrollBehavior(reducedMotion) });
   };
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function HistoricalChapter({ scene, index, active, imagesEnabled,
     <div className="archiveStage" ref={stage}>
       <figure className="archiveFigure" aria-label={`Archivo fotográfico de ${scene.place}, ${scene.date.slice(0,4)}`}>
         {scene.photos.map((p,i) => <div key={p.id} className="archiveFrame" aria-hidden={currentPhoto !== i}
-          style={{ opacity: photoOpacity(position, i, reducedMotion), transform: reducedMotion ? "none" : `translateY(${(i - position) * 8}px)` }}>
+          style={{ opacity: photoOpacity(position, i), transform: reducedMotion ? "none" : `translateY(${(i - position) * 8}px)` }}>
           <ArchiveImage photo={p} enabled={imagesEnabled} />
         </div>)}
         <figcaption><span>{photo.title} · {photo.credit}</span><a href={scene.galleryUrl} target="_blank" rel="noreferrer">Ver archivo INPRES ↗</a></figcaption>

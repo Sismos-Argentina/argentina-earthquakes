@@ -17,33 +17,13 @@ const subscribeMotion = (notify: () => void) => {
   return () => preference.removeEventListener("change", notify);
 };
 const readMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-type MotionChoice = "system" | "reduce" | "full";
-let fallbackMotionChoice: MotionChoice = "system";
-const subscribeMotionChoice = (notify: () => void) => {
-  window.addEventListener("sismos-story-motion", notify);
-  return () => window.removeEventListener("sismos-story-motion", notify);
-};
-const readMotionChoice = (): MotionChoice => {
-  try {
-    const value = window.sessionStorage.getItem("sismos-story-motion");
-    if (value === "system" || value === "reduce" || value === "full") return value;
-  } catch { /* La preferencia funciona aun si el almacenamiento no está disponible. */ }
-  return fallbackMotionChoice;
-};
-const chooseMotion = (choice: MotionChoice) => {
-  fallbackMotionChoice = choice;
-  try { window.sessionStorage.setItem("sismos-story-motion", choice); } catch { /* Usar la preferencia de esta sesión. */ }
-  window.dispatchEvent(new Event("sismos-story-motion"));
-};
 
 export default function CompetitionExperience() {
   const [state, setState] = useState<StoryState>({ mode: "history", guideIndex: null });
   const [mapStarted, setMapStarted] = useState(false);
   const [activeScene, setActiveScene] = useState(0);
   const [imagesEnabled, setImagesEnabled] = useState(true);
-  const motionChoice = useSyncExternalStore(subscribeMotionChoice, readMotionChoice, (): MotionChoice => "system");
-  const systemReducedMotion = useSyncExternalStore(subscribeMotion, readMotion, () => false);
-  const reducedMotion = motionChoice === "system" ? systemReducedMotion : motionChoice === "reduce";
+  const reducedMotion = useSyncExternalStore(subscribeMotion, readMotion, () => false);
   const sections = useRef<(HTMLElement | null)[]>([]);
   const shell = useRef<HTMLDivElement>(null);
   const historyVisible = state.mode === "history";
@@ -80,7 +60,7 @@ export default function CompetitionExperience() {
     });
   };
   return (
-    <div data-reduced-motion={reducedMotion} data-motion-choice={motionChoice} className={`competitionExperience${historyVisible ? " competitionExperience--history" : " competitionExperience--explore"}`}>
+    <div data-reduced-motion={reducedMotion} className={`competitionExperience${historyVisible ? " competitionExperience--history" : " competitionExperience--explore"}`}>
       {mapStarted ? <div ref={shell} tabIndex={-1} inert={historyVisible}
         className={`experienceShell${historyVisible ? " experienceShell--preview" : ""}${historyVisible && activeScene < history.scenes.length ? " experienceShell--hidden" : ""}`}>
         <SeismicViewer guidedIndex={state.guideIndex} onGuideChange={(index) => setState({ mode: "explore", guideIndex: index })}
@@ -91,8 +71,7 @@ export default function CompetitionExperience() {
         <header className="storyHeader">
           <a className="storyBrand" href="#history-0" onClick={(e) => { e.preventDefault(); go(0); }}>SISMOS VISUALES<span>Memoria / profundidad</span></a>
           <div className="storyHeaderActions">
-            <details className="storyPreferences"><summary>Opciones</summary><div><button className="textButton" aria-pressed={!imagesEnabled} onClick={() => setImagesEnabled(!imagesEnabled)}>{imagesEnabled ? "Sólo texto" : "Ver fotografías"}</button>
-              <label htmlFor="story-motion">Movimiento</label><select id="story-motion" value={motionChoice} onChange={(e) => chooseMotion(e.currentTarget.value as MotionChoice)}><option value="system">Según el sistema</option><option value="reduce">Reducido · cortes directos</option><option value="full">Activar fundidos</option></select><small>Por defecto se respeta la preferencia del sistema. Tu elección se conserva al recargar esta pestaña.</small></div></details>
+            <button className="textButton" aria-pressed={!imagesEnabled} onClick={() => setImagesEnabled(!imagesEnabled)}>{imagesEnabled ? "Sólo texto" : "Ver fotografías"}</button>
             <button className="storySkip" onClick={() => dispatch("skip")}>Saltar introducción <span aria-hidden="true">↗</span></button>
           </div>
         </header>
