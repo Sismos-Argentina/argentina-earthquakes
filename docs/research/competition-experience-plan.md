@@ -31,10 +31,16 @@ La referencia visual aportada por el usuario es la sección de modelos de
 [Motorola Signature Swarovski](https://www.motorola.com.ar/motorola-signature-swarovski/p).
 Se adopta un escenario fijo mediante `position: sticky`, fundidos según el scroll
 nativo y controles manuales accesibles; sin copiar contenido ni imágenes de Motorola.
-Son cinco capítulos editoriales, pero tres fotos por caso requieren aproximadamente
-7,4 alturas de ventana en escritorio y 6,8 en móvil. Esto supera el objetivo inicial
-de 3–5 pantallas; el salto y la navegación directa permanecen visibles. La auditoría
-final debe valorar este costo sin recortar automáticamente la ampliación pedida.
+Tras la revisión del usuario, cada escena fotográfica ocupa al menos `420svh`:
+el 40% del recorrido sticky deja fotos completas y el 60% hace dos fundidos con
+aceleración/desaceleración suave. La foto anterior permanece opaca debajo de la
+que entra para evitar descubrir el fondo oscuro. Los botones recorren el mismo
+scroll y la elección de movimiento se conserva al recargar esta pestaña.
+Los cuatro casos más la pregunta equivalen a unas 17,8 alturas de ventana.
+Esto supera el objetivo inicial de 3–5 pantallas y la primera iteración de
+7,4 en escritorio / 6,8 en móvil. El aumento responde a la solicitud explícita
+de más espacio para ver las transiciones; el salto y la navegación directa
+permanecen visibles. La auditoría registra el costo sin recortar lo solicitado.
 
 Validación: suite existente como línea base (11 pruebas pasan), muestras web
 recalculadas, integridad de assets, pruebas de navegación, lint, TypeScript,

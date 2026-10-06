@@ -473,9 +473,9 @@ select:focus-visible { outline: 2px solid #f2bb70; outline-offset: 3px; }
 .storySkip span { margin-left: 0.7rem; }
 .textButton { background: transparent; border-color: transparent; color: #d6e5e0; }
 .textButton:hover { border-color: #627377; }
-.archiveScene { position: relative; min-height: 160svh; background: #071014; }
+.archiveScene { position: relative; min-height: 420svh; background: #071014; }
 .archiveStage { position: sticky; top: 0; min-height: 100svh; display: grid; align-items: center; padding: 7rem 6vw; isolation: isolate; overflow: hidden; }
-.archiveFrame { position: absolute; inset: 0; }
+.archiveFrame { position: absolute; inset: 0; transition: opacity 180ms linear; }
 .archiveFrame[aria-hidden="true"] { pointer-events: none; }
 .archiveImage--portrait { object-fit: contain; background: #071014; }
 .photoNavigation { display: flex; gap: 0.4rem; align-items: center; margin-top: 1rem; }
@@ -554,7 +554,7 @@ button:disabled { cursor: default; opacity: 0.45; }
   .storyHeaderActions { gap: 0.1rem; }
   .storyHeaderActions button { font-size: 0.67rem; padding: 0.5rem; }
   .storySkip span { margin-left: 0.2rem; }
-  .archiveScene { min-height: 145svh; }
+  .archiveScene { min-height: 420svh; }
   .archiveStage { min-height: 100svh; display: flex; align-items: flex-start; padding: calc(4.2rem + 34svh) 1.25rem 6rem; }
   .archiveFigure { inset: 4.2rem 0 auto; height: 32svh; }
   .archiveFigure::after { background: linear-gradient(0deg, #071014 1%, rgb(7 16 20 / 10%) 85%, #071014); }
@@ -590,5 +590,6 @@ button:disabled { cursor: default; opacity: 0.45; }
 }
 /* Únicamente tras elección explícita; el modo predeterminado sigue al sistema. */
 .competitionExperience[data-motion-choice="full"] .archiveImage { transition-duration: 900ms, 1600ms !important; transform: scale(1.015); }
+.competitionExperience[data-motion-choice="full"] .archiveFrame { transition-duration: 180ms !important; }
 .competitionExperience[data-motion-choice="full"] .archiveScene--active .archiveImage { transform: scale(1); }
 .competitionExperience[data-motion-choice="full"] .experienceShell { transition-duration: 700ms !important; }

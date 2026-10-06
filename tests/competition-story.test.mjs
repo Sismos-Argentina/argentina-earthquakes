@@ -79,16 +79,25 @@ test("manifiesto: 12 fotos curadas, variantes íntegras y referencias locales co
   assert.equal(files.filter((f) => f.endsWith(".webp")).length, manifest.media.length);
 });
 
-test("scroll fotográfico acotado, fundidos continuos y cortes con movimiento reducido", () => {
+test("scroll fotográfico: pausas, fundidos sin fondo descubierto y cortes reducidos", () => {
   assert.equal(photoPosition(100, 1600, 1000, 3), 0);
   assert.equal(photoPosition(-300, 1600, 1000, 3), 1);
   assert.equal(photoPosition(-2000, 1600, 1000, 3), 2);
-  assert.equal(photoOpacity(0.5, 0, false), 0.5);
+  assert.equal(photoPosition(-30, 1600, 1000, 3), 0);
+  assert.ok(Math.abs(photoPosition(-120, 1600, 1000, 3) - 7/27) < 1e-12);
+  assert.ok(Math.abs(photoPosition(-150, 1600, 1000, 3) - 0.5) < 1e-12);
+  assert.equal(photoPosition(-270, 1600, 1000, 3), 1);
+  assert.ok(Math.abs(photoPosition(-450, 1600, 1000, 3) - 1.5) < 1e-12);
+  assert.equal(photoPosition(-570, 1600, 1000, 3), 2);
+  assert.equal(photoPosition(-500, 1600, 1400, 3), 2);
+  assert.equal(photoPosition(-100, 1000, 1000, 1), 0);
+  assert.equal(photoOpacity(0.5, 0, false), 1);
   assert.equal(photoOpacity(0.5, 1, false), 0.5);
   assert.equal(photoOpacity(0.5, 0, true), 0);
   assert.equal(photoOpacity(0.5, 1, true), 1);
   for (const position of [0, .2, .8, 1, 1.3, 1.9, 2]) {
-    assert.ok(Math.abs([0,1,2].reduce((n,i) => n + photoOpacity(position,i,false),0) - 1) < 1e-12);
+    const uncoveredBackground = [0,1,2].reduce((n,i) => n * (1 - photoOpacity(position,i,false)),1);
+    assert.equal(uncoveredBackground, 0);
     assert.equal([0,1,2].reduce((n,i) => n + photoOpacity(position,i,true),0),1);
   }
 });

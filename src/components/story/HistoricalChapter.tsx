@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import history from "@/data/competition-history.json";
 import { photoOpacity, photoPosition } from "@/lib/story/photographs";
+import { storyScrollBehavior } from "@/lib/story/navigation";
 
 type Scene = typeof history.scenes[number];
 type Photo = Scene["photos"][number];
@@ -33,34 +34,41 @@ export default function HistoricalChapter({ scene, index, active, imagesEnabled,
   register: (el: HTMLElement | null) => void; go: (index: number) => void;
 }) {
   const section = useRef<HTMLElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(0);
-  const [manualPhoto, setManualPhoto] = useState<number | null>(null);
-  const displayedPosition = manualPhoto ?? position;
-  const currentPhoto = Math.round(displayedPosition);
+  const currentPhoto = Math.round(position);
   const photo = scene.photos[currentPhoto];
+  const choosePhoto = (photoIndex: number) => {
+    if (!section.current || !stage.current) return;
+    const bounds = section.current.getBoundingClientRect();
+    const travel = Math.max(0, bounds.height - stage.current.getBoundingClientRect().height);
+    window.scrollTo({ top: window.scrollY + bounds.top + travel * photoIndex / (scene.photos.length - 1),
+      behavior: storyScrollBehavior(reducedMotion) });
+  };
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
       const bounds = section.current?.getBoundingClientRect();
-      if (bounds) setPosition(photoPosition(bounds.top, bounds.height, window.innerHeight, scene.photos.length));
+      if (bounds && stage.current) setPosition(photoPosition(bounds.top, bounds.height, stage.current.getBoundingClientRect().height, scene.photos.length));
     };
     const onScroll = () => {
-      setManualPhoto(null);
       if (!frame) frame = requestAnimationFrame(update);
     };
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
-    return () => { cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+    const resize = new ResizeObserver(onScroll);
+    if (stage.current) resize.observe(stage.current);
+    return () => { cancelAnimationFrame(frame); resize.disconnect(); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
   }, [scene.photos.length]);
   return <section id={`history-${index}`} data-scene={index} tabIndex={-1}
     ref={(el) => { section.current = el; register(el); }} className={`archiveScene${active ? " archiveScene--active" : ""}`} aria-labelledby={`scene-title-${index}`}
     onKeyDown={(e) => { if (e.target !== e.currentTarget) return; if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); go(index + 1); } else if ((e.key === "ArrowUp" || e.key === "ArrowLeft") && index > 0) { e.preventDefault(); go(index - 1); } }}>
-    <div className="archiveStage">
+    <div className="archiveStage" ref={stage}>
       <figure className="archiveFigure" aria-label={`Archivo fotográfico de ${scene.place}, ${scene.date.slice(0,4)}`}>
         {scene.photos.map((p,i) => <div key={p.id} className="archiveFrame" aria-hidden={currentPhoto !== i}
-          style={{ opacity: photoOpacity(displayedPosition, i, reducedMotion), transform: reducedMotion ? "none" : `translateY(${(i - displayedPosition) * 8}px)` }}>
+          style={{ opacity: photoOpacity(position, i, reducedMotion), transform: reducedMotion ? "none" : `translateY(${(i - position) * 8}px)` }}>
           <ArchiveImage photo={p} enabled={imagesEnabled} />
         </div>)}
         <figcaption><span>{photo.title} · {photo.credit}</span><a href={scene.galleryUrl} target="_blank" rel="noreferrer">Ver archivo INPRES ↗</a></figcaption>
@@ -75,7 +83,7 @@ export default function HistoricalChapter({ scene, index, active, imagesEnabled,
         <a className="catalogSource" href={scene.sourceUrl} target="_blank" rel="noreferrer">Relato del catálogo histórico INPRES ↗</a>
         <nav className="photoNavigation" aria-label={`Fotografías de ${scene.place}, ${scene.date.slice(0,4)}`}>
           <span>Archivo · {currentPhoto + 1} / {scene.photos.length}</span>
-          {scene.photos.map((p,i) => <button key={p.id} aria-label={`Ver fotografía ${i + 1}: ${p.title}`} aria-pressed={currentPhoto === i} onClick={() => setManualPhoto(i)}>{String(i + 1).padStart(2,"0")}</button>)}
+          {scene.photos.map((p,i) => <button key={p.id} aria-label={`Ver fotografía ${i + 1}: ${p.title}`} aria-pressed={currentPhoto === i} onClick={() => choosePhoto(i)}>{String(i + 1).padStart(2,"0")}</button>)}
         </nav>
         {index === 0 ? <p className="storyInstruction">El scroll revela las fotografías y el siguiente capítulo. También podés elegir una foto o usar las flechas cuando la escena tiene foco.</p> : null}
         <div className="sceneNavigation"><button disabled={index === 0} onClick={() => go(index - 1)}>← Anterior</button><button onClick={() => go(index + 1)}>{index === history.scenes.length - 1 ? "Del archivo al catálogo →" : "Continuar →"}</button></div>

@@ -1,7 +1,8 @@
 # Auditoría crítica del prototipo de competencia
 
 6 de octubre de 2026. Revisión posterior a la implementación y al recorrido real
-en navegador. Rama local `feat/competition-cinematic-story`, base `8c7a88a`.
+en navegador, actualizada tras la corrección de fundidos solicitada por el usuario.
+Rama local `feat/competition-cinematic-story`, base `8c7a88a`.
 Esta auditoría recomienda trabajo posterior; sus recomendaciones no se implementan
 automáticamente. El prototipo funciona localmente, pero no está aprobado para
 publicación pública de fotografías ni certificado para hardware móvil.
@@ -25,12 +26,15 @@ permanece montado al volver a la historia. La pregunta explica que la memoria
 histórica y el catálogo instrumental son conjuntos diferentes, no enlaces evento
 por evento. Mercalli describe efectos y no magnitud instrumental.
 
-La ampliación solicitada a tres fotos por caso tiene un costo: cinco capítulos
-editoriales equivalen a aproximadamente 7,4 ventanas de scroll en 1280×900. En
-390×844, el contenido varía por escena y supera una ventana; la sección mínima
-es 145svh, pero una escena larga puede crecer. Esto excede el objetivo inicial
-de 3–5 pantallas. La barra cronológica, los botones y el salto mitigan la longitud,
-pero no la eliminan. El tono conserva respeto: no hay audio, sacudidas ni flashes.
+La ampliación solicitada a tres fotos por caso y más recorrido tiene un costo:
+cuatro escenas de `420svh` más la pregunta equivalen a aproximadamente 17,8
+ventanas de scroll. La primera iteración ocupaba 7,4 en escritorio y dejaba
+apenas 270 px por cambio a 1280×900. La revisión pidió más espacio para mirar
+el fundido: ahora son 864 px por cambio, con pausas de fotos completas.
+En 390×844 se midieron 802 px por fundido en 1944, usando la altura real del
+sticky. Esto excede el objetivo inicial de 3–5 pantallas. La barra cronológica,
+los botones y el salto mitigan la longitud, pero no la eliminan. El tono conserva
+respeto: no hay audio, sacudidas ni flashes.
 
 ## 3. ¿La interacción añade comprensión?
 
@@ -196,8 +200,9 @@ Mostrar la fecha permite evaluar esta limitación sin prometer datos actuales.
   botón principal 12,17:1 y texto de nota sobre fondo sólido 11,16:1; no se
   certifica contraste de cada píxel sobre fotos ni de todos los puntos densos.
 - Alternativa sólo texto: cero imágenes y 12 fallbacks; la narración continúa.
-  Movimiento reducido: transición 0 s, opacidades discretas. Fundidos: mezcla
-  observada 0,185/0,815 con escenario en top=0. No se alteró URL de navegación;
+  Movimiento reducido: transición 0 s, opacidades discretas. En la corrección,
+  fundido móvil observado con opacidades 1/0,496/0 y escenario en top=0:
+  la capa base opaca evita el oscurecimiento de la mezcla anterior. No se alteró URL de navegación;
   la base no tenía persistencia de filtros/perfil en query/hash.
 - Capturas locales fuera del repositorio: `../competition-evidence/`;
   `01-historical-desktop.jpg`, `02-central-question.jpg`, `03-guided-north.jpg`,
@@ -205,6 +210,31 @@ Mostrar la fecha permite evaluar esta limitación sin prometer datos actuales.
   fundido, perfil/inspector y movimiento reducido. Son pruebas de esta sesión.
 - Producto/proveedor separados; `.artifacts/` ajeno excluido. No hubo push, PR,
   deploy, Discord, dataset científico nuevo ni modificación de producción.
+
+## Corrección del recorrido fotográfico solicitada por el usuario
+
+La primera iteración (`ba68ab1`) no tenía suficiente recorrido para apreciar
+los cambios y los botones cambiaban de foto sin transición. Además, dos capas
+con opacidades complementarias dejaban pasar parte del fondo oscuro durante
+la mezcla. La corrección mantiene una base opaca y superpone la foto siguiente,
+añade pausas completas y una curva suave, y lleva cada escena a `420svh`.
+Se mide la altura real del sticky, que puede superar el viewport móvil, en lugar
+de restar siempre la altura de ventana. Un `ResizeObserver` actualiza la medida
+si el contenido cambia de altura. Los botones eligen posiciones del mismo scroll.
+
+Verificación específica de esta corrección en el export estático servido en
+`http://127.0.0.1:3001/`: ambos fundidos de 1944, selección de fotos, recorrido
+inverso, escritorio 1280×900 y viewport móvil 390×844. En móvil no hubo overflow
+horizontal; el sticky de 1944 midió 870,86 px en una ventana de 844 px.
+La elección explícita de fundidos sobrevivió a la recarga; el modo reducido
+mostró opacidades 0/1/0 y transición de 0 s. Se conserva la preferencia del sistema
+como valor predeterminado. No es una prueba en un teléfono físico.
+
+Suite 18/18, lint, TypeScript y build estático pasaron tras la corrección.
+No se cambió el snapshot, los presets, medios ni el proveedor. Evidencia nueva
+en `../competition-evidence/`: `09-scroll-fade-fixed-desktop.jpg`,
+`10-scroll-second-fade-fixed-desktop.jpg` y `11-scroll-fade-fixed-mobile.jpg`.
+Las demás recomendaciones de la auditoría siguen pendientes de decisión.
 
 La tarea local cumple su alcance. La presentación pública y las mejoras de esta
 tabla siguen pendientes de decisiones distintas; no se las declara terminadas.

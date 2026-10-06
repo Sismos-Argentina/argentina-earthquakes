@@ -74,8 +74,9 @@ Los planes y marcadores de posición anteriores se preservan en [el archivo hist
 ## Prototipo local de competencia
 
 La entrada opcional recorre San Juan 1894, San Juan 1944, Caucete 1977 y El Galpón
-2015. Cada capítulo contiene tres fotografías curadas del proveedor, fundidos
-vinculados al scroll nativo y controles manuales. «Saltar introducción» abre el
+2015. Cada capítulo contiene tres fotografías curadas del proveedor, pausas y
+fundidos vinculados al scroll nativo en una escena de `420svh`; los controles
+manuales recorren esas mismas fotos. «Saltar introducción» abre el
 mapa; «Opciones» permite sólo texto y sigue por defecto el movimiento reducido
 del sistema. El mapa permanece montado al volver a la historia: filtros, cámara
 y capas se conservan. El recorrido guiado restablece los filtros deliberadamente
