@@ -1,0 +1,832 @@
+fecha,hora,timestamp,longitude,latitude,depth_km,magnitude,provincia,sentido,source_row,candidate_reason
+16/09/2015,19:54:26,2015-09-16 19:54:26,-72.27,-31.49,10.0,8.3,OCEANO PACIFICO,Si,60696,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/08/2021,15:35:20,2021-08-12 15:35:20,-25.271,-58.432,50.0,8.1,REGION NOT FOUND.,No,27045,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/01/2019,03:02:39,2019-01-29 03:02:39,-68.439,-31.076,10.0,8.0,,No,43784,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,20:18:43,2015-09-16 20:18:43,-71.73,-31.63,10.0,7.6,CHILE,Si,60691,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/12/2016,11:22:23,2016-12-25 11:22:23,-74.391,-43.517,30.0,7.6,CHILE,Si,54319,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/08/2021,15:33:03,2021-08-12 15:33:03,-25.256,-57.613,65.0,7.5,TFAIAS,No,27046,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/08/2016,04:32:23,2016-08-19 04:32:23,-31.939,-55.339,10.0,7.4,ISLAS GEORGIA DEL SUR,No,56078,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/05/2025,09:58:00,2025-05-02 09:58:00,-68.768,-56.86,10.0,7.4,TFAIAS,Si,5706,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,19:59:16,2015-09-16 19:59:16,-71.745,-31.618,30.0,7.1,CHILE,Si,60695,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/12/2018,23:26:30,2018-12-10 23:26:30,-26.4,-58.6,144.0,7.1,ISLAS SANDWICH DEL SUR,No,44563,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/01/2021,20:36:49,2021-01-23 20:36:49,-55.311,-61.79,12.0,7.0,TFAIAS,No,31149,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/08/2021,18:33:21,2021-08-22 18:33:21,-25.09,-60.447,10.0,7.0,TFAIAS,No,26868,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2011,10:47:01,2011-09-02 10:47:01,-63.019,-28.638,635.0,6.9,SANTIAGO DEL ESTERO,Si,79937,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/03/2012,19:37:05,2012-03-25 19:37:05,-72.335,-35.135,48.0,6.8,MAULE - CHILE,Si,77113,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,20:16:08,2015-09-16 20:16:08,-72.29,-31.78,10.0,6.8,OCEANO PACIFICO,Si,60692,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/11/2015,04:31:41,2015-11-07 04:31:41,-71.727,-30.844,56.0,6.8,CHILE,Si,59953,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/04/2018,10:40:34,2018-04-02 10:40:34,-63.418,-20.679,570.0,6.8,BOLIVIA,No,48360,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/08/2019,15:27:59,2019-08-01 15:27:59,-72.5,-34.246,10.0,6.8,OCEANO PACIFICO,Si,41011,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/09/2019,12:57:51,2019-09-29 12:57:51,-73.265,-35.433,22.0,6.8,OCEANO PACIFICO,Si,39941,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2023,09:33:42,2023-10-31 09:33:42,-71.568,-28.726,29.0,6.8,CHILE,Si,12485,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/07/2024,22:50:47,2024-07-18 22:50:47,-68.053,-23.074,141.0,6.8,CHILE,Si,8945,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/09/2015,01:10:28,2015-09-17 01:10:28,-72.06,-31.59,10.0,6.7,OCEANO PACIFICO,Si,60686,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/01/2019,22:32:47,2019-01-19 22:32:47,-71.591,-30.05,32.0,6.7,CHILE,Si,43929,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/06/2020,04:35:33,2020-06-03 04:35:33,-68.45,-23.296,130.0,6.7,CHILE,Si,35878,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,01:09:28,2020-09-01 01:09:28,-71.424,-27.936,39.0,6.7,OCEANO PACIFICO,Si,34254,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/01/2013,17:15:43,2013-01-30 17:15:43,-70.885,-28.273,28.0,6.6,REPUBLICA DE CHILE,Si,72919,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2013,20:03:57,2013-10-31 20:03:57,-71.976,-30.237,56.0,6.6,REPUBLICA DE CHILE,Si,69636,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2015,23:46:11,2015-11-10 23:46:11,-72.371,-29.359,10.0,6.6,OCEANO PACIFICO,Si,59894,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/04/2017,18:38:21,2017-04-24 18:38:21,-72.298,-33.072,14.0,6.6,OCEANO PACIFICO,Si,52863,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/08/2021,08:10:34,2021-08-16 08:10:34,-22.914,-58.233,10.0,6.6,TFAIAS,No,26963,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/08/2021,21:45:09,2021-08-21 21:45:09,-24.423,-60.083,10.0,6.6,TFAIAS,No,26882,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/05/2026,18:52:00,2026-05-25 18:52:00,-68.785,-22.452,112.0,6.6,CHILE,No,1286,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/04/2012,00:50:14,2012-04-17 00:50:14,-71.743,-32.83,27.0,6.5,CHILE,Si,76840,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/06/2012,04:52:48,2012-06-02 04:52:48,-63.687,-22.331,583.0,6.5,SALTA,No,76261,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2015,14:39:57,2015-09-21 14:39:57,-71.88,-31.73,10.0,6.5,CHILE,Si,60638,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/05/2017,20:23:36,2017-05-10 20:23:36,-25.743,-56.414,15.0,6.5,ISLAS GEORGIAS Y SANDWICH DEL SUR,No,52689,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,18:09:14,2020-09-01 18:09:14,-71.627,-27.864,19.0,6.5,OCEANO PACIFICO,Si,34239,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/05/2022,20:06:27,2022-05-10 20:06:27,-66.687,-23.519,234.0,6.5,JUJUY,Si,21678,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/07/2023,00:05:09,2023-07-17 00:05:09,-70.654,-38.193,214.0,6.5,NEUQUEN,Si,14121,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/03/2026,10:39:00,2026-03-13 10:39:00,-71.692,-28.71,27.0,6.5,OCEANO PACIFICO,Si,2111,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/05/2012,02:07:12,2012-05-28 02:07:12,-63.138,-28.155,662.0,6.4,SANTIAGO DEL ESTERO,No,76328,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2015,22:54:33,2015-11-10 22:54:33,-72.468,-29.358,26.0,6.4,OCEANO PACIFICO,Si,59896,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/11/2015,18:00:19,2015-11-27 18:00:19,-70.74,-24.76,20.0,6.4,CHILE,Si,59643,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/02/2017,09:10:14,2017-02-18 09:10:14,-66.83,-23.9,235.0,6.4,JUJUY,Si,53623,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/03/2019,02:03:48,2019-03-15 02:03:48,-66.104,-17.95,419.0,6.4,BOLIVIA,No,43130,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/04/2019,13:14:16,2019-04-05 13:14:16,-27.958,-55.804,61.0,6.4,ISLAS SANDWICH,No,42796,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/04/2019,14:54:03,2019-04-09 14:54:03,-25.293,-58.512,30.0,6.4,ISLAS SANDWICH,No,42710,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/01/2021,23:46:20,2021-01-18 23:46:20,-68.963,-31.854,8.0,6.4,SAN JUAN,Si,31468,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/01/2023,19:09:31,2023-01-20 19:09:31,-63.207,-26.873,637.0,6.4,SANTIAGO DEL ESTERO,Si,16988,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/03/2023,13:00:31,2023-03-22 13:00:31,-66.664,-23.457,233.0,6.4,JUJUY,Si,15993,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/05/2025,14:59:00,2025-05-02 14:59:00,-67.424,-57.15,9.0,6.4,TFAIAS,Si,5702,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/06/2025,14:15:00,2025-06-06 14:15:00,-70.802,-26.63,122.0,6.4,CHILE,Si,5406,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/02/2015,15:57:18,2015-02-11 15:57:18,-66.746,-23.045,240.0,6.3,JUJUY,Si,63480,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,22:33:06,2015-09-16 22:33:06,-72.43,-31.99,10.0,6.3,OCEANO PACIFICO,Si,60688,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/09/2015,09:52:17,2015-09-19 09:52:17,-72.57,-32.28,10.0,6.3,OCEANO PACIFICO,Si,60672,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/02/2016,21:33:01,2016-02-09 21:33:01,-71.939,-30.555,15.0,6.3,OCEANO PACIFICO,Si,58576,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/02/2016,03:36:59,2016-02-22 03:36:59,-72.462,-30.424,27.0,6.3,OCEANO PACIFICO,No,58436,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/11/2016,17:57:44,2016-11-20 17:57:44,-68.663,-31.63,107.0,6.3,SAN JUAN,Si,54844,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/10/2018,03:54:18,2018-10-29 03:54:18,-65.78,-57.244,10.0,6.3,PASAJE DE DRAKE,No,45159,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/09/2020,04:35:56,2020-09-11 04:35:56,-69.893,-21.358,58.0,6.3,CHILE,No,34066,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/02/2015,07:49:48,2015-02-02 07:49:48,-67.217,-32.613,178.0,6.2,SAN LUIS,Si,63594,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,20:38:04,2015-09-16 20:38:04,-71.95,-31.994,10.0,6.2,OCEANO PACIFICO,Si,60690,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2015,02:39:08,2015-09-21 02:39:08,-71.74,-31.76,40.0,6.2,OCEANO PACIFICO,Si,60652,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/09/2015,23:51:13,2015-09-25 23:51:13,-71.86,-30.7,30.0,6.2,CHILE,Si,60591,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/12/2015,16:25:02,2015-12-19 16:25:02,-71.544,-30.655,29.0,6.2,CHILE,Si,59239,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/04/2017,05:19:41,2017-04-15 05:19:41,-67.887,-23.312,170.0,6.2,CHILE,No,52989,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/10/2017,03:32:20,2017-10-10 03:32:20,-69.876,-18.549,103.0,6.2,CHILE,No,50834,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/01/2018,22:06:40,2018-01-20 22:06:40,-69.683,-18.91,133.0,6.2,CHILE,No,49395,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/04/2018,07:19:31,2018-04-10 07:19:31,-71.803,-30.98,68.0,6.2,CHILE,Si,48256,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/11/2018,19:19:49,2018-11-01 19:19:49,-69.438,-19.618,116.0,6.2,CHILE,No,45090,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/06/2019,21:19:10,2019-06-13 21:19:10,-72.336,-30.085,10.0,6.2,OCEANO PACIFICO,Si,41738,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,01:29:59,2020-09-01 01:29:59,-71.43,-27.971,35.0,6.2,OCEANO PACIFICO,Si,34253,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/09/2020,22:16:52,2020-09-05 22:16:52,-71.994,-30.262,14.0,6.2,OCEANO PACIFICO,Si,34158,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/12/2020,13:47:41,2020-12-06 13:47:41,-69.13,-20.35,120.0,6.2,CHILE,No,32341,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/11/2022,23:24:58,2022-11-12 23:24:58,-73.665,-37.639,14.0,6.2,CHILE,Si,18219,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/03/2023,14:33:04,2023-03-30 14:33:04,-73.726,-35.632,27.0,6.2,OCEANO PACIFICO,Si,15856,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/09/2023,20:48:01,2023-09-06 20:48:01,-71.803,-30.24,26.0,6.2,CHILE,Si,13335,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/12/2024,20:38:00,2024-12-13 20:38:00,-70.991,-35.35,127.0,6.2,CHILE,Si,7137,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/02/2013,09:02:02,2013-02-22 09:02:02,-63.0,-27.89,586.0,6.1,SANTIAGO DEL ESTERO,Si,72873,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/08/2014,19:32:22,2014-08-23 19:32:22,-71.558,-32.715,10.0,6.1,CHILE,Si,65648,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,20:03:59,2015-09-16 20:03:59,-71.677,-31.733,30.0,6.1,CHILE,Si,60694,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,21:50:02,2015-09-16 21:50:02,-72.42,-30.98,10.0,6.1,OCEANO PACIFICO,Si,60689,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/09/2015,00:55:07,2015-09-17 00:55:07,-71.33,-31.06,10.0,6.1,CHILE,Si,60687,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2015,12:37:02,2015-09-21 12:37:02,-72.275,-31.008,9.0,6.1,OCEANO PACIFICO,Si,60645,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2015,04:12:58,2015-09-22 04:12:58,-71.32,-31.43,60.0,6.1,CHILE,Si,60630,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/11/2015,20:05:23,2015-11-21 20:05:23,-71.8,-30.61,10.0,6.1,CHILE,Si,59740,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/11/2019,18:53:24,2019-11-04 18:53:24,-71.375,-31.76,57.0,6.1,CHILE,Si,39306,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/12/2019,13:43:26,2019-12-24 13:43:26,-63.247,-27.07,590.0,6.1,SANTIAGO DEL ESTERO,Si,38496,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/11/2020,21:54:55,2020-11-21 21:54:55,-73.171,-34.587,39.0,6.1,OCEANO PACIFICO,Si,32697,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/11/2020,19:54:59,2020-11-30 19:54:59,-67.229,-24.318,188.0,6.1,SALTA,Si,32506,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/08/2021,04:34:29,2021-08-13 04:34:29,-27.17,-60.48,12.0,6.1,TFAIAS,No,27031,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2021,10:14:12,2021-09-21 10:14:12,-76.043,-36.496,10.0,6.1,OCEANO PACIFICO,Si,26315,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/11/2022,11:17:53,2022-11-02 11:17:53,-25.777,-60.784,25.0,6.1,TFAIAS,No,18412,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/01/2023,15:36:54,2023-01-24 15:36:54,-63.172,-26.902,622.0,6.1,SANTIAGO DEL ESTERO,Si,16931,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/08/2023,04:19:59,2023-08-05 04:19:59,-63.266,-28.35,635.0,6.1,SANTIAGO DEL ESTERO,Si,13868,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/01/2025,17:43:00,2025-01-02 17:43:00,-69.078,-21.706,100.0,6.1,CHILE,No,6910,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/02/2026,10:34:00,2026-02-12 10:34:00,-71.655,-30.771,29.0,6.1,CHILE,Si,2453,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2026,20:46:00,2026-09-02 20:46:00,-27.872,-55.803,103.0,6.1,TIFAIAS,No,201,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/10/2011,08:12:29,2011-10-06 08:12:29,-64.352,-24.248,8.0,6.0,JUJUY,Si,79471,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/03/2012,04:46:01,2012-03-05 04:46:01,-63.089,-28.371,583.0,6.0,SANTIAGO DEL ESTERO,No,77359,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/04/2012,07:56:10,2012-04-14 07:56:10,-65.41,-57.59,10.0,6.0,ESTRECHO DE DRAKE,No,76870,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/11/2012,16:02:04,2012-11-14 16:02:04,-71.496,-29.101,64.0,6.0,REPUBLICA DE CHILE,Si,74031,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/08/2015,20:10:01,2015-08-23 20:10:01,-71.605,-29.665,49.0,6.0,CHILE,Si,61092,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2015,16:56:05,2015-09-21 16:56:05,-71.976,-31.732,25.0,6.0,OCEANO PACIFICO,Si,60636,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/09/2015,12:28:02,2015-09-28 12:28:02,-66.802,-23.866,227.0,6.0,JUJUY,No,60563,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/10/2015,03:26:53,2015-10-03 03:26:53,-71.71,-30.29,30.0,6.0,CHILE,Si,60512,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/11/2015,04:04:32,2015-11-07 04:04:32,-72.414,-29.369,15.0,6.0,OCEANO PACIFICO,Si,59954,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/11/2015,07:53:40,2015-11-07 07:53:40,-71.718,-30.687,28.0,6.0,CHILE,Si,59951,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/11/2016,13:20:42,2016-11-04 13:20:42,-71.174,-35.133,122.0,6.0,CHILE,No,55050,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/11/2016,01:55:43,2016-11-08 01:55:43,-73.73,-36.623,15.0,6.0,CHILE,No,55002,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/04/2017,13:05:54,2017-04-28 13:05:54,-71.915,-33.094,30.0,6.0,CHILE,Si,52820,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/11/2018,08:01:15,2018-11-02 08:01:15,146.74,47.81,456.0,6.0,NORTHWEST OF KURIL ISLANDS,No,45076,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/11/2019,20:10:39,2019-11-19 20:10:39,-66.913,-33.776,14.0,6.0,MENDOZA,Si,39059,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/01/2021,00:54:12,2021-01-10 00:54:12,-66.871,-24.019,202.0,6.0,SALTA,Si,31675,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/10/2021,00:54:12,2021-10-04 00:54:12,-27.787,-60.41,10.0,6.0,TFAIAS,No,26076,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/07/2022,01:15:02,2022-07-28 01:15:02,-70.526,-21.951,60.0,6.0,CHILE,Si,20250,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/10/2022,21:13:02,2022-10-24 21:13:02,-26.154,-58.692,68.0,6.0,TFAIAS,No,18564,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/09/2023,15:07:36,2023-09-15 15:07:36,-71.826,-27.261,12.0,6.0,OCEANO PACIFICO,No,13197,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/02/2024,22:31:40,2024-02-13 22:31:40,-71.463,-28.723,21.0,6.0,CHILE,Si,10940,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2024,18:24:28,2024-09-21 18:24:28,-66.913,-31.941,150.0,6.0,SAN LUIS,Si,8173,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/05/2026,18:34:00,2026-05-31 18:34:00,-71.794,-32.828,23.0,6.0,CHILE,Si,1203,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/11/2011,00:12:41,2011-11-08 00:12:41,-26.264,-39.603,610.0,5.9,OCEANO ATLANTICO SUR,No,78965,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/11/2012,10:07:06,2012-11-22 10:07:06,-64.11,-23.099,596.0,5.9,SALTA,No,73921,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/09/2014,08:16:13,2014-09-24 08:16:13,-66.634,-23.78,229.0,5.9,JUJUY,Si,65263,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/10/2015,13:33:22,2015-10-05 13:33:22,-71.834,-30.276,15.0,5.9,CHILE,Si,60477,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/10/2015,08:33:10,2015-10-17 08:33:10,-64.632,-25.442,33.0,5.9,SALTA,Si,60280,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/11/2015,12:16:16,2015-11-01 12:16:16,-68.575,-23.252,128.0,5.9,CHILE,No,60045,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/01/2016,22:11:55,2016-01-07 22:11:55,-72.103,-30.618,11.0,5.9,OCEANO PACIFICO,Si,58976,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/07/2016,14:26:48,2016-07-25 14:26:48,-70.573,-26.11,90.0,5.9,CHILE,Si,56422,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/04/2017,23:36:02,2017-04-22 23:36:02,-72.348,-33.098,11.0,5.9,OCEANO PACIFICO,Si,52887,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/04/2017,12:30:03,2017-04-28 12:30:03,-72.121,-33.268,10.0,5.9,OCEANO PACIFICO,Si,52821,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/05/2017,16:44:24,2017-05-14 16:44:24,-68.77,-20.84,120.0,5.9,CHILE,No,52639,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/06/2017,23:43:22,2017-06-11 23:43:22,-71.988,-31.488,10.0,5.9,OCEANO PACIFICO,Si,52331,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/09/2017,10:46:51,2017-09-18 10:46:51,-72.563,-31.857,12.0,5.9,OCEANO PACIFICO,Si,51121,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/09/2019,13:36:17,2019-09-26 13:36:17,-72.114,-40.837,146.0,5.9,CHILE,Si,39990,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/11/2020,20:49:19,2020-11-06 20:49:19,-58.329,-62.388,7.0,5.9,TFAIAS,No,32986,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/11/2020,13:40:43,2020-11-29 13:40:43,-65.025,-23.264,17.0,5.9,SALTA,Si,32543,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/12/2020,12:20:48,2020-12-14 12:20:48,-68.766,-21.804,124.0,5.9,CHILE,No,32182,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/05/2021,03:57:35,2021-05-02 03:57:35,-71.773,-30.049,14.0,5.9,CHILE,Si,29074,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/07/2021,22:01:36,2021-07-03 22:01:36,-71.543,-28.799,30.0,5.9,CHILE,Si,27837,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/07/2021,22:29:15,2021-07-03 22:29:15,-71.473,-28.759,23.0,5.9,CHILE,Si,27835,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/08/2021,15:49:54,2021-08-12 15:49:54,-25.405,-57.15,45.0,5.9,TFAIAS,No,27044,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/08/2021,16:07:52,2021-08-12 16:07:52,-25.379,-57.963,24.0,5.9,TFAIAS,No,27042,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2021,15:35:42,2021-09-01 15:35:42,-71.342,-27.678,11.0,5.9,OCEANO PACIFICO,Si,26676,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/09/2021,02:18:13,2021-09-13 02:18:13,-67.134,-23.815,187.0,5.9,SALTA,Si,26470,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/02/2022,03:12:49,2022-02-22 03:12:49,-66.265,-22.691,275.0,5.9,JUJUY,No,23274,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/02/2022,22:15:03,2022-02-27 22:15:03,-75.324,-36.752,10.0,5.9,OCEANO PACIFICO,Si,23161,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/12/2023,04:55:40,2023-12-02 04:55:40,-69.322,-19.231,121.0,5.9,CHILE,No,11954,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/12/2023,13:21:50,2023-12-21 13:21:50,-70.33,-21.891,55.0,5.9,CHILE,No,11636,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/03/2025,13:21:00,2025-03-06 13:21:00,-69.322,-23.38,110.0,5.9,CHILE,No,6284,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2015,20:09:12,2015-09-16 20:09:12,-71.14,-30.99,10.0,5.8,CHILE,Si,60693,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/11/2015,03:04:17,2015-11-13 03:04:17,-64.649,-29.866,52.0,5.8,CORDOBA,Si,59871,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/07/2016,08:33:21,2016-07-31 08:33:21,-27.569,-56.284,102.0,5.8,ISLAS SANDWICH DEL SUR,No,56342,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/08/2016,04:32:32,2016-08-02 04:32:32,-25.647,-58.742,53.0,5.8,ISLAS SANDWICH DEL SUR,No,56323,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/05/2017,21:16:09,2017-05-05 21:16:09,-37.958,-60.798,10.0,5.8,ISLAS ORCADAS DEL SUR,No,52734,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/09/2018,23:39:16,2018-09-06 23:39:16,-70.28,-28.845,112.0,5.8,CHILE,Si,45921,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/07/2020,02:40:34,2020-07-17 02:40:34,-70.135,-20.25,80.0,5.8,CHILE,No,35094,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,04:01:20,2020-09-01 04:01:20,-71.739,-27.925,8.0,5.8,OCEANO PACIFICO,Si,34246,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/10/2020,06:13:04,2020-10-21 06:13:04,-71.114,-25.531,19.0,5.8,OCEANO PACIFICO,No,33293,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/10/2020,11:53:10,2020-10-28 11:53:10,-71.378,-29.341,50.0,5.8,CHILE,Si,33175,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/11/2021,00:17:46,2021-11-03 00:17:46,-70.067,-32.745,122.0,5.8,MENDOZA,Si,25465,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/07/2022,15:58:57,2022-07-27 15:58:57,-68.813,-22.23,130.0,5.8,CHILE,No,20258,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2022,19:53:26,2022-09-23 19:53:26,-75.689,-41.416,39.0,5.8,OCEANO PACIFICO,Si,19170,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/04/2023,16:08:44,2023-04-04 16:08:44,-71.048,-27.313,48.0,5.8,CHILE,Si,15772,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/08/2023,11:22:37,2023-08-23 11:22:37,-63.34,-27.049,603.0,5.8,SANTIAGO DEL ESTERO,Si,13561,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/12/2023,00:23:38,2023-12-24 00:23:38,-74.144,-38.164,8.0,5.8,OCEANO PACIFICO,No,11596,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/10/2024,19:59:40,2024-10-20 19:59:40,-68.792,-30.917,112.0,5.8,SAN JUAN,Si,7832,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/10/2025,18:37:52,2025-10-02 18:37:52,-63.241,-27.047,588.0,5.8,SANTIAGO DEL ESTERO,No,4169,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/03/2026,07:00:00,2026-03-21 07:00:00,-66.98,-23.99,206.0,5.8,SALTA,No,2027,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/05/2012,08:50:49,2012-05-28 08:50:49,-63.373,-28.139,635.0,5.7,SANTIAGO DEL ESTERO,No,76324,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/06/2012,04:30:54,2012-06-02 04:30:54,-63.338,-22.317,658.0,5.7,SALTA,No,76262,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/10/2012,14:22:10,2012-10-11 14:22:10,-70.576,-32.914,118.0,5.7,REP�BLICA DE CHILE,Si,74500,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/03/2014,20:50:52,2014-03-27 20:50:52,-68.86,-29.214,21.0,5.7,LA RIOJA,Si,67481,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/09/2015,13:13:23,2015-09-24 13:13:23,-71.76,-30.67,30.0,5.7,CHILE,Si,60603,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/12/2015,09:56:03,2015-12-08 09:56:03,-72.009,-30.824,10.0,5.7,OCEANO PACIFICO,Si,59405,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/12/2015,09:12:10,2015-12-10 09:12:10,-23.885,-52.925,10.0,5.7,ISLAS SANDWICH DEL SUR,No,59371,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/06/2016,02:51:07,2016-06-05 02:51:07,-71.744,-29.36,40.0,5.7,CHILE,No,57104,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/06/2016,18:29:16,2016-06-24 18:29:16,-69.495,-25.735,146.0,5.7,CHILE,No,56846,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/08/2016,11:15:09,2016-08-04 11:15:09,-66.011,-22.29,313.0,5.7,JUJUY,Si,56281,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/05/2017,08:29:51,2017-05-30 08:29:51,-26.132,-58.644,78.0,5.7,ISLAS SANDWICH DEL SUR,No,52475,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/06/2018,13:08:00,2018-06-21 13:08:00,-67.144,-24.267,201.0,5.7,SALTA,Si,47111,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/10/2018,23:13:39,2018-10-29 23:13:39,174.99,-39.0,225.0,5.7,"NORTH ISLAND, NEW ZEALAND",No,45138,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/11/2018,16:30:33,2018-11-01 16:30:33,-25.23,-58.09,25.0,5.7,ISLAS SANDWICH DEL SUR,No,45094,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/10/2019,07:40:54,2019-10-06 07:40:54,-68.711,-21.966,138.0,5.7,CHILE,No,39837,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/12/2019,04:29:27,2019-12-03 04:29:27,-70.98,-20.889,25.0,5.7,OCEANO PACIFICO,No,38819,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/10/2020,07:17:33,2020-10-02 07:17:33,-58.493,-62.372,10.0,5.7,TFAIAS,No,33692,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/01/2021,21:07:43,2021-01-23 21:07:43,-70.168,-33.364,124.0,5.7,CHILE,Si,31148,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/12/2021,11:54:17,2021-12-11 11:54:17,-71.284,-29.49,26.0,5.7,CHILE,Si,24706,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/05/2022,06:07:41,2022-05-20 06:07:41,-72.315,-29.48,6.0,5.7,OCEANO PACIFICO,Si,21481,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/01/2023,03:19:07,2023-01-12 03:19:07,-71.638,-30.533,25.0,5.7,CHILE,Si,17096,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/10/2023,07:01:30,2023-10-10 07:01:30,-66.32,-22.892,267.0,5.7,JUJUY,Si,12819,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/10/2023,18:49:34,2023-10-26 18:49:34,-70.379,-28.655,108.0,5.7,CHILE,Si,12551,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/12/2024,19:42:00,2024-12-24 19:42:00,-67.375,-28.26,150.0,5.7,CATAMARCA,Si,7020,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/12/2024,02:40:00,2024-12-30 02:40:00,-72.479,-29.803,10.0,5.7,OCEANO PACIFICO,Si,6955,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/04/2025,21:10:00,2025-04-17 21:10:00,-68.182,-23.594,137.0,5.7,CHILE,No,5852,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/09/2025,01:55:56,2025-09-19 01:55:56,-69.3,-20.22,102.0,5.7,CHILE,No,4349,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/07/2026,20:10:00,2026-07-24 20:10:00,-66.89,-57.37,10.0,5.7,SUR DE CHILE,Si,617,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/01/2014,05:38:08,2014-01-15 05:38:08,-68.206,-31.129,116.0,5.6,SAN JUAN,Si,68473,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/01/2015,15:41:36,2015-01-17 15:41:36,-63.569,-22.519,633.0,5.6,SALTA,No,63767,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2015,15:36:50,2015-09-21 15:36:50,-71.61,-31.64,30.0,5.6,OCEANO PACIFICO,Si,60637,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/10/2015,15:27:35,2015-10-09 15:27:35,-71.64,-31.8,30.0,5.6,CHILE,Si,60389,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/06/2016,10:15:59,2016-06-06 10:15:59,-71.83,-30.01,10.0,5.6,CHILE,Si,57094,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/07/2016,02:18:37,2016-07-19 02:18:37,-72.21,-30.178,30.0,5.6,OCEANO PACIFICO,No,56535,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/08/2016,12:46:02,2016-08-30 12:46:02,-30.388,-55.324,10.0,5.6,ISLAS SANDWICH DEL SUR,No,55899,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2016,22:57:53,2016-09-01 22:57:53,-30.953,-55.32,30.0,5.6,ISLAS SANDWICH DEL SUR,No,55854,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2016,13:07:27,2016-09-22 13:07:27,-27.388,-59.453,10.0,5.6,ISLAS SANDWICH DEL SUR,No,55582,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/11/2016,11:01:01,2016-11-13 11:01:01,-67.557,-29.026,134.0,5.6,LA RIOJA,Si,54936,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/04/2017,10:53:17,2017-04-04 10:53:17,-30.062,-55.618,10.0,5.6,ISLAS SANDWICH DEL SUR,No,53129,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,12:41:16,2017-05-11 12:41:16,-25.993,-56.593,35.0,5.6,ISLAS SANDWICH DEL SUR,No,52680,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/07/2017,02:57:02,2017-07-09 02:57:02,-27.701,-56.097,68.0,5.6,ISLAS SANDWICH DEL SUR,No,52023,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/08/2017,03:13:54,2017-08-01 03:13:54,-68.917,-28.539,130.0,5.6,LA RIOJA,Si,51747,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/08/2017,17:03:24,2017-08-02 17:03:24,-71.519,-28.406,17.0,5.6,OCEANO PACIFICO,No,51725,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/10/2017,05:11:35,2017-10-05 05:11:35,-68.591,-22.41,127.0,5.6,CHILE,No,50898,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/01/2018,08:31:10,2018-01-20 08:31:10,-72.14,-28.843,40.0,5.6,OCEANO PACIFICO,No,49400,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/02/2018,18:19:16,2018-02-08 18:19:16,-74.681,-37.411,11.0,5.6,OCEANO PACIFICO,No,49108,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/07/2018,07:24:50,2018-07-20 07:24:50,-63.239,-28.164,629.0,5.6,SANTIAGO DEL ESTERO,Si,46691,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/03/2019,12:05:31,2019-03-28 12:05:31,-70.354,-24.565,70.0,5.6,CHILE,No,42909,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/04/2019,01:06:32,2019-04-18 01:06:32,-71.701,-29.378,40.0,5.6,CHILE,Si,42552,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/05/2019,08:18:31,2019-05-20 08:18:31,-70.049,-31.457,123.0,5.6,SAN JUAN,Si,42079,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/06/2019,22:23:25,2019-06-19 22:23:25,-68.91,-33.587,177.0,5.6,MENDOZA,Si,41640,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/09/2019,17:31:27,2019-09-26 17:31:27,-71.575,-29.817,26.0,5.6,CHILE,Si,39988,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/09/2019,08:53:20,2019-09-30 08:53:20,-68.902,-22.186,128.0,5.6,CHILE,No,39924,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/11/2019,10:23:17,2019-11-03 10:23:17,-67.76,-29.165,131.0,5.6,LA RIOJA,Si,39328,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,07:31:48,2020-09-01 07:31:48,-71.646,-27.828,7.0,5.6,OCEANO PACIFICO,Si,34244,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/11/2020,23:11:47,2020-11-20 23:11:47,-71.453,-30.918,46.0,5.6,CHILE,Si,32720,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/08/2021,23:24:58,2021-08-12 23:24:58,-24.855,-57.873,28.0,5.6,TFAIAS,No,27038,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/01/2022,07:27:11,2022-01-07 07:27:11,-76.345,-12.153,80.0,5.6,PERU,No,24174,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/01/2022,05:36:03,2022-01-10 05:36:03,-65.577,-26.138,13.0,5.6,TUCUMAN,Si,24105,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/08/2022,09:09:45,2022-08-24 09:09:45,-68.751,-22.022,131.0,5.6,CHILE,No,19752,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/02/2023,22:02:44,2023-02-04 22:02:44,-71.382,-29.645,66.0,5.6,CHILE,Si,16765,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/03/2023,14:38:13,2023-03-21 14:38:13,-71.381,-33.612,62.0,5.6,CHILE,Si,16012,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/01/2024,19:30:07,2024-01-22 19:30:07,-72.652,-30.028,20.0,5.6,OCEANO PACIFICO,No,11221,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/11/2024,01:04:03,2024-11-03 01:04:03,-69.606,-35.756,211.0,5.6,MENDOZA,Si,7650,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/02/2025,04:08:00,2025-02-16 04:08:00,-76.367,-38.6,25.0,5.6,OCEANO PACIFICO,No,6461,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/08/2025,03:08:00,2025-08-19 03:08:00,-67.276,-56.796,10.0,5.6,SUR DE CHILE,Si,4751,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/11/2013,03:19:19,2013-11-15 03:19:19,-67.58,-32.8,33.0,5.5,MENDOZA,Si,69444,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/02/2015,02:13:49,2015-02-24 02:13:49,-66.816,-22.655,233.0,5.5,JUJUY,No,63295,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/09/2015,00:01:58,2015-09-20 00:01:58,-71.64,-30.831,27.0,5.5,CHILE,Si,60665,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/09/2015,03:07:00,2015-09-20 03:07:00,-72.45,-31.69,10.0,5.5,OCEANO PACIFICO,Si,60663,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/10/2015,22:17:11,2015-10-21 22:17:11,-45.4,-60.345,16.0,5.5,ISLAS ORCADAS DEL SUR,No,60198,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/11/2015,15:52:49,2015-11-29 15:52:49,-64.745,-23.455,26.0,5.5,SALTA,Si,59611,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/03/2016,00:49:30,2016-03-16 00:49:30,-72.234,-31.187,40.0,5.5,OCEANO PACIFICO,No,58178,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/06/2016,10:21:56,2016-06-06 10:21:56,-71.78,-29.99,10.0,5.5,CHILE,Si,57093,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/06/2016,14:29:43,2016-06-18 14:29:43,-67.201,-24.21,208.0,5.5,SALTA,No,56929,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/04/2017,16:40:08,2017-04-23 16:40:08,-72.133,-33.04,16.0,5.5,CHILE,No,52875,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,12:57:33,2017-05-11 12:57:33,-25.88,-56.591,10.0,5.5,ISLAS SANDWICH DEL SUR,No,52679,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/09/2017,15:48:02,2017-09-15 15:48:02,-28.362,-55.444,9.0,5.5,ISLAS GEORGIAS Y SANDWICH DEL SUR,No,51164,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/10/2017,15:59:10,2017-10-12 15:59:10,-65.697,-31.05,189.0,5.5,CORDOBA,Si,50801,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/12/2017,00:54:51,2017-12-28 00:54:51,-70.219,-24.909,58.0,5.5,CHILE,No,49722,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/03/2018,01:42:07,2018-03-02 01:42:07,-63.833,-22.101,594.0,5.5,SALTA,Si,48872,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/03/2018,11:28:28,2018-03-25 11:28:28,-63.234,-27.001,601.0,5.5,SANTIAGO DEL ESTERO,No,48516,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/04/2018,08:12:10,2018-04-05 08:12:10,-70.546,-20.366,47.0,5.5,OCEANO PACIFICO,No,48320,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/01/2019,04:44:42,2019-01-30 04:44:42,-70.919,-25.967,55.0,5.5,OCEANO PACIFICO,No,43773,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/03/2019,17:21:49,2019-03-02 17:21:49,-72.799,-33.66,10.0,5.5,OCEANO PACIFICO,No,43325,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/03/2019,12:34:23,2019-03-07 12:34:23,-72.886,-29.42,9.0,5.5,OCEANO PACIFICO,Si,43260,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/08/2019,17:01:25,2019-08-01 17:01:25,-72.485,-34.282,12.0,5.5,CHILE,No,41009,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/03/2020,03:57:41,2020-03-05 03:57:41,-67.573,-28.368,150.0,5.5,LA RIOJA,Si,37455,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/03/2020,05:11:59,2020-03-17 05:11:59,-73.459,-36.136,50.0,5.5,CHILE,No,37263,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/04/2020,22:15:27,2020-04-14 22:15:27,-62.862,-27.105,577.0,5.5,SANTIAGO DEL ESTERO,No,36758,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/08/2020,08:56:51,2020-08-03 08:56:51,-69.286,-19.607,110.0,5.5,CHILE,No,34805,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/04/2021,21:17:12,2021-04-21 21:17:12,-72.571,-33.962,13.0,5.5,OCEANO PACIFICO,Si,29287,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/07/2021,17:38:28,2021-07-08 17:38:28,-71.939,-28.683,14.0,5.5,OCEANO PACIFICO,Si,27749,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/10/2021,04:55:30,2021-10-13 04:55:30,-72.31,-50.313,14.0,5.5,SANTA CRUZ,Si,25911,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/12/2021,01:39:18,2021-12-01 01:39:18,-74.046,-37.845,7.0,5.5,OCEANO PACIFICO,No,24909,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/03/2022,20:17:01,2022-03-30 20:17:01,-72.114,-28.629,13.0,5.5,OCEANO PACIFICO,Si,22493,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/04/2022,08:19:06,2022-04-20 08:19:06,-68.496,-22.919,114.0,5.5,CHILE,Si,22114,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/12/2022,04:25:46,2022-12-10 04:25:46,-72.177,-33.651,18.0,5.5,CHILE,Si,17695,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/02/2023,23:40:40,2023-02-18 23:40:40,-71.185,-19.96,21.0,5.5,OCEANO PACIFICO,No,16506,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/09/2023,10:37:06,2023-09-11 10:37:06,-71.672,-27.117,40.0,5.5,OCEANO PACIFICO,Si,13250,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/08/2024,03:55:14,2024-08-21 03:55:14,-65.872,-22.083,306.0,5.5,JUJUY,No,8551,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/09/2024,07:38:24,2024-09-05 07:38:24,-67.399,-19.072,263.0,5.5,BOLIVIA,No,8380,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/09/2024,07:12:56,2024-09-06 07:12:56,-69.537,-28.617,125.0,5.5,SAN JUAN,Si,8374,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2024,23:36:40,2024-09-22 23:36:40,-71.19,-29.73,65.0,5.5,CHILE,Si,8147,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/02/2025,14:18:00,2025-02-18 14:18:00,-70.683,-26.315,29.0,5.5,CHILE,Si,6442,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/03/2025,18:17:00,2025-03-18 18:17:00,-71.394,-30.049,60.0,5.5,CHILE,Si,6155,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/03/2025,19:55:00,2025-03-25 19:55:00,-69.286,-20.252,100.0,5.5,CHILE,No,6092,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/05/2025,13:04:00,2025-05-01 13:04:00,-67.572,-28.56,7.0,5.5,LA RIOJA,Si,5717,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/07/2025,12:47:00,2025-07-04 12:47:00,-67.686,-56.89,9.0,5.5,OCEANO PACIFICO,Si,5184,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/10/2025,14:10:17,2025-10-14 14:10:17,-69.227,-20.212,101.0,5.5,CHILE,No,3990,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/10/2025,08:43:36,2025-10-15 08:43:36,-71.683,-30.722,17.0,5.5,CHILE,Si,3981,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/01/2026,01:26:24,2026-01-01 01:26:24,-66.935,-24.171,208.0,5.5,SALTA,No,2984,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/07/2026,22:26:00,2026-07-06 22:26:00,-66.512,-57.476,10.0,5.5,SUR DE CHILE,Si,777,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/07/2011,23:56:51,2011-07-22 23:56:51,-69.979,-29.304,119.0,5.4,SAN JUAN,Si,80436,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/07/2011,14:36:28,2011-07-31 14:36:28,-66.79,-27.944,178.0,5.4,CATAMARCA,No,80332,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/02/2013,01:43:39,2013-02-16 01:43:39,-68.831,-31.48,110.0,5.4,SAN JUAN,No,72884,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/06/2013,18:29:11,2013-06-19 18:29:11,-70.252,-32.646,119.0,5.4,REPUBLICA DE CHILE,Si,71299,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/07/2013,04:05:35,2013-07-06 04:05:35,-66.424,-23.398,291.0,5.4,JUJUY,No,71125,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/10/2015,08:21:00,2015-10-03 08:21:00,-72.004,-29.76,53.0,5.4,OCEANO PACIFICO,No,60507,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/10/2015,01:51:39,2015-10-06 01:51:39,-72.587,-30.222,11.0,5.4,OCEANO PACIFICO,No,60460,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/10/2015,00:15:12,2015-10-12 00:15:12,-71.75,-31.18,30.0,5.4,CHILE,No,60352,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2015,23:23:36,2015-11-10 23:23:36,-72.364,-29.374,24.0,5.4,OCEANO PACIFICO,Si,59895,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/11/2015,06:14:18,2015-11-24 06:14:18,-72.165,-31.818,39.0,5.4,OCEANO PACIFICO,Si,59691,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/12/2015,04:51:09,2015-12-07 04:51:09,-71.26,-31.11,40.0,5.4,CHILE,No,59436,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/02/2016,02:33:03,2016-02-19 02:33:03,-71.986,-30.569,30.0,5.4,OCEANO PACIFICO,No,58469,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/04/2016,03:05:23,2016-04-16 03:05:23,-70.02,-26.48,80.0,5.4,CHILE,No,57711,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/07/2016,13:32:03,2016-07-26 13:32:03,-26.67,-55.663,30.0,5.4,ISLAS SANDWICH DEL SUR,No,56406,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/08/2016,01:51:06,2016-08-27 01:51:06,-26.904,-56.282,66.0,5.4,ISLAS SANDWICH DEL SUR,No,55960,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/12/2016,17:42:32,2016-12-08 17:42:32,-72.049,-31.509,15.0,5.4,OCEANO PACIFICO,No,54550,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/12/2016,15:04:33,2016-12-27 15:04:33,-26.087,-60.658,52.0,5.4,ISLAS SANDWICH DEL SUR,No,54294,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/01/2017,14:38:49,2017-01-29 14:38:49,-64.879,-58.039,10.0,5.4,PASAJE DE DRAKE,No,53821,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/02/2017,06:38:32,2017-02-14 06:38:32,-66.78,-23.896,237.0,5.4,JUJUY,No,53667,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/03/2017,12:05:52,2017-03-13 12:05:52,-71.578,-30.427,17.0,5.4,CHILE,Si,53359,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/03/2017,10:13:08,2017-03-30 10:13:08,-27.036,-55.698,10.0,5.4,ISLAS SANDWICH DEL SUR,No,53183,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/04/2017,00:42:47,2017-04-13 00:42:47,-71.421,-30.965,50.0,5.4,CHILE,No,53019,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/05/2017,22:16:58,2017-05-10 22:16:58,-25.78,-56.409,10.0,5.4,ISLAS SANDWICH DEL SUR,No,52688,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/05/2017,18:12:20,2017-05-15 18:12:20,-25.292,-56.367,10.0,5.4,ISLAS SANDWICH DEL SUR,No,52627,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/06/2017,14:35:08,2017-06-06 14:35:08,-68.754,-22.987,110.0,5.4,CHILE,No,52386,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/07/2017,12:52:57,2017-07-02 12:52:57,-68.712,-21.902,126.0,5.4,CHILE,No,52091,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/07/2017,03:29:48,2017-07-22 03:29:48,-69.227,-21.156,28.0,5.4,CHILE,No,51868,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/09/2017,18:55:18,2017-09-04 18:55:18,-70.143,-19.279,82.0,5.4,CHILE,No,51297,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2017,19:26:03,2017-10-31 19:26:03,-26.734,-60.103,102.0,5.4,ISLAS SANDWICH DEL SUR,No,50525,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/01/2018,04:46:04,2018-01-24 04:46:04,-69.102,-20.305,111.0,5.4,CHILE,No,49345,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/01/2018,20:53:15,2018-01-28 20:53:15,-68.817,-31.303,110.0,5.4,SAN JUAN,Si,49290,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/08/2018,01:51:34,2018-08-28 01:51:34,-71.757,-29.635,6.0,5.4,CHILE,Si,46071,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2018,10:13:58,2018-09-22 10:13:58,-70.979,-25.935,34.0,5.4,OCEANO PACIFICO,No,45681,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2018,02:32:10,2018-09-23 02:32:10,-70.196,-24.291,77.0,5.4,CHILE,No,45672,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/12/2018,20:55:22,2018-12-01 20:55:22,-72.51,-33.9,20.0,5.4,OCEANO PACIFICO,No,44679,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/12/2018,14:12:13,2018-12-05 14:12:13,-71.616,-33.706,52.0,5.4,CHILE,Si,44633,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/12/2018,07:49:40,2018-12-31 07:49:40,-69.349,-31.799,120.0,5.4,SAN JUAN,Si,44255,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/02/2019,21:13:22,2019-02-28 21:13:22,-63.196,-28.337,597.0,5.4,SANTIAGO DEL ESTERO,No,43358,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/03/2019,15:06:11,2019-03-16 15:06:11,-71.828,-29.71,15.0,5.4,CHILE,Si,43102,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/04/2019,07:19:50,2019-04-01 07:19:50,-67.085,-17.979,293.0,5.4,BOLIVIA,No,42859,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/04/2019,03:22:32,2019-04-26 03:22:32,-71.072,-25.911,40.0,5.4,OCEANO PACIFICO,No,42417,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/05/2019,17:15:59,2019-05-24 17:15:59,-66.709,-27.969,194.0,5.4,CATAMARCA,Si,42023,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/01/2020,15:44:04,2020-01-26 15:44:04,-65.995,-21.948,282.0,5.4,JUJUY,No,38003,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/02/2020,19:05:44,2020-02-16 19:05:44,-68.598,-21.903,125.0,5.4,CHILE,No,37691,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/03/2020,23:08:01,2020-03-12 23:08:01,-69.375,-19.929,114.0,5.4,CHILE,No,37333,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/03/2020,14:42:43,2020-03-27 14:42:43,-63.062,-28.877,646.0,5.4,SANTIAGO DEL ESTERO,Si,37087,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/04/2020,19:10:32,2020-04-30 19:10:32,-67.142,-23.985,204.0,5.4,SALTA,Si,36483,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,02:29:34,2020-09-01 02:29:34,-71.678,-27.913,9.0,5.4,OCEANO PACIFICO,Si,34250,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/10/2020,18:17:12,2020-10-25 18:17:12,-71.21,-19.998,22.0,5.4,OCEANO PACIFICO,No,33214,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/10/2020,01:52:30,2020-10-28 01:52:30,-71.727,-34.896,70.0,5.4,CHILE,Si,33179,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/12/2020,14:00:35,2020-12-02 14:00:35,-69.579,-24.281,99.0,5.4,CHILE,No,32444,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/04/2021,00:18:55,2021-04-19 00:18:55,-72.511,-33.916,14.0,5.4,OCEANO PACIFICO,Si,29349,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/04/2021,23:17:14,2021-04-28 23:17:14,-71.147,-37.277,163.0,5.4,NEUQUEN,Si,29135,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/08/2021,00:14:11,2021-08-13 00:14:11,-24.38,-59.499,14.0,5.4,TFAIAS,No,27037,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/08/2021,17:04:55,2021-08-13 17:04:55,-24.017,-57.893,14.0,5.4,TFAIAS,No,27012,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/11/2021,18:38:46,2021-11-17 18:38:46,-63.27,-26.502,614.0,5.4,SANTIAGO DEL ESTERO,No,25184,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/12/2021,18:51:08,2021-12-05 18:51:08,-68.977,-25.32,125.0,5.4,CHILE,No,24816,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/08/2022,23:10:22,2022-08-17 23:10:22,-70.623,-34.346,109.0,5.4,CHILE,Si,19863,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/11/2022,09:12:38,2022-11-05 09:12:38,-68.653,-33.477,22.0,5.4,MENDOZA,Si,18355,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/11/2022,23:23:56,2022-11-12 23:23:56,-73.904,-37.504,20.0,5.4,OCEANO PACIFICO,Si,18220,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/12/2022,00:31:43,2022-12-31 00:31:43,-68.962,-23.089,104.0,5.4,CHILE,No,17315,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/03/2023,21:02:44,2023-03-25 21:02:44,-68.742,-21.018,105.0,5.4,CHILE,No,15926,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/03/2023,07:46:22,2023-03-31 07:46:22,-70.108,-24.899,33.0,5.4,CHILE,No,15847,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/07/2023,14:11:33,2023-07-09 14:11:33,-70.256,-33.268,110.0,5.4,CHILE,Si,14257,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/08/2023,11:17:06,2023-08-30 11:17:06,-71.436,-29.347,62.0,5.4,CHILE,Si,13459,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2024,15:46:36,2024-09-22 15:46:36,-71.707,-32.007,64.0,5.4,CHILE,Si,8157,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/11/2024,09:33:00,2024-11-26 09:33:00,-71.495,-30.365,13.0,5.4,CHILE,Si,7355,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/12/2024,01:09:00,2024-12-18 01:09:00,-70.009,-20.159,53.0,5.4,CHILE,No,7090,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/05/2025,10:07:00,2025-05-02 10:07:00,-69.32,-56.666,10.0,5.4,TFAIAS,No,5705,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/07/2025,22:39:00,2025-07-01 22:39:00,-73.126,-33.821,15.0,5.4,OCEANO PACIFICO,Si,5213,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/10/2025,07:43:51,2025-10-02 07:43:51,-72.137,-30.634,14.0,5.4,OCEANO PACIFICO,Si,4177,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/12/2025,09:18:43,2025-12-13 09:18:43,-69.017,-21.281,121.0,5.4,CHILE,No,3195,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/01/2012,02:58:02,2012-01-22 02:58:02,-58.51,-41.639,681.0,5.3,ATLANTICO SUR,No,77917,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/09/2013,09:37:08,2013-09-14 09:37:08,-67.398,-27.935,136.0,5.3,CATAMARCA,No,70256,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/12/2013,21:51:27,2013-12-09 21:51:27,-69.279,-31.396,114.0,5.3,SAN JUAN,Si,69046,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/04/2014,06:52:07,2014-04-04 06:52:07,-70.513,-31.445,130.0,5.3,SAN JUAN,Si,67339,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/09/2015,13:08:33,2015-09-17 13:08:33,-71.621,-30.849,16.0,5.3,CHILE,Si,60685,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/10/2015,00:49:48,2015-10-04 00:49:48,-72.462,-30.317,30.0,5.3,OCEANO PACIFICO,No,60496,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/10/2015,03:00:21,2015-10-10 03:00:21,-67.082,-24.387,224.0,5.3,SALTA,No,60381,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/04/2016,09:32:41,2016-04-04 09:32:41,-72.22,-31.19,20.0,5.3,OCEANO PACIFICO,Si,57878,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/04/2016,14:35:35,2016-04-06 14:35:35,-72.09,-31.48,30.0,5.3,OCEANO PACIFICO,Si,57844,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/04/2016,07:13:50,2016-04-27 07:13:50,-66.901,-24.128,202.0,5.3,SALTA,No,57547,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/08/2016,21:04:22,2016-08-19 21:04:22,-31.206,-55.159,10.0,5.3,ISLAS GEORGIAS DEL SUR,No,56067,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2016,03:48:56,2016-09-02 03:48:56,-30.746,-55.269,33.0,5.3,ISLAS SANDWICH DEL SUR,No,55852,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/10/2016,01:26:08,2016-10-18 01:26:08,-47.27,-60.349,10.0,5.3,ISLAS ORCADAS DEL SUR,No,55289,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/10/2016,01:49:39,2016-10-30 01:49:39,-70.39,-25.184,60.0,5.3,CHILE,No,55135,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/02/2017,21:52:24,2017-02-02 21:52:24,-69.621,-33.078,10.0,5.3,MENDOZA,Si,53787,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/02/2017,05:25:36,2017-02-22 05:25:36,-51.524,-60.875,68.0,5.3,ISLAS SHETLAND DEL SUR,No,53579,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/02/2017,02:59:07,2017-02-24 02:59:07,-30.645,-55.285,10.0,5.3,ISLAS GEORGIAS y SANDWICH DEL SUR,No,53557,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/05/2017,14:24:54,2017-05-03 14:24:54,-26.702,-56.029,35.0,5.3,ISLAS SANDWICH DEL SUR,No,52754,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,13:04:29,2017-05-11 13:04:29,-25.968,-56.653,10.0,5.3,ISLAS SANDWICH DEL SUR,No,52678,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,13:05:30,2017-05-11 13:05:30,-26.202,-56.779,10.0,5.3,ISLAS SANDWICH DEL SUR,No,52677,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/06/2017,09:54:36,2017-06-20 09:54:36,-27.081,-56.263,61.0,5.3,ISLAS SANDWICH DEL SUR,No,52237,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/08/2017,16:03:19,2017-08-15 16:03:19,-72.519,-29.94,20.0,5.3,OCEANO PACIFICO,No,51567,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2017,14:25:52,2017-09-23 14:25:52,-68.945,-30.762,129.0,5.3,SAN JUAN,Si,51051,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/10/2017,00:12:27,2017-10-12 00:12:27,-24.814,-56.318,30.0,5.3,ISLAS GEORGIAS Y SANDWICH DEL SUR,No,50808,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/11/2017,12:51:44,2017-11-16 12:51:44,-62.907,-58.548,10.0,5.3,PASAJE DE DRAKE,No,50288,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/02/2018,06:38:58,2018-02-20 06:38:58,-70.554,-25.307,43.0,5.3,CHILE,No,48975,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/10/2018,17:17:23,2018-10-29 17:17:23,-66.48,-57.558,10.0,5.3,PASAJE DE DRAKE,No,45150,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/11/2018,15:54:05,2018-11-09 15:54:05,-72.051,-30.606,13.0,5.3,OCEANO PACIFICO,Si,44973,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/02/2019,12:28:44,2019-02-25 12:28:44,-71.606,-29.86,10.0,5.3,CHILE,No,43412,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/04/2019,15:57:31,2019-04-24 15:57:31,-68.515,-21.482,145.0,5.3,CHILE,No,42439,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/05/2019,21:32:12,2019-05-15 21:32:12,-69.363,-31.466,114.0,5.3,SAN JUAN,Si,42137,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/06/2019,05:42:11,2019-06-03 05:42:11,-70.382,-19.728,78.0,5.3,CHILE,No,41904,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/07/2019,19:29:49,2019-07-10 19:29:49,-66.826,-24.042,217.0,5.3,JUJUY,No,41331,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/08/2019,21:55:12,2019-08-01 21:55:12,-72.281,-33.963,18.0,5.3,CHILE,Si,41000,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/01/2020,23:01:40,2020-01-12 23:01:40,-71.38,-40.335,193.0,5.3,NEUQUEN,Si,38217,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/01/2020,23:35:56,2020-01-31 23:35:56,-67.103,-24.488,198.0,5.3,SALTA,No,37920,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/02/2020,02:50:35,2020-02-13 02:50:35,-70.946,-20.919,17.0,5.3,OCEANO PACIFICO,No,37748,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/02/2020,02:32:42,2020-02-18 02:32:42,-73.493,-35.502,16.0,5.3,OCEANO PACIFICO,No,37677,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/04/2020,06:23:11,2020-04-30 06:23:11,-68.216,-22.694,146.0,5.3,CHILE,No,36493,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/06/2020,08:54:57,2020-06-25 08:54:57,-72.222,-32.2,13.0,5.3,OCEANO PACIFICO,Si,35507,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/10/2020,10:56:42,2020-10-06 10:56:42,-58.423,-62.369,10.0,5.3,TFAIAS,No,33608,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/11/2020,09:33:14,2020-11-15 09:33:14,-67.683,-24.149,169.0,5.3,CHILE,No,32828,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/03/2021,18:54:39,2021-03-11 18:54:39,-67.22,-24.34,185.0,5.3,SALTA,No,30103,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/04/2021,04:14:01,2021-04-10 04:14:01,-58.474,-62.387,11.0,5.3,TFAIAS,No,29505,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/06/2021,09:42:04,2021-06-01 09:42:04,-66.771,-21.483,229.0,5.3,BOLIVIA,No,28481,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/08/2021,15:11:38,2021-08-13 15:11:38,-26.41,-59.894,16.0,5.3,TFAIAS,No,27015,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/12/2021,01:23:49,2021-12-14 01:23:49,-71.964,-28.572,13.0,5.3,OCEANO PACIFICO,Si,24657,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/01/2022,21:31:25,2022-01-27 21:31:25,-69.518,-19.159,106.0,5.3,CHILE,No,23745,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/02/2022,20:46:30,2022-02-06 20:46:30,-68.704,-22.175,126.0,5.3,CHILE,No,23550,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/03/2022,22:10:06,2022-03-04 22:10:06,-66.183,-22.498,269.0,5.3,JUJUY,Si,23053,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/03/2022,06:35:06,2022-03-06 06:35:06,-68.762,-28.512,122.0,5.3,LA RIOJA,Si,23028,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/05/2022,00:45:55,2022-05-04 00:45:55,-72.191,-32.295,11.0,5.3,OCEANO PACIFICO,Si,21816,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/05/2022,08:59:32,2022-05-04 08:59:32,-72.003,-32.276,15.0,5.3,OCEANO PACIFICO,Si,21810,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/05/2022,18:05:24,2022-05-05 18:05:24,-73.053,-33.128,25.0,5.3,OCEANO PACIFICO,No,21779,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/05/2022,05:41:59,2022-05-10 05:41:59,-63.262,-27.234,598.0,5.3,SANTIAGO DEL ESTERO,No,21686,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/06/2022,11:54:34,2022-06-03 11:54:34,-68.502,-23.203,127.0,5.3,CHILE,No,21213,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/09/2022,10:14:38,2022-09-06 10:14:38,-68.953,-23.011,93.0,5.3,CHILE,No,19476,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/10/2022,04:35:30,2022-10-18 04:35:30,-71.66,-30.698,22.0,5.3,CHILE,Si,18715,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/10/2022,23:08:28,2022-10-22 23:08:28,-69.017,-22.012,126.0,5.3,CHILE,No,18609,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/11/2022,05:51:15,2022-11-08 05:51:15,-70.801,-33.686,94.0,5.3,CHILE,Si,18301,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/11/2022,14:10:26,2022-11-19 14:10:26,-26.468,-59.811,71.0,5.3,TFAIAS,No,18096,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/12/2022,03:41:29,2022-12-10 03:41:29,-68.407,-22.996,100.0,5.3,CHILE,Si,17698,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/05/2023,03:29:01,2023-05-07 03:29:01,-70.28,-25.36,30.0,5.3,CHILE,No,15273,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/09/2023,01:58:38,2023-09-12 01:58:38,-68.685,-20.647,125.0,5.3,CHILE,No,13241,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/12/2023,15:35:59,2023-12-11 15:35:59,-66.825,-24.055,220.0,5.3,JUJUY,No,11793,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/01/2024,05:04:03,2024-01-03 05:04:03,-68.809,-28.399,114.0,5.3,LA RIOJA,Si,11479,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/03/2024,00:42:27,2024-03-12 00:42:27,-72.917,-33.696,15.0,5.3,OCEANO PACIFICO,Si,10609,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/06/2024,07:53:07,2024-06-01 07:53:07,-68.97,-21.342,115.0,5.3,CHILE,No,9619,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/09/2024,11:24:23,2024-09-24 11:24:23,-71.197,-25.825,44.0,5.3,OCEANO PACIFICO,No,8124,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/12/2024,03:26:00,2024-12-07 03:26:00,-74.143,-38.825,15.0,5.3,OCEANO PACIFICO,Si,7238,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/03/2025,01:35:00,2025-03-24 01:35:00,-71.603,-29.613,50.0,5.3,CHILE,Si,6118,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/04/2025,00:20:00,2025-04-24 00:20:00,-72.462,-30.566,25.0,5.3,OCEANO PACIFICO,Si,5803,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/05/2025,10:55:00,2025-05-02 10:55:00,-67.908,-56.981,10.0,5.3,TFAIAS,No,5704,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/09/2025,15:11:43,2025-09-25 15:11:43,-69.309,-19.481,110.0,5.3,CHILE,No,4263,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/02/2026,13:23:56,2026-02-08 13:23:56,-69.1,-20.149,123.0,5.3,CHILE,No,2508,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/12/2011,05:04:57,2011-12-24 05:04:57,-70.053,-32.19,112.0,5.2,SAN JUAN,No,78406,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/12/2011,13:15:10,2011-12-31 13:15:10,-64.403,-23.425,14.0,5.2,SALTA,Si,78309,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/07/2012,03:01:12,2012-07-25 03:01:12,-66.628,-28.109,183.0,5.2,CATAMARCA,No,75595,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/09/2012,03:35:38,2012-09-11 03:35:38,-68.35,-31.875,124.0,5.2,SAN JUAN,Si,74985,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/10/2012,13:55:54,2012-10-07 13:55:54,-69.254,-32.904,17.0,5.2,MENDOZA,No,74556,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/12/2012,12:00:12,2012-12-20 12:00:12,-63.941,-23.001,590.0,5.2,SALTA,No,73532,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/06/2013,09:25:06,2013-06-08 09:25:06,-66.81,-22.616,221.0,5.2,JUJUY,No,71418,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/07/2013,17:04:55,2013-07-02 17:04:55,-66.682,-23.932,223.0,5.2,JUJUY,No,71158,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/07/2013,18:36:15,2013-07-13 18:36:15,-67.02,-26.96,24.0,5.2,CATAMARCA,No,71035,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/04/2014,04:46:55,2014-04-18 04:46:55,-62.874,-27.746,596.0,5.2,SANTIAGO DEL ESTERO,No,67182,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/05/2014,00:38:21,2014-05-14 00:38:21,-66.609,-22.731,243.0,5.2,JUJUY,No,66898,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/11/2014,18:15:55,2014-11-18 18:15:55,-63.007,-27.99,627.0,5.2,SANTIAGO DEL ESTERO,No,64538,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/12/2014,17:15:11,2014-12-18 17:15:11,-25.414,-56.61,9.0,5.2,MAR ARGENTINO,No,64137,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/02/2015,10:01:14,2015-02-11 10:01:14,-66.818,-23.504,221.0,5.2,JUJUY,No,63484,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2015,08:32:41,2015-09-23 08:32:41,-71.93,-31.597,36.0,5.2,OCEANO PACIFICO,No,60615,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/09/2015,00:21:56,2015-09-25 00:21:56,-69.401,-20.922,98.0,5.2,CHILE,No,60598,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/09/2015,17:30:58,2015-09-25 17:30:58,-72.277,-30.41,30.0,5.2,OCEANO PACIFICO,No,60594,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/10/2015,07:11:53,2015-10-04 07:11:53,-71.909,-30.6,13.0,5.2,OCEANO PACIFICO,No,60493,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/10/2015,19:48:30,2015-10-06 19:48:30,-71.737,-30.802,30.0,5.2,CHILE,No,60446,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/11/2015,05:44:07,2015-11-06 05:44:07,-72.362,-30.121,40.0,5.2,OCEANO PACIFICO,No,59973,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/11/2015,02:44:36,2015-11-28 02:44:36,-72.298,-30.183,4.0,5.2,OCEANO PACIFICO,Si,59635,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/02/2016,09:28:44,2016-02-09 09:28:44,-25.98,-57.9,68.0,5.2,REGION NOT FOUND.,No,58586,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/02/2016,12:35:07,2016-02-25 12:35:07,-69.067,-23.041,90.0,5.2,CHILE,No,58403,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/04/2016,06:38:43,2016-04-14 06:38:43,-70.464,-33.856,125.0,5.2,CHILE,Si,57742,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/04/2016,08:38:36,2016-04-18 08:38:36,-71.603,-31.766,35.0,5.2,CHILE,Si,57675,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/06/2016,00:05:28,2016-06-23 00:05:28,-43.144,-60.291,80.0,5.2,ISLAS ORCADAS DEL SUR,No,56871,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/07/2016,03:43:45,2016-07-27 03:43:45,-68.155,-24.247,150.0,5.2,CHILE,No,56396,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/08/2016,05:09:07,2016-08-30 05:09:07,-72.55,-34.88,10.0,5.2,CHILE,No,55903,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2016,19:56:34,2016-09-01 19:56:34,-30.931,-55.223,10.0,5.2,ISLAS SANDWICH DEL SUR,No,55856,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/09/2016,15:03:26,2016-09-14 15:03:26,-27.575,-56.086,115.0,5.2,ISLAS SANDWICH DEL SUR,No,55699,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2016,09:04:38,2016-09-16 09:04:38,-30.98,-54.71,10.0,5.2,ISLAS SANDWICH DEL SUR,No,55676,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/09/2016,15:00:39,2016-09-17 15:00:39,-31.592,-55.279,32.0,5.2,ISLAS GEORGIAS DEL SUR,No,55651,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/11/2016,22:01:51,2016-11-12 22:01:51,-67.449,-28.106,149.0,5.2,CATAMARCA,Si,54943,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/11/2016,11:29:25,2016-11-17 11:29:25,-27.546,-55.893,68.0,5.2,ISLAS SANDWICH DEL SUR,No,54886,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/02/2017,00:05:33,2017-02-15 00:05:33,-26.624,-56.081,72.0,5.2,ISLAS SANDWICH DEL SUR,No,53658,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/03/2017,05:08:06,2017-03-16 05:08:06,-66.959,-24.089,212.0,5.2,SALTA,No,53332,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/03/2017,21:31:01,2017-03-17 21:31:01,-28.081,-59.604,210.0,5.2,ISLAS SANDWICH DEL SUR,No,53321,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/04/2017,18:23:44,2017-04-04 18:23:44,-48.463,-53.308,10.0,5.2,ATLANTICO SUR,No,53125,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/04/2017,10:39:42,2017-04-11 10:39:42,-70.206,-27.528,102.0,5.2,CHILE,No,53045,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/04/2017,06:36:00,2017-04-30 06:36:00,-71.014,-20.018,28.0,5.2,OCEANO PACIFICO,No,52798,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/05/2017,13:54:44,2017-05-13 13:54:44,-72.053,-32.946,20.0,5.2,CHILE,No,52652,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/05/2017,04:15:01,2017-05-20 04:15:01,-27.009,-59.479,42.0,5.2,ISLAS SANDWICH DEL SUR,No,52577,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/07/2017,07:11:01,2017-07-26 07:11:01,-69.557,-23.976,86.0,5.2,CHILE,No,51817,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/07/2017,18:31:05,2017-07-31 18:31:05,-30.844,-55.245,10.0,5.2,ISLAS SANDWICH DEL SUR,No,51752,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/08/2017,12:59:27,2017-08-12 12:59:27,-71.132,-20.045,22.0,5.2,OCEANO PACIFICO,No,51602,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/11/2017,13:45:46,2017-11-17 13:45:46,-69.285,-19.785,108.0,5.2,CHILE,No,50280,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/12/2017,23:28:03,2017-12-16 23:28:03,-67.218,-24.276,201.0,5.2,SALTA,No,49872,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/01/2018,07:11:28,2018-01-28 07:11:28,-69.165,-28.222,114.0,5.2,LA RIOJA,Si,49300,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/06/2018,03:17:12,2018-06-02 03:17:12,-74.308,-38.195,18.0,5.2,OCEANO PACIFICO,No,47385,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/09/2018,05:24:13,2018-09-10 05:24:13,-71.784,-28.747,40.0,5.2,OCEANO PACIFICO,No,45871,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2018,09:36:30,2018-10-31 09:36:30,-66.29,-57.38,10.0,5.2,PASAJE DE DRAKE,No,45111,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/01/2019,06:00:40,2019-01-28 06:00:40,-73.384,-35.568,20.0,5.2,OCEANO PACIFICO,No,43804,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/03/2019,19:43:19,2019-03-01 19:43:19,-72.273,-30.394,5.0,5.2,OCEANO PACIFICO,No,43339,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/04/2019,14:01:03,2019-04-16 14:01:03,-63.264,-28.353,535.0,5.2,SANTIAGO DEL ESTERO,No,42571,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/06/2019,13:19:42,2019-06-05 13:19:42,-70.241,-27.387,86.0,5.2,CHILE,Si,41865,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2019,05:24:35,2019-09-23 05:24:35,-74.217,-36.02,20.0,5.2,OCEANO PACIFICO,No,40048,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/09/2019,16:43:22,2019-09-25 16:43:22,-66.769,-27.921,188.0,5.2,CATAMARCA,Si,40006,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/10/2019,00:55:09,2019-10-28 00:55:09,-69.051,-30.365,11.0,5.2,SAN JUAN,Si,39442,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/11/2019,05:06:07,2019-11-03 05:06:07,-72.257,-30.628,15.0,5.2,OCEANO PACIFICO,No,39338,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/11/2019,19:27:30,2019-11-22 19:27:30,-70.071,-32.732,125.0,5.2,MENDOZA,Si,39005,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/01/2020,15:16:43,2020-01-28 15:16:43,-72.395,-30.279,12.0,5.2,OCEANO PACIFICO,Si,37970,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/02/2020,03:17:57,2020-02-08 03:17:57,-68.869,-20.813,130.0,5.2,CHILE,No,37823,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/04/2020,09:04:30,2020-04-14 09:04:30,-69.49,-25.755,10.0,5.2,CHILE,No,36766,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/04/2020,02:37:15,2020-04-29 02:37:15,-67.335,-24.272,193.0,5.2,SALTA,No,36516,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/05/2020,15:04:22,2020-05-10 15:04:22,-68.257,-22.867,134.0,5.2,CHILE,No,36310,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/05/2020,07:42:05,2020-05-20 07:42:05,-66.671,-25.937,21.0,5.2,SALTA,Si,36125,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/05/2020,11:59:31,2020-05-22 11:59:31,-69.085,-22.934,102.0,5.2,CHILE,No,36081,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/05/2020,10:10:58,2020-05-23 10:10:58,-69.886,-33.517,137.0,5.2,CHILE,Si,36063,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/08/2020,00:18:48,2020-08-16 00:18:48,-70.295,-19.226,80.0,5.2,CHILE,No,34565,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,01:36:35,2020-09-01 01:36:35,-71.27,-27.968,32.0,5.2,CHILE,Si,34252,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/09/2020,14:13:18,2020-09-01 14:13:18,-71.763,-27.808,14.0,5.2,OCEANO PACIFICO,Si,34241,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/09/2020,08:11:50,2020-09-19 08:11:50,-58.451,-62.371,10.0,5.2,TFAIAS,No,33922,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/10/2020,16:01:25,2020-10-05 16:01:25,-58.274,-62.289,21.0,5.2,TFAIAS,No,33623,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/12/2020,23:37:27,2020-12-02 23:37:27,-67.163,-31.928,128.0,5.2,SAN LUIS,Si,32436,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/01/2021,00:53:34,2021-01-16 00:53:34,-71.595,-31.014,62.0,5.2,CHILE,Si,31546,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/02/2021,17:18:26,2021-02-10 17:18:26,-71.474,-31.742,19.0,5.2,CHILE,Si,30687,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/03/2021,09:48:05,2021-03-08 09:48:05,-69.891,-32.201,125.0,5.2,SAN JUAN,Si,30173,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/03/2021,11:17:14,2021-03-21 11:17:14,-64.235,-19.399,593.0,5.2,BOLIVIA,No,29925,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/05/2021,12:06:51,2021-05-19 12:06:51,-62.843,-28.405,571.0,5.2,SANTIAGO DEL ESTERO,No,28748,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/06/2021,00:36:25,2021-06-12 00:36:25,-72.264,-33.747,29.0,5.2,OCEANO PACIFICO,Si,28287,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/07/2021,07:30:37,2021-07-08 07:30:37,-71.473,-18.7,40.0,5.2,OCEANO PACIFICO,No,27756,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/08/2021,15:31:04,2021-08-07 15:31:04,-68.429,-21.848,142.0,5.2,CHILE,No,27142,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/09/2021,04:53:56,2021-09-29 04:53:56,-68.246,-33.231,14.0,5.2,MENDOZA,Si,26158,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/01/2022,15:19:34,2022-01-13 15:19:34,-71.59,-26.786,25.0,5.2,OCEANO PACIFICO,Si,24012,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/04/2022,08:28:04,2022-04-01 08:28:04,-68.001,-31.394,109.0,5.2,SAN JUAN,Si,22472,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/04/2022,13:43:30,2022-04-15 13:43:30,-70.03,-22.755,68.0,5.2,CHILE,No,22216,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/05/2022,03:54:08,2022-05-04 03:54:08,-72.3,-32.227,12.0,5.2,OCEANO PACIFICO,Si,21813,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/10/2022,04:52:14,2022-10-26 04:52:14,-67.086,-24.024,210.0,5.2,SALTA,No,18538,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/12/2022,18:04:23,2022-12-04 18:04:23,-66.618,-27.917,200.0,5.2,CATAMARCA,Si,17823,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/02/2023,19:12:21,2023-02-15 19:12:21,-68.288,-20.081,177.0,5.2,BOLIVIA,No,16575,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/03/2023,19:50:44,2023-03-13 19:50:44,-67.52,-28.129,143.0,5.2,CATAMARCA,Si,16149,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/03/2023,16:56:35,2023-03-14 16:56:35,-75.371,-38.325,10.0,5.2,OCEANO PACIFICO,No,16137,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/03/2023,12:18:49,2023-03-22 12:18:49,-66.631,-23.495,228.0,5.2,JUJUY,Si,15994,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/03/2023,08:39:01,2023-03-26 08:39:01,-69.317,-25.658,7.0,5.2,CHILE,No,15914,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/10/2023,21:13:10,2023-10-09 21:13:10,-63.213,-23.559,580.0,5.2,SALTA,No,12828,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/11/2023,10:51:08,2023-11-06 10:51:08,-72.095,-33.085,20.0,5.2,OCEANO PACIFICO,Si,12392,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/11/2023,12:37:09,2023-11-23 12:37:09,-68.629,-21.855,114.0,5.2,CHILE,No,12086,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/01/2024,05:05:10,2024-01-24 05:05:10,-68.768,-22.202,130.0,5.2,CHILE,Si,11201,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/08/2024,22:31:52,2024-08-07 22:31:52,-66.937,-21.183,220.0,5.2,BOLIVIA,Si,8730,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/08/2024,20:31:51,2024-08-18 20:31:51,-74.864,-36.996,20.0,5.2,OCEANO PACIFICO,No,8579,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/01/2025,13:19:00,2025-01-24 13:19:00,-69.61,-18.327,137.0,5.2,CHILE,No,6694,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/05/2025,21:47:00,2025-05-12 21:47:00,-72.23,-51.475,19.0,5.2,SANTA CRUZ,Si,5615,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/07/2025,02:41:00,2025-07-03 02:41:00,-67.377,-21.332,235.0,5.2,BOLIVIA,Si,5201,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/07/2025,21:46:00,2025-07-23 21:46:00,-68.772,-22.263,125.0,5.2,CHILE,No,4999,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/11/2025,12:51:49,2025-11-03 12:51:49,-71.759,-27.394,12.0,5.2,OCEANO PACIFICO,No,3729,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/12/2025,07:40:43,2025-12-27 07:40:43,-63.143,-28.324,625.0,5.2,SANTIAGO DEL ESTERO,No,3038,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/05/2012,16:18:53,2012-05-24 16:18:53,-70.694,-36.994,169.0,5.1,NEUQUEN,Si,76361,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/08/2012,16:05:38,2012-08-04 16:05:38,-69.587,-31.925,119.0,5.1,SAN JUAN,Si,75489,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/02/2013,08:18:56,2013-02-20 08:18:56,-66.64,-27.86,192.0,5.1,CATAMARCA,Si,72877,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/05/2013,15:50:29,2013-05-24 15:50:29,-69.307,-30.576,12.0,5.1,SAN JUAN,Si,71566,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2015,01:21:24,2015-09-23 01:21:24,-72.183,-31.359,10.0,5.1,OCEANO PACIFICO,No,60620,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/09/2015,18:04:45,2015-09-27 18:04:45,-71.618,-31.648,34.0,5.1,CHILE,No,60574,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/10/2015,05:00:40,2015-10-07 05:00:40,-71.518,-30.228,60.0,5.1,CHILE,No,60434,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/10/2015,00:31:33,2015-10-12 00:31:33,-71.788,-31.193,31.0,5.1,CHILE,No,60351,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/11/2015,20:47:43,2015-11-08 20:47:43,-27.286,-56.05,77.0,5.1,ISLAS SANDWICH DEL SUR,No,59927,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/01/2016,10:33:32,2016-01-10 10:33:32,-72.07,-31.289,30.0,5.1,OCEANO PACIFICO,No,58947,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/01/2016,17:32:56,2016-01-15 17:32:56,-67.956,-28.569,63.0,5.1,LA RIOJA,Si,58892,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/01/2016,21:19:08,2016-01-25 21:19:08,-71.85,-32.64,30.0,5.1,CHILE,No,58776,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/02/2016,14:55:01,2016-02-04 14:55:01,-71.759,-31.071,31.0,5.1,CHILE,Si,58637,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/02/2016,05:52:48,2016-02-26 05:52:48,-67.71,-31.7,18.0,5.1,SAN JUAN,Si,58399,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/05/2016,08:47:06,2016-05-22 08:47:06,-71.67,-30.63,30.0,5.1,CHILE,No,57281,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/07/2016,00:11:28,2016-07-08 00:11:28,-37.37,-61.005,10.0,5.1,MAR DE SCOTIA,No,56691,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/08/2016,12:15:18,2016-08-03 12:15:18,-27.206,-55.711,13.0,5.1,ISLAS SANDWICH DEL SUR,No,56295,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/08/2016,11:26:05,2016-08-28 11:26:05,-31.39,-55.073,10.0,5.1,ISLAS GEORGIAS DEL SUR,No,55934,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/09/2016,21:03:44,2016-09-08 21:03:44,-65.809,-31.364,167.0,5.1,LA RIOJA,Si,55770,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2016,04:19:48,2016-09-21 04:19:48,-30.503,-54.84,18.0,5.1,ISLAS GEORGIAS DEL SUR,No,55603,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/10/2016,08:03:05,2016-10-05 08:03:05,-25.16,-58.813,35.0,5.1,ISLAS SANDWICH DEL SUR,No,55456,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2016,02:44:30,2016-10-31 02:44:30,-68.63,-22.43,105.0,5.1,CHILE,No,55116,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/12/2016,15:06:04,2016-12-05 15:06:04,-66.66,-23.195,222.0,5.1,JUJUY,No,54596,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/12/2016,23:56:58,2016-12-11 23:56:58,-68.08,-30.945,15.0,5.1,SAN JUAN,Si,54505,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/01/2017,06:22:02,2017-01-17 06:22:02,-26.049,-56.855,92.0,5.1,ISLAS SANDWICH DEL SUR,No,53966,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/01/2017,06:30:36,2017-01-21 06:30:36,-68.53,-33.837,21.0,5.1,MENDOZA,Si,53915,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/02/2017,11:26:38,2017-02-07 11:26:38,-25.883,-56.392,10.0,5.1,ISLAS SANDWICH DEL SUR,No,53732,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/02/2017,01:01:30,2017-02-12 01:01:30,-27.047,-56.349,38.0,5.1,ISLAS SANDWICH DEL SUR,No,53687,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/02/2017,01:03:16,2017-02-19 01:03:16,-75.644,-37.519,13.0,5.1,OCEANO PACIFICO,No,53611,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/02/2017,11:00:32,2017-02-25 11:00:32,-68.079,-29.194,120.0,5.1,LA RIOJA,Si,53543,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/03/2017,03:22:18,2017-03-10 03:22:18,-72.121,-30.55,18.0,5.1,OCEANO PACIFICO,No,53392,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/04/2017,10:35:20,2017-04-27 10:35:20,-30.219,-55.832,32.0,5.1,ISLAS SANDWICH DEL SUR,No,52835,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,06:33:26,2017-05-11 06:33:26,-25.628,-56.426,36.0,5.1,ISLAS SANDWICH DEL SUR,No,52686,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,15:34:03,2017-05-11 15:34:03,-25.573,-56.621,10.0,5.1,ISLAS SANDWICH DEL SUR,No,52673,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/05/2017,02:21:33,2017-05-12 02:21:33,-25.761,-56.632,10.0,5.1,ISLAS SANDWICH DEL SUR,No,52666,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/05/2017,05:22:56,2017-05-15 05:22:56,-25.0,-60.058,32.0,5.1,ISLAS SANDWICH DEL SUR,No,52636,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/05/2017,14:02:11,2017-05-15 14:02:11,-26.293,-56.825,58.0,5.1,ISLAS SANDWICH DEL SUR,No,52630,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/05/2017,11:42:07,2017-05-16 11:42:07,-25.49,-56.394,10.0,5.1,ISLAS SANDWICH DEL SUR,No,52617,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/06/2017,10:02:29,2017-06-20 10:02:29,-27.446,-56.046,86.0,5.1,ISLAS SANDWICH DEL SUR,No,52236,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/06/2017,11:44:50,2017-06-26 11:44:50,-71.372,-30.631,38.0,5.1,CHILE,Si,52151,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/07/2017,13:44:30,2017-07-30 13:44:30,-27.955,-54.576,39.0,5.1,ISLAS SANDWICH DEL SUR,No,51766,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/09/2017,09:03:41,2017-09-09 09:03:41,-66.291,-22.505,252.0,5.1,JUJUY,No,51243,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/12/2017,05:20:50,2017-12-30 05:20:50,-69.36,-19.288,114.0,5.1,CHILE,No,49678,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/02/2018,20:13:53,2018-02-01 20:13:53,-70.038,-31.538,123.0,5.1,SAN JUAN,Si,49217,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/03/2018,09:48:35,2018-03-22 09:48:35,-75.517,-38.673,20.0,5.1,OCEANO PACIFICO,No,48554,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/04/2018,10:46:03,2018-04-17 10:46:03,-68.852,-21.476,123.0,5.1,CHILE,No,48149,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/05/2018,17:25:29,2018-05-04 17:25:29,-71.731,-29.789,11.0,5.1,CHILE,No,47865,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/05/2018,17:59:35,2018-05-28 17:59:35,-68.702,-31.284,113.0,5.1,SAN JUAN,Si,47452,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/07/2018,11:39:02,2018-07-21 11:39:02,-68.642,-22.258,132.0,5.1,CHILE,No,46677,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/08/2018,10:24:59,2018-08-31 10:24:59,-70.402,-32.214,124.0,5.1,CHILE,Si,46017,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/01/2019,10:43:30,2019-01-07 10:43:30,-69.175,-19.64,117.0,5.1,CHILE,No,44126,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/02/2019,10:22:09,2019-02-17 10:22:09,-64.785,-23.501,16.0,5.1,JUJUY,Si,43532,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/04/2019,07:52:36,2019-04-07 07:52:36,-73.01,-33.669,10.0,5.1,OCEANO PACIFICO,No,42756,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/04/2019,14:07:28,2019-04-11 14:07:28,-70.486,-24.549,66.0,5.1,CHILE,No,42670,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/04/2019,18:37:40,2019-04-19 18:37:40,-69.189,-20.344,99.0,5.1,CHILE,No,42527,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/04/2019,13:31:42,2019-04-21 13:31:42,-67.158,-24.351,200.0,5.1,SALTA,No,42505,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/05/2019,11:16:22,2019-05-17 11:16:22,-70.229,-19.852,89.0,5.1,CHILE,No,42113,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/06/2019,19:50:44,2019-06-16 19:50:44,-66.916,-24.137,220.0,5.1,SALTA,No,41693,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/07/2019,22:18:23,2019-07-18 22:18:23,-67.401,-20.848,222.0,5.1,BOLIVIA,No,41197,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/08/2019,23:32:59,2019-08-23 23:32:59,-71.45,-31.096,54.0,5.1,CHILE,Si,40614,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/09/2019,02:41:26,2019-09-05 02:41:26,-74.147,-35.984,9.0,5.1,OCEANO PACIFICO,No,40374,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/11/2019,10:03:37,2019-11-04 10:03:37,-70.573,-21.396,34.0,5.1,CHILE,No,39312,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/11/2019,14:16:41,2019-11-15 14:16:41,-72.354,-34.002,21.0,5.1,CHILE,Si,39126,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/12/2019,16:46:58,2019-12-03 16:46:58,-66.322,-22.999,258.0,5.1,JUJUY,No,38813,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/12/2019,15:42:06,2019-12-15 15:42:06,-67.234,-24.156,198.0,5.1,SALTA,No,38625,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/12/2019,05:11:03,2019-12-18 05:11:03,-69.147,-20.253,108.0,5.1,CHILE,No,38587,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/12/2019,17:34:50,2019-12-21 17:34:50,-67.203,-56.87,22.0,5.1,PASAJE DE DRAKE,No,38532,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/01/2020,05:47:43,2020-01-08 05:47:43,-68.87,-20.441,125.0,5.1,CHILE,No,38279,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/01/2020,22:57:28,2020-01-13 22:57:28,-68.558,-21.72,138.0,5.1,CHILE,No,38195,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/01/2020,17:53:32,2020-01-29 17:53:32,-72.677,-30.109,31.0,5.1,OCEANO PACIFICO,No,37957,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/02/2020,10:50:00,2020-02-11 10:50:00,-70.971,-24.776,40.0,5.1,OCEANO PACIFICO,No,37770,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/03/2020,03:52:31,2020-03-25 03:52:31,-74.068,-35.624,7.0,5.1,OCEANO PACIFICO,No,37118,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/04/2020,12:13:02,2020-04-16 12:13:02,-74.096,-37.974,20.0,5.1,OCEANO PACIFICO,No,36727,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/04/2020,02:53:54,2020-04-25 02:53:54,-71.578,-27.887,11.0,5.1,OCEANO PACIFICO,No,36585,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/05/2020,03:36:50,2020-05-06 03:36:50,-71.615,-29.577,64.0,5.1,CHILE,Si,36394,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/07/2020,09:35:44,2020-07-02 09:35:44,-72.318,-34.142,14.0,5.1,CHILE,Si,35360,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/09/2020,03:39:38,2020-09-05 03:39:38,-71.831,-27.95,20.0,5.1,OCEANO PACIFICO,No,34173,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/09/2020,22:33:16,2020-09-16 22:33:16,-71.472,-30.34,38.0,5.1,CHILE,Si,33959,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/10/2020,23:20:10,2020-10-14 23:20:10,-68.914,-31.543,122.0,5.1,SAN JUAN,Si,33429,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/11/2020,17:18:29,2020-11-16 17:18:29,-71.431,-28.34,22.0,5.1,CHILE,No,32805,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/12/2020,03:48:38,2020-12-05 03:48:38,-58.477,-62.401,5.0,5.1,TFAIAS,No,32380,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/12/2020,10:55:20,2020-12-27 10:55:20,-69.535,-19.116,120.0,5.1,CHILE,No,31924,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/01/2021,10:24:58,2021-01-30 10:24:58,-70.346,-19.956,65.0,5.1,CHILE,No,30946,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/02/2021,15:49:41,2021-02-13 15:49:41,-70.615,-20.528,38.0,5.1,OCEANO PACIFICO,No,30605,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/02/2021,03:54:25,2021-02-19 03:54:25,-71.825,-29.279,15.0,5.1,OCEANO PACIFICO,Si,30503,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/04/2021,21:00:00,2021-04-26 21:00:00,-58.411,-62.364,12.0,5.1,TFAIAS,No,29172,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/05/2021,15:27:54,2021-05-20 15:27:54,-68.666,-22.242,126.0,5.1,CHILE,No,28727,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/05/2021,23:48:43,2021-05-31 23:48:43,-67.883,-30.536,15.0,5.1,SAN JUAN,Si,28493,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/06/2021,16:16:25,2021-06-22 16:16:25,-71.288,-32.102,97.0,5.1,CHILE,Si,28069,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/08/2021,17:25:28,2021-08-13 17:25:28,-24.102,-57.891,12.0,5.1,TFAIAS,No,27010,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/08/2021,21:28:32,2021-08-24 21:28:32,-69.344,-27.414,111.0,5.1,CHILE,No,26830,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/10/2021,09:36:11,2021-10-04 09:36:11,-72.498,-31.649,12.0,5.1,OCEANO PACIFICO,Si,26066,magnitud catalogada ≥5; tipo de magnitud no preservado
+12/03/2022,09:27:46,2022-03-12 09:27:46,-71.275,-27.437,18.0,5.1,OCEANO PACIFICO,No,22907,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/04/2022,02:16:37,2022-04-03 02:16:37,-67.144,-31.524,124.0,5.1,SAN JUAN,Si,22444,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/04/2022,09:53:08,2022-04-14 09:53:08,-72.706,-31.626,18.0,5.1,OCEANO PACIFICO,Si,22240,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/04/2022,19:17:53,2022-04-14 19:17:53,-71.756,-32.167,45.0,5.1,CHILE,Si,22233,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/04/2022,11:45:05,2022-04-24 11:45:05,-71.273,-35.23,98.0,5.1,CHILE,No,22019,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/05/2022,00:47:37,2022-05-24 00:47:37,-71.023,-28.093,27.0,5.1,CHILE,Si,21411,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/06/2022,05:32:44,2022-06-09 05:32:44,-69.709,-24.036,35.0,5.1,CHILE,No,21115,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/09/2022,04:49:56,2022-09-05 04:49:56,-72.41,-33.441,13.0,5.1,OCEANO PACIFICO,Si,19497,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/10/2022,08:40:20,2022-10-29 08:40:20,-66.92,-19.06,248.0,5.1,BOLIVIA,No,18486,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/11/2022,16:03:06,2022-11-06 16:03:06,-25.255,-60.628,41.0,5.1,TFAIAS,No,18337,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/11/2022,05:53:12,2022-11-23 05:53:12,-71.458,-35.363,90.0,5.1,CHILE,Si,18028,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/01/2023,20:23:46,2023-01-04 20:23:46,-69.104,-19.212,134.0,5.1,CHILE,No,17221,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/02/2023,07:23:36,2023-02-23 07:23:36,-73.306,-33.881,39.0,5.1,OCEANO PACIFICO,Si,16439,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/03/2023,04:34:48,2023-03-06 04:34:48,-71.723,-29.612,58.0,5.1,CHILE,Si,16254,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/06/2023,07:08:34,2023-06-03 07:08:34,-69.006,-20.687,121.0,5.1,CHILE,No,14819,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/07/2023,08:12:57,2023-07-27 08:12:57,-71.517,-26.791,12.0,5.1,OCEANO PACIFICO,No,13995,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/08/2023,15:09:13,2023-08-05 15:09:13,-69.736,-23.416,93.0,5.1,CHILE,No,13857,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/08/2023,11:02:09,2023-08-23 11:02:09,-69.316,-20.467,101.0,5.1,CHILE,No,13562,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/09/2023,01:01:45,2023-09-17 01:01:45,-71.31,-29.477,14.0,5.1,CHILE,Si,13166,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2023,12:27:36,2023-11-10 12:27:36,-71.758,-28.703,40.0,5.1,OCEANO PACIFICO,Si,12313,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/01/2024,13:47:25,2024-01-09 13:47:25,-67.407,-21.875,208.0,5.1,BOLIVIA,Si,11394,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/01/2024,23:36:01,2024-01-20 23:36:01,-66.746,-23.281,226.0,5.1,JUJUY,No,11251,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/03/2024,06:30:05,2024-03-13 06:30:05,-69.541,-18.668,123.0,5.1,CHILE,No,10585,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/04/2024,21:28:16,2024-04-03 21:28:16,-69.628,-24.395,80.0,5.1,CHILE,Si,10326,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/04/2024,12:33:43,2024-04-10 12:33:43,-68.914,-17.375,255.0,5.1,BOLIVIA,No,10249,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/05/2024,06:18:47,2024-05-13 06:18:47,-73.464,-35.332,18.0,5.1,OCEANO PACIFICO,Si,9860,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/07/2024,15:20:34,2024-07-03 15:20:34,-68.884,-23.032,120.0,5.1,CHILE,No,9178,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/08/2024,10:04:43,2024-08-31 10:04:43,-72.029,-29.716,10.0,5.1,OCEANO PACIFICO,Si,8433,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/10/2024,08:45:29,2024-10-24 08:45:29,-72.245,-28.578,5.0,5.1,OCEANO PACIFICO,No,7788,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/02/2025,10:54:00,2025-02-02 10:54:00,-71.771,-30.684,17.0,5.1,CHILE,Si,6608,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/03/2025,22:27:00,2025-03-15 22:27:00,-69.323,-20.208,105.0,5.1,CHILE,No,6174,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/05/2025,06:46:00,2025-05-05 06:46:00,-71.961,-29.449,43.0,5.1,OCEANO PACIFICO,Si,5673,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2025,00:36:47,2025-09-23 00:36:47,-75.002,-40.278,27.0,5.1,OCEANO PACIFICO,No,4306,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/09/2025,01:56:57,2025-09-24 01:56:57,-69.178,-23.786,106.0,5.1,CHILE,No,4292,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2025,07:49:28,2025-11-10 07:49:28,-70.694,-23.4,58.0,5.1,CHILE,No,3632,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/03/2026,07:00:00,2026-03-21 07:00:00,-66.961,-23.992,220.0,5.1,SALTA,Si,2026,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/05/2026,02:23:00,2026-05-27 02:23:00,-68.826,-22.275,116.0,5.1,CHILE,No,1270,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/06/2026,02:19:00,2026-06-11 02:19:00,-72.045,-27.77,37.0,5.1,OCEANO PACIFICO,No,1067,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/07/2026,13:15:00,2026-07-06 13:15:00,-71.876,-32.612,20.0,5.1,CHILE,Si,782,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/08/2026,02:19:00,2026-08-30 02:19:00,-70.313,-22.211,70.0,5.1,CHILE,No,237,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/08/2026,02:19:00,2026-08-30 02:19:00,-70.283,-22.214,75.0,5.1,CHILE,No,242,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/09/2026,18:18:00,2026-09-03 18:18:00,-71.328,-31.869,85.0,5.1,CHILE,Si,194,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/09/2026,07:06:00,2026-09-09 07:06:00,-66.73,-26.0,6.0,5.1,SALTA,Si,115,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/10/2011,20:26:42,2011-10-20 20:26:42,-66.399,-22.877,274.0,5.0,JUJUY,No,79243,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/06/2012,05:29:03,2012-06-18 05:29:03,-68.721,-33.06,15.0,5.0,MENDOZA,Si,76073,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/06/2012,07:25:55,2012-06-24 07:25:55,-66.97,-22.547,185.0,5.0,JUJUY,No,75965,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/03/2013,16:13:58,2013-03-28 16:13:58,-68.496,-32.043,114.0,5.0,SAN JUAN,No,72389,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/05/2013,05:59:34,2013-05-05 05:59:34,-68.942,-29.726,10.0,5.0,SAN JUAN,No,71841,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/06/2014,17:19:36,2014-06-08 17:19:36,-68.973,-31.394,108.0,5.0,SAN JUAN,Si,66608,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2014,06:08:20,2014-11-10 06:08:20,-69.091,-28.364,119.0,5.0,LA RIOJA,No,64680,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2015,19:26:36,2015-09-22 19:26:36,-71.857,-30.984,14.0,5.0,CHILE,No,60624,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/09/2015,23:25:52,2015-09-30 23:25:52,-72.425,-30.032,47.0,5.0,OCEANO PACIFICO,No,60532,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/10/2015,13:22:44,2015-10-02 13:22:44,-72.05,-30.505,31.0,5.0,OCEANO PACIFICO,No,60519,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/10/2015,01:06:49,2015-10-20 01:06:49,-71.765,-30.731,17.0,5.0,CHILE,No,60239,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/10/2015,07:05:26,2015-10-20 07:05:26,-71.67,-30.72,10.0,5.0,CHILE,Si,60233,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/10/2015,18:24:43,2015-10-24 18:24:43,-71.685,-31.426,64.0,5.0,CHILE,No,60148,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/10/2015,00:18:43,2015-10-30 00:18:43,-59.95,-60.97,10.0,5.0,MAR DE SCOTIA,No,60075,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2015,22:28:38,2015-10-31 22:28:38,-73.444,-38.841,78.0,5.0,CHILE,No,60051,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/11/2015,22:43:25,2015-11-02 22:43:25,-71.71,-30.63,30.0,5.0,CHILE,Si,60020,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2015,09:58:35,2015-11-10 09:58:35,-71.69,-30.79,50.0,5.0,CHILE,No,59903,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/11/2015,18:45:10,2015-11-27 18:45:10,-70.56,-24.73,30.0,5.0,CHILE,Si,59642,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/11/2015,13:50:28,2015-11-30 13:50:28,-25.32,-58.72,35.0,5.0,ISLAS SANDWICH DEL SUR,No,59574,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/12/2015,09:08:30,2015-12-01 09:08:30,-71.682,-30.237,20.0,5.0,CHILE,No,59554,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/12/2015,07:29:17,2015-12-05 07:29:17,-70.56,-22.51,15.0,5.0,CHILE,No,59475,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/01/2016,14:05:35,2016-01-17 14:05:35,-71.29,-26.37,10.0,5.0,OCEANO PACIFICO,No,58868,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/02/2016,02:24:37,2016-02-05 02:24:37,-71.91,-31.03,40.0,5.0,OCEANO PACIFICO,No,58633,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/02/2016,02:28:06,2016-02-05 02:28:06,-71.9,-31.03,20.0,5.0,OCEANO PACIFICO,No,58632,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/03/2016,00:24:06,2016-03-10 00:24:06,-66.405,-57.491,10.0,5.0,PASAJE DE DRAKE,No,58260,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/04/2016,11:59:42,2016-04-17 11:59:42,-71.35,-30.75,40.0,5.0,CHILE,No,57687,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/05/2016,17:25:43,2016-05-19 17:25:43,-66.687,-28.013,192.0,5.0,CATAMARCA,No,57308,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/05/2016,09:20:38,2016-05-22 09:20:38,-64.146,-22.39,30.0,5.0,BOLIVIA,Si,57280,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/06/2016,20:07:27,2016-06-28 20:07:27,-71.86,-30.36,30.0,5.0,CHILE,No,56792,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/07/2016,06:34:58,2016-07-31 06:34:58,-26.275,-59.752,91.0,5.0,ISLAS SANDWICH DEL SUR,No,56343,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/08/2016,15:06:06,2016-08-11 15:06:06,-25.239,-59.948,48.0,5.0,ISLAS SANDWICH DEL SUR,No,56179,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/08/2016,12:39:07,2016-08-31 12:39:07,-27.33,-56.116,102.0,5.0,ISLAS SANDWICH DEL SUR,No,55882,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2016,13:38:32,2016-09-02 13:38:32,-30.924,-55.392,35.0,5.0,ISLAS SANDWICH DEL SUR,No,55846,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/09/2016,21:05:54,2016-09-20 21:05:54,-30.576,-54.792,10.0,5.0,ISLAS GEORGIAS DEL SUR,No,55609,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/09/2016,11:46:08,2016-09-21 11:46:08,-27.538,-55.794,38.0,5.0,ISLAS SANDWICH DEL SUR,No,55595,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2016,22:32:55,2016-09-23 22:32:55,-30.724,-54.956,15.0,5.0,ISLAS GEORGIAS DEL SUR,No,55566,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/09/2016,04:50:22,2016-09-24 04:50:22,-30.631,-54.846,16.0,5.0,ISLAS GEORGIAS DEL SUR,No,55561,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/10/2016,22:59:18,2016-10-11 22:59:18,-71.39,-30.64,30.0,5.0,CHILE,No,55356,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/10/2016,04:18:15,2016-10-25 04:18:15,-71.635,-26.688,19.0,5.0,OCEANO PACIFICO,No,55192,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/10/2016,21:40:04,2016-10-28 21:40:04,-25.217,-56.567,10.0,5.0,ISLAS SANDWICH DEL SUR,No,55150,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2016,08:15:46,2016-10-31 08:15:46,-72.46,-33.73,10.0,5.0,OCEANO PACIFICO,No,55109,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/11/2016,04:21:30,2016-11-02 04:21:30,-68.5,-22.52,140.0,5.0,CHILE,No,55080,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/12/2016,12:36:44,2016-12-19 12:36:44,-71.59,-30.78,23.0,5.0,CHILE,Si,54400,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/01/2017,22:04:43,2017-01-07 22:04:43,-66.966,-23.99,175.0,5.0,SALTA,No,54123,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/01/2017,10:14:48,2017-01-13 10:14:48,-26.273,-58.902,160.0,5.0,ISLAS SANDWICH DEL SUR,No,54025,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/01/2017,23:38:40,2017-01-23 23:38:40,-31.358,-55.114,34.0,5.0,ISLAS GEORGIAS DEL SUR,No,53886,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/01/2017,10:23:30,2017-01-27 10:23:30,-68.722,-22.529,111.0,5.0,CHILE,No,53851,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/03/2017,00:42:14,2017-03-11 00:42:14,-71.98,-34.73,50.0,5.0,CHILE,No,53382,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/03/2017,05:17:26,2017-03-20 05:17:26,-66.492,-27.084,196.0,5.0,CATAMARCA,No,53302,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/03/2017,03:59:23,2017-03-25 03:59:23,-69.24,-19.9,106.0,5.0,CHILE,No,53237,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/03/2017,00:03:31,2017-03-27 00:03:31,-72.0,-36.21,109.0,5.0,CHILE,No,53218,magnitud catalogada ≥5; tipo de magnitud no preservado
+30/03/2017,18:58:17,2017-03-30 18:58:17,-28.088,-55.44,10.0,5.0,ISLAS SANDWICH DEL SUR,No,53179,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/04/2017,00:13:00,2017-04-10 00:13:00,-26.509,-56.154,38.0,5.0,ISLAS SANDWICH DEL SUR,No,53060,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/04/2017,18:24:29,2017-04-20 18:24:29,-67.376,-27.578,153.0,5.0,CATAMARCA,Si,52915,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/04/2017,00:02:20,2017-04-25 00:02:20,-72.21,-33.14,10.0,5.0,OCEANO PACIFICO,No,52860,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/05/2017,02:09:52,2017-05-03 02:09:52,-27.402,-59.797,122.0,5.0,ISLAS SANDWICH DEL SUR,No,52759,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/05/2017,19:08:27,2017-05-10 19:08:27,-28.052,-56.067,95.0,5.0,ISLAS SANDWICH DEL SUR,No,52691,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2017,13:36:16,2017-05-11 13:36:16,-25.386,-56.466,10.0,5.0,ISLAS SANDWICH DEL SUR,No,52674,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/05/2017,01:55:28,2017-05-29 01:55:28,-25.682,-56.296,12.0,5.0,ISLAS SANDWICH DEL SUR,No,52488,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/06/2017,19:21:43,2017-06-03 19:21:43,-68.787,-21.952,120.0,5.0,CHILE,No,52426,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/06/2017,10:48:49,2017-06-08 10:48:49,-70.231,-22.083,82.0,5.0,CHILE,No,52374,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/06/2017,06:54:31,2017-06-15 06:54:31,-66.803,-21.522,251.0,5.0,BOLIVIA,No,52303,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/07/2017,23:25:25,2017-07-03 23:25:25,-69.614,-19.431,101.0,5.0,CHILE,No,52076,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/07/2017,19:38:46,2017-07-11 19:38:46,-48.682,-60.336,10.0,5.0,MAR DE SCOTIA,No,51995,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/11/2017,15:56:17,2017-11-01 15:56:17,-25.545,-56.52,24.0,5.0,ISLAS GIORGIA Y SANDWICH DEL SUR,No,50514,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/11/2017,04:36:57,2017-11-09 04:36:57,-71.45,-30.697,35.0,5.0,CHILE,Si,50398,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/11/2017,19:15:12,2017-11-26 19:15:12,-71.065,-32.233,66.0,5.0,CHILE,Si,50139,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/12/2017,15:20:12,2017-12-19 15:20:12,-67.163,-24.244,210.0,5.0,SALTA,No,49848,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/01/2018,10:27:03,2018-01-26 10:27:03,-74.485,-37.413,34.0,5.0,OCEANO PACIFICO,No,49322,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/02/2018,20:31:44,2018-02-26 20:31:44,-67.589,-28.368,145.0,5.0,LA RIOJA,Si,48912,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/03/2018,13:16:31,2018-03-04 13:16:31,-68.712,-20.426,137.0,5.0,CHILE,No,48835,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/03/2018,09:51:16,2018-03-19 09:51:16,-69.451,-32.374,126.0,5.0,MENDOZA,Si,48604,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/04/2018,03:00:33,2018-04-23 03:00:33,-68.757,-22.391,131.0,5.0,CHILE,No,48049,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/05/2018,13:09:53,2018-05-02 13:09:53,-70.087,-33.294,125.0,5.0,CHILE,Si,47900,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/06/2018,02:01:48,2018-06-24 02:01:48,-67.037,-24.171,220.0,5.0,SALTA,No,47088,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/11/2018,05:20:22,2018-11-02 05:20:22,-67.652,-30.217,15.0,5.0,LA RIOJA,Si,45081,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/12/2018,02:33:09,2018-12-11 02:33:09,-70.016,-20.998,76.0,5.0,CHILE,No,44560,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/12/2018,13:27:22,2018-12-16 13:27:22,-69.4,-23.406,82.0,5.0,CHILE,No,44488,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/01/2019,07:28:25,2019-01-24 07:28:25,-71.486,-30.117,20.0,5.0,CHILE,Si,43855,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/02/2019,23:56:37,2019-02-02 23:56:37,-72.064,-31.356,8.0,5.0,OCEANO PACIFICO,Si,43734,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/03/2019,12:09:48,2019-03-14 12:09:48,-66.66,-27.969,194.0,5.0,CATAMARCA,Si,43140,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/04/2019,10:17:38,2019-04-02 10:17:38,-72.297,-51.268,15.0,5.0,SUR DE CHILE,Si,42846,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/04/2019,15:29:54,2019-04-22 15:29:54,-67.247,-24.245,187.0,5.0,SALTA,Si,42483,magnitud catalogada ≥5; tipo de magnitud no preservado
+21/05/2019,04:18:58,2019-05-21 04:18:58,-66.742,-23.274,223.0,5.0,JUJUY,No,42064,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/06/2019,19:50:07,2019-06-13 19:50:07,-71.707,-30.368,22.0,5.0,CHILE,Si,41740,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/06/2019,05:30:41,2019-06-28 05:30:41,-71.091,-29.371,81.0,5.0,CHILE,Si,41523,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/08/2019,11:23:36,2019-08-15 11:23:36,-72.408,-29.833,13.0,5.0,OCEANO PACIFICO,No,40773,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2019,17:53:28,2019-09-02 17:53:28,-67.165,-24.088,205.0,5.0,SALTA,No,40434,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/09/2019,17:11:55,2019-09-29 17:11:55,-73.079,-35.557,10.0,5.0,CHILE,No,39939,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/10/2019,14:26:51,2019-10-02 14:26:51,-67.777,-23.369,159.0,5.0,CHILE,No,39893,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/10/2019,23:55:36,2019-10-10 23:55:36,-72.137,-29.162,14.0,5.0,OCEANO PACIFICO,Si,39764,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/10/2019,13:58:24,2019-10-17 13:58:24,-68.734,-46.284,15.0,5.0,SANTA CRUZ,Si,39640,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/01/2020,18:11:18,2020-01-23 18:11:18,-63.14,-27.106,636.0,5.0,SANTIAGO DEL ESTERO,No,38056,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/05/2020,19:42:06,2020-05-08 19:42:06,-69.046,-23.168,120.0,5.0,CHILE,No,36348,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/06/2020,21:50:41,2020-06-16 21:50:41,-73.658,-36.595,33.0,5.0,CHILE,No,35631,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2020,06:38:06,2020-09-02 06:38:06,-71.735,-27.824,7.0,5.0,OCEANO PACIFICO,Si,34227,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/09/2020,00:23:56,2020-09-03 00:23:56,-71.429,-27.975,15.0,5.0,OCEANO PACIFICO,Si,34214,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/09/2020,17:37:25,2020-09-09 17:37:25,-57.999,-62.397,10.0,5.0,TIERRA DEL FUEGO,No,34099,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/09/2020,20:04:33,2020-09-11 20:04:33,-57.936,-62.042,16.0,5.0,TFAIAS,No,34061,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2020,20:44:13,2020-09-22 20:44:13,-58.372,-62.364,11.0,5.0,TFAIAS,No,33868,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2020,20:53:46,2020-09-22 20:53:46,-58.41,-62.372,7.0,5.0,TFAIAS,No,33867,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/10/2020,14:16:14,2020-10-13 14:16:14,-71.237,-26.101,28.0,5.0,OCEANO PACIFICO,No,33458,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/10/2020,21:05:10,2020-10-17 21:05:10,-58.454,-62.376,9.0,5.0,TFAIAS,No,33370,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/10/2020,23:00:25,2020-10-20 23:00:25,-58.273,-62.318,13.0,5.0,TFAIAS,No,33301,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/10/2020,07:40:18,2020-10-24 07:40:18,-58.434,-62.401,7.0,5.0,TFAIAS,No,33243,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/10/2020,04:02:46,2020-10-29 04:02:46,-58.318,-62.364,10.0,5.0,TFAIAS,No,33162,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/10/2020,04:41:39,2020-10-31 04:41:39,-58.387,-62.375,6.0,5.0,TFAIAS,No,33126,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/01/2021,13:38:40,2021-01-06 13:38:40,-69.33,-19.512,106.0,5.0,CHILE,No,31736,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/01/2021,20:20:47,2021-01-31 20:20:47,-68.972,-31.792,10.0,5.0,SAN JUAN,Si,30909,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/04/2021,01:11:25,2021-04-19 01:11:25,-72.464,-34.001,10.0,5.0,OCEANO PACIFICO,Si,29346,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/07/2021,02:05:30,2021-07-09 02:05:30,-68.855,-20.309,123.0,5.0,CHILE,No,27742,magnitud catalogada ≥5; tipo de magnitud no preservado
+26/07/2021,17:58:03,2021-07-26 17:58:03,-71.875,-33.48,15.0,5.0,CHILE,Si,27390,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/07/2021,09:14:21,2021-07-31 09:14:21,-72.036,-32.714,11.0,5.0,OCEANO PACIFICO,No,27288,magnitud catalogada ≥5; tipo de magnitud no preservado
+28/08/2021,09:57:46,2021-08-28 09:57:46,-67.539,-22.28,190.0,5.0,BOLIVIA,No,26767,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/09/2021,10:11:48,2021-09-20 10:11:48,-75.79,-36.556,10.0,5.0,OCEANO PACIFICO,No,26330,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/11/2021,01:18:21,2021-11-04 01:18:21,-71.479,-30.262,40.0,5.0,CHILE,Si,25440,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/12/2021,06:41:14,2021-12-07 06:41:14,-66.585,-27.911,194.0,5.0,CATAMARCA,Si,24779,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/02/2022,08:39:11,2022-02-09 08:39:11,-69.196,-20.585,107.0,5.0,CHILE,No,23508,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/04/2022,14:10:32,2022-04-16 14:10:32,-72.522,-33.974,14.0,5.0,OCEANO PACIFICO,Si,22190,magnitud catalogada ≥5; tipo de magnitud no preservado
+09/05/2022,04:25:13,2022-05-09 04:25:13,-69.556,-33.64,160.0,5.0,MENDOZA,Si,21704,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/05/2022,12:21:14,2022-05-11 12:21:14,-70.293,-21.662,63.0,5.0,CHILE,No,21656,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/05/2022,02:37:16,2022-05-27 02:37:16,-70.501,-26.371,71.0,5.0,CHILE,No,21353,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/06/2022,15:24:09,2022-06-18 15:24:09,-69.476,-33.668,130.0,5.0,MENDOZA,Si,20954,magnitud catalogada ≥5; tipo de magnitud no preservado
+06/08/2022,23:41:15,2022-08-06 23:41:15,-69.391,-19.42,104.0,5.0,CHILE,No,20067,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/08/2022,19:14:40,2022-08-27 19:14:40,-71.503,-28.63,25.0,5.0,CHILE,Si,19691,magnitud catalogada ≥5; tipo de magnitud no preservado
+23/09/2022,17:16:58,2022-09-23 17:16:58,-71.998,-28.896,9.0,5.0,OCEANO PACIFICO,No,19174,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/10/2022,08:19:01,2022-10-10 08:19:01,-71.574,-29.836,10.0,5.0,CHILE,No,18851,magnitud catalogada ≥5; tipo de magnitud no preservado
+17/10/2022,10:38:23,2022-10-17 10:38:23,-69.4,-18.414,138.0,5.0,CHILE,No,18733,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/11/2022,23:37:59,2022-11-01 23:37:59,-68.914,-22.222,114.0,5.0,CHILE,No,18422,magnitud catalogada ≥5; tipo de magnitud no preservado
+04/11/2022,11:39:05,2022-11-04 11:39:05,-70.58,-20.156,32.0,5.0,OCEANO PACIFICO,No,18377,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/11/2022,19:17:39,2022-11-20 19:17:39,-66.743,-27.907,188.0,5.0,CATAMARCA,Si,18070,magnitud catalogada ≥5; tipo de magnitud no preservado
+25/11/2022,20:09:38,2022-11-25 20:09:38,-27.723,-55.959,11.0,5.0,TFAIAS,No,17990,magnitud catalogada ≥5; tipo de magnitud no preservado
+19/12/2022,17:10:49,2022-12-19 17:10:49,-68.684,-22.362,126.0,5.0,CHILE,No,17543,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/12/2022,17:02:09,2022-12-24 17:02:09,-67.201,-24.107,181.0,5.0,SALTA,No,17435,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/01/2023,12:47:41,2023-01-16 12:47:41,-67.229,-24.389,180.0,5.0,SALTA,No,17048,magnitud catalogada ≥5; tipo de magnitud no preservado
+15/06/2023,16:07:33,2023-06-15 16:07:33,-71.966,-34.506,32.0,5.0,CHILE,Si,14641,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/07/2023,15:35:41,2023-07-11 15:35:41,-73.94,-38.178,30.0,5.0,CHILE,No,14221,magnitud catalogada ≥5; tipo de magnitud no preservado
+29/07/2023,23:16:11,2023-07-29 23:16:11,-74.242,-37.418,11.0,5.0,OCEANO PACIFICO,Si,13952,magnitud catalogada ≥5; tipo de magnitud no preservado
+20/11/2023,18:03:07,2023-11-20 18:03:07,-71.521,-30.76,25.0,5.0,CHILE,Si,12134,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/12/2023,11:57:31,2023-12-14 11:57:31,-66.866,-24.054,216.0,5.0,SALTA,No,11742,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/01/2024,05:35:33,2024-01-07 05:35:33,-69.499,-18.321,157.0,5.0,CHILE,No,11426,magnitud catalogada ≥5; tipo de magnitud no preservado
+13/01/2024,22:08:13,2024-01-13 22:08:13,-68.643,-21.139,142.0,5.0,CHILE,No,11345,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/03/2024,16:50:10,2024-03-24 16:50:10,-70.142,-19.504,74.0,5.0,CHILE,No,10445,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/04/2024,10:51:53,2024-04-03 10:51:53,-72.944,-36.989,10.0,5.0,CHILE,Si,10331,magnitud catalogada ≥5; tipo de magnitud no preservado
+22/09/2024,16:42:31,2024-09-22 16:42:31,-66.826,-19.495,320.0,5.0,BOLIVIA,No,8153,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/10/2024,02:35:06,2024-10-07 02:35:06,-67.151,-24.148,194.0,5.0,SALTA,Si,7993,magnitud catalogada ≥5; tipo de magnitud no preservado
+03/11/2024,18:18:38,2024-11-03 18:18:38,-67.05,-18.995,295.0,5.0,BOLIVIA,No,7629,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/11/2024,19:10:00,2024-11-10 19:10:00,-69.402,-29.773,118.0,5.0,SAN JUAN,Si,7530,magnitud catalogada ≥5; tipo de magnitud no preservado
+14/12/2024,09:54:00,2024-12-14 09:54:00,-67.386,-21.301,226.0,5.0,BOLIVIA,No,7131,magnitud catalogada ≥5; tipo de magnitud no preservado
+05/03/2025,07:01:00,2025-03-05 07:01:00,-71.739,-31.518,57.0,5.0,CHILE,Si,6298,magnitud catalogada ≥5; tipo de magnitud no preservado
+08/04/2025,19:30:00,2025-04-08 19:30:00,-68.527,-21.042,125.0,5.0,CHILE,No,5932,magnitud catalogada ≥5; tipo de magnitud no preservado
+27/04/2025,08:36:00,2025-04-27 08:36:00,-68.832,-34.082,30.0,5.0,MENDOZA,Si,5766,magnitud catalogada ≥5; tipo de magnitud no preservado
+10/12/2025,03:38:27,2025-12-10 03:38:27,-71.22,-28.834,38.0,5.0,CHILE,No,3234,magnitud catalogada ≥5; tipo de magnitud no preservado
+01/03/2026,17:03:00,2026-03-01 17:03:00,-68.841,-22.104,119.0,5.0,CHILE,No,2252,magnitud catalogada ≥5; tipo de magnitud no preservado
+07/03/2026,14:13:00,2026-03-07 14:13:00,-66.893,-31.532,135.0,5.0,LA RIOJA,Si,2187,magnitud catalogada ≥5; tipo de magnitud no preservado
+24/04/2026,10:49:00,2026-04-24 10:49:00,-70.851,-27.862,57.0,5.0,CHILE,Si,1627,magnitud catalogada ≥5; tipo de magnitud no preservado
+16/05/2026,07:59:00,2026-05-16 07:59:00,-66.34,-22.88,266.0,5.0,JUJUY,No,1394,magnitud catalogada ≥5; tipo de magnitud no preservado
+18/05/2026,05:48:00,2026-05-18 05:48:00,-70.021,-20.412,87.0,5.0,CHILE,No,1370,magnitud catalogada ≥5; tipo de magnitud no preservado
+11/06/2026,09:06:00,2026-06-11 09:06:00,-72.209,-27.782,15.0,5.0,OCEANO PACIFICO,No,1063,magnitud catalogada ≥5; tipo de magnitud no preservado
+31/07/2026,14:47:00,2026-07-31 14:47:00,-72.274,-29.928,10.0,5.0,OCEANO PACIFICO,Si,553,magnitud catalogada ≥5; tipo de magnitud no preservado
+02/09/2026,07:54:00,2026-09-02 07:54:00,-26.562,-56.422,96.0,5.0,TFAIAS,No,203,magnitud catalogada ≥5; tipo de magnitud no preservado

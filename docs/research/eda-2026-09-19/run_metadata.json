@@ -1,0 +1,249 @@
+{
+  "run": {
+    "analysis_date": "2026-09-19",
+    "python": "3.13.5",
+    "pandas": "2.3.3",
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "geopandas": "1.1.2",
+    "shapely": "2.1.2",
+    "pyproj": "3.7.2"
+  },
+  "audit": {
+    "source": "../inpres-sismos/data/sismos.csv",
+    "bytes": 4818108,
+    "sha256": "839a061f9877df6ed596b1bb0c73f3471d352add046dbf56a20d7f47f84c32f6",
+    "rows": 80524,
+    "source_columns": [
+      "fecha",
+      "hora",
+      "latitud",
+      "longitud",
+      "profundidad",
+      "magnitud",
+      "provincia",
+      "sentido"
+    ],
+    "derived_columns": [
+      "timestamp",
+      "depth_km",
+      "latitude",
+      "longitude",
+      "magnitude",
+      "source_row",
+      "depth_class"
+    ],
+    "missing_source": {
+      "fecha": 0,
+      "hora": 0,
+      "latitud": 0,
+      "longitud": 0,
+      "profundidad": 0,
+      "magnitud": 0,
+      "provincia": 31,
+      "sentido": 0
+    },
+    "unparsed": {
+      "timestamp": 0,
+      "depth_km": 0,
+      "latitude": 0,
+      "longitude": 0,
+      "magnitude": 0
+    },
+    "duplicates": {
+      "exact_rows": 0,
+      "same_reported_event_fields": 0,
+      "same_parsed_physical_fields": 0
+    },
+    "invalid": {
+      "latitude_outside_world": 0,
+      "longitude_outside_world": 0,
+      "negative_depth": 0,
+      "depth_over_700_km": 1,
+      "magnitude_nonpositive": 0,
+      "magnitude_over_10": 0
+    },
+    "ranges": {
+      "timestamp": [
+        "2011-07-16T08:45:02",
+        "2026-09-18T06:25:00"
+      ],
+      "latitude": [
+        -64.982,
+        47.81
+      ],
+      "longitude": [
+        -78.661,
+        174.99
+      ],
+      "depth_km": [
+        0.0,
+        750.0
+      ],
+      "magnitude": [
+        1.6,
+        8.3
+      ]
+    },
+    "scientific_bbox": {
+      "bounds_wsen": [
+        -82.0,
+        -58.0,
+        -52.0,
+        -18.0
+      ],
+      "inside": 80262,
+      "outside": 262,
+      "note": "Ventana de trabajo del producto; no define nacionalidad ni tectónica."
+    },
+    "time_reference": "Fecha y hora publicadas sin zona horaria preservada; se analizan como tiempo local ingenuo.",
+    "depth_reference": "Profundidad reportada en km; datum vertical no documentado en el export.",
+    "magnitude_reference": "Tipo de magnitud no preservado; no asumir Mw homogénea."
+  },
+  "depth": {
+    "n": 80524,
+    "mean_km": 113.8909890219065,
+    "median_km": 110.0,
+    "minimum_km": 0.0,
+    "maximum_km": 750.0,
+    "quantiles_km": {
+      "p10": 14.0,
+      "p25": 99.0,
+      "p50": 110.0,
+      "p75": 135.0,
+      "p90": 207.0,
+      "p95": 225.0
+    },
+    "classification_note": "Bandas descriptivas, no clases tectónicas."
+  },
+  "magnitude_completeness": {
+    "n": 80524,
+    "mc": 2.5,
+    "b_value": 0.8655,
+    "b_sigma": 0.003,
+    "n_above_mc": 80469,
+    "method": "MAXC (pico no acumulado, bin 0.1) + estimador Aki-Utsu; diagnóstico exploratorio"
+  },
+  "latitude_scan": {
+    "0.25": {
+      "step_degrees": 0.25,
+      "centers": 93,
+      "corridor": {
+        "west": -73.0,
+        "east": -61.0,
+        "half_width_km": 50.0,
+        "projection": "WGS84 to local azimuthal equidistant for each center; point-to-segment distance"
+      },
+      "events_median": 471.0,
+      "events_minimum": 0,
+      "adjacent_jaccard_median": 0.5531888150732558,
+      "change_js_median": 0.11315382143755624
+    },
+    "0.5": {
+      "step_degrees": 0.5,
+      "centers": 47,
+      "corridor": {
+        "west": -73.0,
+        "east": -61.0,
+        "half_width_km": 50.0,
+        "projection": "WGS84 to local azimuthal equidistant for each center; point-to-segment distance"
+      },
+      "events_median": 471.0,
+      "events_minimum": 0,
+      "adjacent_jaccard_median": 0.25,
+      "change_js_median": 0.20116323403519432
+    }
+  },
+  "slab2": {
+    "catalog_events": 80524,
+    "inside_clp": 80048,
+    "interpolated_four_valid_nodes": 80046,
+    "coverage_fraction": 0.9940638815756793,
+    "delta_z_definition": "profundidad INPRES - profundidad Slab2 DEP; positivo = hipocentro nominalmente más profundo",
+    "delta_z_quantiles_km": {
+      "p05": -160.54913232724232,
+      "p10": -99.08738158412703,
+      "p25": 2.2978257622981957,
+      "p50": 12.281266631941897,
+      "p75": 30.91040384829801,
+      "p90": 55.35916073033097,
+      "p95": 63.02943123496588
+    },
+    "abs_delta_z_median_km": 25.42851000050399,
+    "near_model_counts": {
+      "abs_delta_le_10_km": 17630,
+      "abs_delta_le_25_km": 39721,
+      "abs_delta_le_50_km": 52923
+    },
+    "warning": "Diferencia vertical nominal, no distancia 3D, membresía tectónica ni validación independiente de Slab2.",
+    "source": {
+      "version": "02.23.18",
+      "files": {
+        "sam_slab2_dep_02.23.18.xyz": {
+          "bytes": 14339837,
+          "sha256": "0522c999fcd3f80422407e0f6bdb4cb1ce09bd2cf1f13d68c2b169c26762bbca"
+        },
+        "sam_slab2_dip_02.23.18.xyz": {
+          "bytes": 14134592,
+          "sha256": "dcdd1c10ceaf5423a9f4ffbd7a238525f24112d66a83e2e62ce9ae7576c6411c"
+        },
+        "sam_slab2_str_02.23.18.xyz": {
+          "bytes": 14136413,
+          "sha256": "c138d970788e9c1d4efa95a25ce0b62472cc6c3f53457adfb48db5a3536d7422"
+        },
+        "sam_slab2_thk_02.23.18.xyz": {
+          "bytes": 14134504,
+          "sha256": "0d46977fb483ddc8553eac14db67f9dca51a4cb7e262f2b4e7fad6d73809f604"
+        },
+        "sam_slab2_unc_02.23.18.xyz": {
+          "bytes": 14133924,
+          "sha256": "e21d3d7b65f7da0be5cb6952ec901d359da514d20e02428495c579d798a971dc"
+        },
+        "sam_slab2_clp_02.23.18.csv": {
+          "bytes": 17458,
+          "sha256": "b85e7211e0842d21026de6d9f5fae4544a18f6291d74fac0023784f13bce45c8"
+        }
+      }
+    }
+  },
+  "provinces": {
+    "cartography": "../inpres-sismos/data/provincia/provincia.shp",
+    "cartography_files": {
+      "provincia.shp": {
+        "bytes": 18699324,
+        "sha256": "0c89818ee96ae8b495c9cd9a1fd1d81904181c9f73252aaf58879a25a76a90f1"
+      },
+      "provincia.shx": {
+        "bytes": 292,
+        "sha256": "ce2b3a812d9cdf428581f8b007fe2fa19235a4c5bd40bc8f00b0f853588e542c"
+      },
+      "provincia.dbf": {
+        "bytes": 11737,
+        "sha256": "22177d4384e48c8e60cf723fcc4837d6d31b7f9b57b8987fc155a6ceb4b7d89d"
+      },
+      "provincia.prj": {
+        "bytes": 143,
+        "sha256": "98aaf3d1c0ecadf1a424a4536de261c3daf4e373697cb86c40c43b989daf52eb"
+      },
+      "provincia.cpg": {
+        "bytes": 5,
+        "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+      }
+    },
+    "crs_source": "EPSG:4326",
+    "area_crs": "EPSG:6933",
+    "geometry_repaired": 1,
+    "matched_events": 79252,
+    "unmatched_events": 1272,
+    "global_mc_used": 2.5,
+    "warning": "Provincias son unidades administrativas; densidad depende de geometría, catálogo y completitud."
+  },
+  "methodological_limits": [
+    "Mc por MAXC es diagnóstico y no demuestra completitud homogénea.",
+    "El tipo de magnitud y las incertidumbres por evento no están disponibles.",
+    "Δz es diferencia vertical nominal; no es distancia 3D ni clasificación tectónica.",
+    "El catálogo y Slab2 no son evidencia estadísticamente independiente.",
+    "Point-in-polygon provincial es una agregación administrativa.",
+    "Los picos diarios son candidatos; no se declaran secuencias de réplicas."
+  ]
+}

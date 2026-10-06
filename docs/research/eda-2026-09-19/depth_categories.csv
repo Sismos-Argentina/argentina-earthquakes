@@ -1,0 +1,4 @@
+category,definition,events,proportion
+superficial,0 ≤ d < 70 km,16697,0.2073543291441061
+intermedia,70 ≤ d < 300 km,63549,0.7891932839898663
+profunda,d ≥ 300 km,278,0.0034523868660275197
