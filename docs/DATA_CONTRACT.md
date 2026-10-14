@@ -146,10 +146,10 @@ Cada transformación debe registrar:
 
 No se adoptará un formato binario propio hasta completar el benchmark inicial.
 
-## 9. Catálogo histórico: proveedor implementado, consumo pendiente
+## 9. Catálogo histórico: proveedor y consumo curado
 
-El catálogo de terremotos históricos de INPRES y su material fotográfico pertenecen
-a una experiencia futura distinta de la exploración instrumental en profundidad. El
+El catálogo de terremotos históricos de INPRES y su material fotográfico permanecen
+separados de la exploración instrumental en profundidad. El
 proveedor `inpres-sismos` ya publica dos artefactos con `schema_version: "1.0"`:
 
 - `data/exports/sismos_historicos.json`: 80 eventos con fecha original e ISO,
@@ -158,11 +158,19 @@ proveedor `inpres-sismos` ya publica dos artefactos con `schema_version: "1.0"`:
 - `data/exports/fotos_historicas.json`: manifiesto de galerías argentinas e
   internacionales, URLs oficiales, disponibilidad y rutas a derivados WebP.
 
-Estos artefactos todavía no están incorporados a este repositorio ni a la interfaz.
-Cuando se consuman, se debe fijar un commit del proveedor, registrar checksums y
-usar tipos independientes de `InpresFeature`. No agregar profundidad o magnitud
-ficticias, no confundir Mercalli con magnitud instrumental y no presentar el ID
-derivado como identificador oficial.
+El producto integra cuatro fichas como memoria histórica opcional: San Juan 1894
+y 1944, Caucete 1977 y El Galpón 2015. `src/data/competition-history.json` fija el
+commit proveedor `c5634cac3bb3d3757ed79dfd897b58c128fb5798` y los checksums de
+sus entradas. Sus tipos son independientes de `InpresFeature`; no se agregan
+profundidades o magnitudes ficticias, ni vínculos automáticos con el catálogo
+instrumental. Mercalli describe intensidad y el ID derivado no es oficial.
+
+Los metadatos y derivados de las 20 fotografías seleccionadas se preservan, pero
+`src/data/historical-rights.json` mantiene su reproducción bloqueada mientras no
+haya evidencia de permisos. El build retira únicamente sus derivados de `out/`.
+El bloque de fotografías muestra el enlace a la galería original de INPRES; no
+presenta el texto de autor pendiente de verificación. Incorporar los 80 eventos
+o ampliar las galerías queda fuera de esta entrega.
 
 Las asociaciones foto–evento son derivadas. Nueve coinciden por fecha exacta y
 Sampacho explicita la discrepancia `1934-06-11` (catálogo) frente a `1934-06-10`

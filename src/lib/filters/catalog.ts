@@ -1,4 +1,5 @@
 import type { InpresFeature } from "@/lib/data/inpres";
+import { allowedInVisualization } from "../data/catalog-quality.ts";
 
 export type CatalogFilters = {
   dateFrom: string;
@@ -7,6 +8,7 @@ export type CatalogFilters = {
   magnitudeMax: number;
   depthMin: number;
   depthMax: number;
+  includeProvisional?: boolean;
 };
 
 export type CatalogFilterBounds = CatalogFilters;
@@ -63,7 +65,8 @@ export function matchesCatalogFilters(
   filters: CatalogFilters,
 ): boolean {
   const date = catalogDateKey(feature.properties.fecha);
-  return date >= isoDateKey(filters.dateFrom)
+  return allowedInVisualization(feature, filters.includeProvisional)
+    && date >= isoDateKey(filters.dateFrom)
     && date <= isoDateKey(filters.dateTo)
     && feature.properties.magnitud >= filters.magnitudeMin
     && feature.properties.magnitud <= filters.magnitudeMax
@@ -77,7 +80,8 @@ export function sameCatalogFilters(a: CatalogFilters, b: CatalogFilters): boolea
     && a.magnitudeMin === b.magnitudeMin
     && a.magnitudeMax === b.magnitudeMax
     && a.depthMin === b.depthMin
-    && a.depthMax === b.depthMax;
+    && a.depthMax === b.depthMax
+    && Boolean(a.includeProvisional) === Boolean(b.includeProvisional);
 }
 
 export function depthPresetRange(

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import HistoricalChapter from "./HistoricalChapter";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import history from "@/data/competition-history.json";
-import presets from "@/data/competition-presets.json";
+import presets from "@/data/flat-slab-guide.json";
 import snapshot from "@/data/catalog-snapshot.json";
 import { navigateStory, storyScrollBehavior, type StoryAction, type StoryState } from "@/lib/story/navigation";
 
@@ -24,8 +24,8 @@ const subscribeVisibility = (notify: () => void) => {
 const readVisibility = () => document.visibilityState === "visible";
 
 export default function CompetitionExperience() {
-  const [state, setState] = useState<StoryState>({ mode: "history", guideIndex: null });
-  const [mapStarted, setMapStarted] = useState(false);
+  const [state, setState] = useState<StoryState>({ mode: "explore", guideIndex: null });
+  const [mapStarted, setMapStarted] = useState(true);
   const [activeScene, setActiveScene] = useState(0);
   const [photosPaused, setPhotosPaused] = useState(false);
   const pageVisible = useSyncExternalStore(subscribeVisibility, readVisibility, () => false);
@@ -73,11 +73,11 @@ export default function CompetitionExperience() {
           reducedMotion={reducedMotion}
           onHistory={() => dispatch("history")} onStartGuide={() => dispatch("guide")} />
       </div> : null}
-      {historyVisible ? <main className="archiveStory" aria-label="Prólogo histórico de Sismos Visuales">
+      {historyVisible ? <main className="archiveStory" aria-label="Memoria histórica de Bajo nuestros pies">
         <header className="storyHeader">
-          <a className="storyBrand" href="#history-0" onClick={(e) => { e.preventDefault(); go(0); }}>SISMOS VISUALES<span>Memoria / profundidad</span></a>
+          <a className="storyBrand" href="#history-0" onClick={(e) => { e.preventDefault(); go(0); }}>BAJO NUESTROS PIES<span>Memoria / profundidad</span></a>
           <div className="storyHeaderActions">
-            <button className="storySkip" onClick={() => dispatch("skip")}>Saltar introducción <span aria-hidden="true">↗</span></button>
+            <button className="storySkip" onClick={() => dispatch("skip")}>Volver al mapa <span aria-hidden="true">↗</span></button>
           </div>
         </header>
         {history.scenes.map((scene, index) => <HistoricalChapter key={scene.id} scene={scene} index={index}
@@ -88,13 +88,13 @@ export default function CompetitionExperience() {
           tabIndex={-1} className="questionScene" aria-labelledby="central-question-title">
           <div className="questionCopy"><p className="storyKicker">DEL RECUERDO A LA OBSERVACIÓN</p>
             <p className="questionLead">Estos son los terremotos que recordamos.<br />Debajo de ellos existe un catálogo de más de 80.000 eventos.</p>
-            <h1 id="central-question-title">¿Qué revelan más de 80.000 sismos sobre cómo cambia la profundidad bajo Argentina?</h1>
+            <h1 id="central-question-title">{presets.question}</h1>
             <p>Cada punto del mapa es un hipocentro catalogado por INPRES: una posición y una profundidad reportadas. Un corte permite mirar de lado y comparar su distribución de norte a sur.</p>
-            <div className="questionActions"><button className="storyPrimary" onClick={() => dispatch("guide")}>Recorrer tres descubrimientos →</button><button className="textButton" onClick={() => dispatch("free")}>Explorá por tu cuenta ↗</button></div>
+            <div className="questionActions"><button className="storyPrimary" onClick={() => dispatch("guide")}>Comparar 31°S y 35°S →</button><button className="textButton" onClick={() => dispatch("free")}>Explorá por tu cuenta ↗</button></div>
             <p className="snapshotNote"><strong>Mapa: {snapshot.events.toLocaleString("es-AR")} eventos · snapshot 14/09/2026.</strong><br />INPRES, export normalizado por inpres-sismos · 16/07/2011–14/09/2026. Incluye registros fuera de Argentina.</p>
             <details className="storyProvenance"><summary>Dos catálogos, fuentes y límites</summary><p>El archivo histórico y el catálogo instrumental 2011–2026 son conjuntos diferentes, relacionados por la memoria sísmica; no se vinculan evento por evento. Mercalli describe efectos, no magnitud instrumental.</p>
-              <p>El EDA del 19/09 analiza otro snapshot: 80.524 eventos hasta el 18/09/2026. Usamos sus candidatos y recalculamos las muestras con el snapshot y la geodésica WGS84 del mapa. No se comparan conteos como riesgo ni se establecen causas tectónicas.</p>
-              <p>Fotografías: archivo publicado por INPRES. Autor y licencia pendientes de verificación por imagen; disponibilidad pública no equivale a permiso de reutilización. Prototipo local.</p>
+              <p>La comparación 31°S–35°S usa el mismo snapshot instrumental y corredor geodésico. Distingue hipocentros INPRES, geometría Slab2 e interpretación bibliográfica. Los conteos no miden riesgo.</p>
+              <p>Fotografías: enlaces al archivo original de INPRES. Las imágenes sin permisos de reutilización demostrados no se reproducen ni se incluyen en el export público.</p>
               <p>Proveedor histórico: {history.provenance.providerCommit.slice(0,7)} · export {history.provenance.catalogGeneratedAt}. Snapshot del mapa: {snapshot.sourceCommit.slice(0,7)}. Manifiestos y checksums documentados en el repositorio.</p></details>
           </div>
         </section>

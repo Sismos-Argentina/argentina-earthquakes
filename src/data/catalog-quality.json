@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-13",
+  "snapshotSha256": "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82",
+  "policy": "Anotaciones independientes del catÃ¡logo original. Solo provisional-exclusion queda fuera de la visualizaciÃ³n inicial; puede reincluirse explÃ­citamente. Las discrepancias entre escalas no autorizan correcciones automÃ¡ticas.",
+  "entries": [
+    {
+      "id": "f69ff9337367a750",
+      "status": "provisional-exclusion",
+      "label": "M8,0 sin corroboraciÃ³n independiente",
+      "reason": "INPRES publica M8 y 10 km para el 29/01/2019. USGS no registra un gran evento equivalente. ISC contiene un candidato temporal SJA de ML2,0, a unos 40 km y 98,9 km de profundidad, no revisado por ISC. La asociaciÃ³n no estÃ¡ certificada; no se reemplazan los campos originales.",
+      "sources": [
+        {
+          "label": "Ficha original INPRES",
+          "url": "http://contenidos.inpres.gob.ar/epicentro3.php?s=20190129060236"
+        },
+        {
+          "label": "Consulta regional USGS",
+          "url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-01-28&endtime=2019-01-31&latitude=-31.076&longitude=-68.439&maxradiuskm=300&minmagnitude=2"
+        },
+        {
+          "label": "Candidato ISC 617802051",
+          "url": "https://www.isc.ac.uk/fdsnws/event/1/query?eventid=617802051&includeallorigins=true&includeallmagnitudes=true&format=xml"
+        }
+      ],
+      "originalRecord": {
+        "type": "Feature",
+        "id": "f69ff9337367a750",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -68.439,
+            -31.076
+          ]
+        },
+        "properties": {
+          "id": "f69ff9337367a750",
+          "fecha": "29/01/2019",
+          "hora": "03:02:39",
+          "latitud": -31.076,
+          "longitud": -68.439,
+          "profundidad": 10.0,
+          "magnitud": 8.0,
+          "sentido": "No",
+          "ubicacion_original": null,
+          "ubicacion_normalizada": "Desconocido",
+          "provincia": null,
+          "provincias": [],
+          "pais": "Desconocido",
+          "tipo_ubicacion": "desconocido",
+          "es_argentina": false,
+          "es_limite": false
+        }
+      }
+    },
+    {
+      "id": "cd1d35d2463ac283",
+      "status": "magnitude-discrepancy",
+      "label": "Magnitudes de agencias diferentes",
+      "reason": "INPRES reporta M7,1 con escala no preservada; USGS e ISC reportan mb6,4 para un candidato coincidente en tiempo y regiÃ³n. Se conserva: la magnitud y su escala requieren cotejo, no una sustituciÃ³n automÃ¡tica.",
+      "sources": [
+        {
+          "label": "Evento USGS us20003k8b",
+          "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us20003k8b"
+        },
+        {
+          "label": "Evento ISC 607743100",
+          "url": "https://www.isc.ac.uk/fdsnws/event/1/query?eventid=607743100&format=xml"
+        }
+      ],
+      "originalRecord": {
+        "type": "Feature",
+        "id": "cd1d35d2463ac283",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -71.745,
+            -31.618
+          ]
+        },
+        "properties": {
+          "id": "cd1d35d2463ac283",
+          "fecha": "16/09/2015",
+          "hora": "19:59:16",
+          "latitud": -31.618,
+          "longitud": -71.745,
+          "profundidad": 30.0,
+          "magnitud": 7.1,
+          "sentido": "Si",
+          "ubicacion_original": "CHILE",
+          "ubicacion_normalizada": "Chile",
+          "provincia": null,
+          "provincias": [],
+          "pais": "Chile",
+          "tipo_ubicacion": "extranjero",
+          "es_argentina": false,
+          "es_limite": false
+        }
+      }
+    },
+    {
+      "id": "67a43d2fc2a103f5",
+      "status": "magnitude-discrepancy",
+      "label": "Magnitudes de agencias diferentes",
+      "reason": "INPRES reporta M7,6 con escala no preservada; USGS reporta Mww7,0 e ISC MW7,1 para candidatos coincidentes en tiempo y regiÃ³n. El evento se conserva y la discrepancia queda visible.",
+      "sources": [
+        {
+          "label": "Evento USGS us20003k7w",
+          "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us20003k7w"
+        },
+        {
+          "label": "Evento ISC 610637518",
+          "url": "https://www.isc.ac.uk/fdsnws/event/1/query?eventid=610637518&format=xml"
+        }
+      ],
+      "originalRecord": {
+        "type": "Feature",
+        "id": "67a43d2fc2a103f5",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -71.73,
+            -31.63
+          ]
+        },
+        "properties": {
+          "id": "67a43d2fc2a103f5",
+          "fecha": "16/09/2015",
+          "hora": "20:18:43",
+          "latitud": -31.63,
+          "longitud": -71.73,
+          "profundidad": 10.0,
+          "magnitud": 7.6,
+          "sentido": "Si",
+          "ubicacion_original": "CHILE",
+          "ubicacion_normalizada": "Chile",
+          "provincia": null,
+          "provincias": [],
+          "pais": "Chile",
+          "tipo_ubicacion": "extranjero",
+          "es_argentina": false,
+          "es_limite": false
+        }
+      }
+    },
+    {
+      "id": "4df71e4c86efc2a3",
+      "status": "depth-review",
+      "label": "Profundidad extrema pendiente de revisiÃ³n",
+      "reason": "Mendoza, 05/04/2018: 750 km y M3,3. No se obtuvo corroboraciÃ³n en la ventana ISC consultada. La ausencia en otro catÃ¡logo no demuestra un error; permanece visible, sin modificar su profundidad.",
+      "sources": [
+        {
+          "label": "Consulta ISC de la ventana",
+          "url": "https://www.isc.ac.uk/fdsnws/event/1/query?format=text&starttime=2018-04-05T04:00:00&endtime=2018-04-05T04:30:00&minlatitude=-36&maxlatitude=-32&minlongitude=-72&maxlongitude=-66"
+        }
+      ],
+      "originalRecord": {
+        "type": "Feature",
+        "id": "4df71e4c86efc2a3",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -69.13,
+            -33.89
+          ]
+        },
+        "properties": {
+          "id": "4df71e4c86efc2a3",
+          "fecha": "05/04/2018",
+          "hora": "01:11:56",
+          "latitud": -33.89,
+          "longitud": -69.13,
+          "profundidad": 750.0,
+          "magnitud": 3.3,
+          "sentido": "No",
+          "ubicacion_original": "MENDOZA",
+          "ubicacion_normalizada": "Mendoza",
+          "provincia": "Mendoza",
+          "provincias": [
+            "Mendoza"
+          ],
+          "pais": "Argentina",
+          "tipo_ubicacion": "provincia",
+          "es_argentina": true,
+          "es_limite": false
+        }
+      }
+    }
+  ]
+}

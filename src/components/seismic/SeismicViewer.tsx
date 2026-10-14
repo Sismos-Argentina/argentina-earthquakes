@@ -29,6 +29,7 @@ import {
 } from "@/lib/cartography/create-map-labels";
 import {
   geographicToScene,
+  sceneToGeographic,
   VERTICAL_EXAGGERATION,
 } from "@/lib/geo/scene-coordinates";
 import { createGebcoGeometry } from "@/lib/terrain/create-gebco-geometry";
@@ -44,8 +45,8 @@ import {
 import CuyoSection from "./CuyoSection";
 import DualRangeFilter from "./DualRangeFilter";
 import EventInspector from "./EventInspector";
-import presets from "@/data/competition-presets.json";
-import snapshot from "@/data/catalog-snapshot.json";
+import presets from "@/data/flat-slab-guide.json";
+import { provisionalExclusions } from "@/lib/data/catalog-quality";
 import {
   CUYO_PROFILE,
   LATITUDE_PROFILE,
@@ -60,7 +61,8 @@ import {
 } from "@/lib/profile/cuyo";
 
 type ReliefExaggeration = 1 | 5 | 10;
-type ControlPanel = "filters" | "layers" | "information";
+type ControlPanel = "filters" | "layers" | "information" | "navigation";
+type NavigationMode = "rotate" | "pan";
 
 type Metrics = {
   decodedBytes?: number;
@@ -95,8 +97,12 @@ type Metrics = {
 type ViewActions = {
   setRelief: (value: ReliefExaggeration) => void;
   toggleSlab: () => void;
+  setSlabOpacity: (opacity: number) => void;
   openProfile: () => void;
   closeProfile: () => void;
+  resetCamera: () => void;
+  setNavigationMode: (mode: NavigationMode) => void;
+  setCameraView: (view: "above" | "side" | "territory") => void;
   selectEvent: (feature: InpresFeature) => void;
   clearSelection: () => void;
   setFilters: (filters: CatalogFilters) => void;
@@ -129,52 +135,6 @@ function formatMiB(value: number | undefined) {
   return value === undefined
     ? "no disponible"
     : `${(value / 1048576).toFixed(1)} MiB`;
-}
-
-function ProfileMapHandle({
-  latitude,
-  onChange,
-}: {
-  latitude: number;
-  onChange: (latitude: number) => void;
-}) {
-  const dragging = useRef(false);
-  const position = (LATITUDE_PROFILE.maxLatitude - latitude)
-    / (LATITUDE_PROFILE.maxLatitude - LATITUDE_PROFILE.minLatitude) * 100;
-  const update = (event: React.PointerEvent<HTMLButtonElement>) => {
-    const bounds = event.currentTarget.parentElement?.getBoundingClientRect();
-    if (!bounds) return;
-    const ratio = Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height));
-    onChange(LATITUDE_PROFILE.maxLatitude
-      - ratio * (LATITUDE_PROFILE.maxLatitude - LATITUDE_PROFILE.minLatitude));
-  };
-  return (
-    <div className="profileMapDragLayer" aria-hidden="true">
-      <button
-        type="button"
-        className="profileMapHandle"
-        style={{ top: `${position}%` }}
-        tabIndex={-1}
-        onPointerDown={(event) => {
-          event.preventDefault();
-          dragging.current = true;
-          event.currentTarget.setPointerCapture(event.pointerId);
-        }}
-        onPointerMove={(event) => {
-          if (dragging.current) update(event);
-        }}
-        onPointerUp={(event) => {
-          if (!dragging.current) return;
-          update(event);
-          dragging.current = false;
-          event.currentTarget.releasePointerCapture(event.pointerId);
-        }}
-        onPointerCancel={() => { dragging.current = false; }}
-      >
-        <span>↕ {Math.abs(latitude).toFixed(latitude % 1 === 0 ? 0 : 2)}°S</span>
-      </button>
-    </div>
-  );
 }
 
 function depthColor(depthKm: number): [number, number, number] {
@@ -260,7 +220,7 @@ function createProfileFootprint(profile: ProfileDefinition) {
     ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(label, 32, 34);
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(badge), depthTest: false }));
     sprite.position.set(center[index], 12, center[index + 2]);
-    sprite.scale.set(45, 45, 1);
+    sprite.scale.set(85, 85, 1);
     sprite.renderOrder = 13;
     footprint.add(sprite);
   }
@@ -344,7 +304,9 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
   );
   const [slabStatus, setSlabStatus] = useState("Cargando modelo Slab2…");
   const [slabVisible, setSlabVisible] = useState(false);
+  const [slabOpacity, setSlabOpacity] = useState(0.4);
   const [inversePanActive, setInversePanActive] = useState(false);
+  const [navigationMode, setNavigationModeReact] = useState<NavigationMode>("rotate");
   const [slabSummary, setSlabSummary] = useState<Slab2Artifact["summary"] | null>(null);
   const [count, setCount] = useState(0);
   const [visibleCount, setVisibleCount] = useState(0);
@@ -428,8 +390,27 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     controls.zoomToCursor = true;
     controls.minDistance = 30;
     controls.maxDistance = 70000;
-    const footprint = createProfileFootprint(CUYO_PROFILE);
+    let currentNavigationMode: NavigationMode = "rotate";
+    const setNavigationMode = (mode: NavigationMode) => {
+      stopChord();
+      currentNavigationMode = mode;
+      controls.mouseButtons.LEFT = mode === "rotate" ? THREE.MOUSE.ROTATE : THREE.MOUSE.PAN;
+      controls.touches.ONE = mode === "rotate" ? THREE.TOUCH.ROTATE : THREE.TOUCH.PAN;
+      renderer.domElement.style.cursor = mode === "pan" ? "move" : "grab";
+      setNavigationModeReact(mode);
+    };
+    let footprint = createProfileFootprint(CUYO_PROFILE);
     scene.add(footprint);
+    let guidedProfile = false;
+    const setProfileCamera = (profile: ProfileDefinition) => {
+      const [x, , z] = geographicToScene(-67, profile.latitude, 0);
+      const damping = controls.enableDamping;
+      controls.enableDamping = false; controls.update();
+      controls.target.set(x, 0, z);
+      // Vista superior y norte arriba; A–B ocupa su lugar geográfico real.
+      camera.position.set(x, 700, z + 0.1);
+      controls.update(); controls.enableDamping = damping;
+    };
 
     const setInitialCamera = () => {
       const [x, , z] = geographicToScene(-67, -31, 0);
@@ -510,6 +491,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         ...previous,
         filterMs: performance.now() - started,
       }));
+      if (beforeProfile) calculateProfile(currentProfile);
     };
     const closeProfile = () => {
       profileGeneration++;
@@ -517,6 +499,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       if (profileDebounce) clearTimeout(profileDebounce);
       footprint.visible = false;
       setProfileOpen(false);
+      controls.enabled = true;
+      renderer.domElement.style.cursor = currentNavigationMode === "pan" ? "move" : "grab";
       if (beforeProfile) {
         setRelief(beforeProfile.relief);
         camera.position.copy(beforeProfile.camera);
@@ -526,9 +510,22 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       }
     };
     const moveFootprint = (profile: ProfileDefinition) => {
-      const [, , defaultZ] = geographicToScene(-67, CUYO_PROFILE.latitude, 0);
-      const [, , nextZ] = geographicToScene(-67, profile.latitude, 0);
-      footprint.position.z = nextZ - defaultZ;
+      const wasVisible = footprint.visible;
+      scene.remove(footprint);
+      footprint.traverse((object) => {
+        const drawable = object as THREE.Mesh;
+        drawable.geometry?.dispose();
+        if (drawable.material) {
+          const materials = Array.isArray(drawable.material) ? drawable.material : [drawable.material];
+          for (const material of materials) {
+            (material as THREE.SpriteMaterial).map?.dispose();
+            material.dispose();
+          }
+        }
+      });
+      footprint = createProfileFootprint(profile);
+      footprint.visible = wasVisible;
+      scene.add(footprint);
     };
     const calculateProfile = (profile: ProfileDefinition) => {
       if (!features.length || !scientificTerrain || !profileSlab) return;
@@ -571,6 +568,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       currentProfile = nextProfile;
       moveFootprint(nextProfile);
       setProfileDefinition(nextProfile);
+      if (beforeProfile) setProfileCamera(nextProfile);
       setProfileStatus("Moviendo perfil…");
       profileGeneration++;
       if (profileTimer) clearTimeout(profileTimer);
@@ -585,23 +583,56 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       moveFootprint(currentProfile);
       footprint.visible = true;
       setProfileOpen(true);
-      const [x, , z] = geographicToScene(-67, (LATITUDE_PROFILE.minLatitude + LATITUDE_PROFILE.maxLatitude) / 2, 0);
-      controls.target.set(x, -30, z);
-      camera.position.set(x, 3300, z + 1200);
-      controls.update();
+      controls.enabled = false;
+      setProfileCamera(currentProfile);
       calculateProfile(currentProfile);
     };
     views.current = {
       setRelief,
       toggleSlab,
-      openProfile,
+      setSlabOpacity: (opacity) => {
+        if (slabMesh) (slabMesh.material as THREE.MeshBasicMaterial).opacity = opacity;
+        setSlabOpacity(opacity);
+      },
+      openProfile: () => { guidedProfile = false; openProfile(); },
       closeProfile,
+      resetCamera: () => {
+        closeProfile();
+        clearSelection();
+        stopChord();
+        const damping = controls.enableDamping;
+        controls.enableDamping = false;
+        controls.update();
+        setInitialCamera();
+        controls.enableDamping = damping;
+        setNavigationMode("rotate");
+        setOpenPanel(null);
+      },
+      setNavigationMode,
+      setCameraView: (view) => {
+        closeProfile(); clearSelection(); stopChord();
+        const damping = controls.enableDamping;
+        controls.enableDamping = false; controls.update();
+        const [x, , z] = geographicToScene(-67, -35, 0);
+        controls.target.set(x, -150, z);
+        camera.position.set(x, view === "above" ? 5000 : -150, z + (view === "above" ? 1 : 3600));
+        if (view === "territory") {
+          const [westX, , northZ] = geographicToScene(TERRITORIAL_BBOX[0], TERRITORIAL_BBOX[3], 0);
+          const [eastX, , southZ] = geographicToScene(TERRITORIAL_BBOX[2], TERRITORIAL_BBOX[1], 0);
+          const centerX = (westX + eastX) / 2, centerZ = (northZ + southZ) / 2;
+          const distance = Math.max(Math.abs(eastX - westX) / camera.aspect, Math.abs(southZ - northZ)) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))) * 1.08;
+          controls.target.set(centerX, 0, centerZ); camera.position.set(centerX, distance, centerZ + 0.1);
+        }
+        controls.update(); controls.enableDamping = damping;
+        setOpenPanel(null);
+      },
       selectEvent,
       clearSelection,
       setFilters: applyFilters,
       setProfileLatitude,
       setReducedMotion: (value) => { controls.enableDamping = !value; },
       startGuidedProfile: (latitude, bounds) => {
+        guidedProfile = true;
         setOpenPanel(null);
         clearSelection();
         applyFilters(bounds);
@@ -719,14 +750,23 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       controls.update();
     };
     let pointerDown: { x: number; y: number } | null = null;
+    let profileDrag: { latitude: number; geographicLatitude: number; camera: THREE.PerspectiveCamera } | null = null;
+    const profilePointerLatitude = (event: PointerEvent, view: THREE.PerspectiveCamera) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      const ray = new THREE.Raycaster();
+      ray.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1), view);
+      const point = ray.ray.intersectPlane(seaLevelPlane, new THREE.Vector3());
+      return point ? sceneToGeographic(point.x, point.z)[1] : null;
+    };
     let chordEngaged = false;
     let chordLastX = 0;
     let chordLastY = 0;
     const stopChord = () => {
       chordEngaged = false;
+      profileDrag = null;
       setInversePanActive(false);
-      controls.enabled = true;
-      renderer.domElement.style.cursor = "";
+      controls.enabled = !beforeProfile;
+      renderer.domElement.style.cursor = currentNavigationMode === "pan" ? "move" : "grab";
     };
     const startChord = (clientX: number, clientY: number) => {
       chordEngaged = true;
@@ -738,11 +778,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       renderer.domElement.style.cursor = "move";
     };
     const handleChordStart = (event: MouseEvent) => {
+      if (beforeProfile) return;
       if ((event.buttons & 3) !== 3) return;
       event.preventDefault();
       startChord(event.clientX, event.clientY);
     };
     const handleChordMove = (event: PointerEvent) => {
+      if (beforeProfile) return;
       if (event.pointerType === "touch" || (event.buttons & 3) !== 3) return;
       if (!chordEngaged) {
         // Con mouse hay navegadores que no emiten un segundo pointerdown al
@@ -779,9 +821,29 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     };
     const preventCanvasContextMenu = (event: MouseEvent) => event.preventDefault();
     const handlePointerDown = (event: PointerEvent) => {
+      if (beforeProfile) {
+        if (guidedProfile) return;
+        const view = camera.clone(); view.updateMatrixWorld();
+        const latitude = profilePointerLatitude(event, view);
+        if (latitude !== null) {
+          profileDrag = { latitude: currentProfile.latitude, geographicLatitude: latitude, camera: view };
+          renderer.domElement.setPointerCapture(event.pointerId);
+        }
+        return;
+      }
       pointerDown = { x: event.clientX, y: event.clientY };
     };
+    const handleProfilePointerMove = (event: PointerEvent) => {
+      if (!profileDrag) return;
+      const latitude = profilePointerLatitude(event, profileDrag.camera);
+      if (latitude !== null) setProfileLatitude(Math.min(LATITUDE_PROFILE.maxLatitude, Math.max(LATITUDE_PROFILE.minLatitude, profileDrag.latitude + latitude - profileDrag.geographicLatitude)));
+    };
     const handlePointerUp = (event: PointerEvent) => {
+      if (beforeProfile) {
+        profileDrag = null;
+        if (renderer.domElement.hasPointerCapture(event.pointerId)) renderer.domElement.releasePointerCapture(event.pointerId);
+        return;
+      }
       if (!catalogPoints || !pointerDown) return;
       const moved = Math.hypot(
         event.clientX - pointerDown.x,
@@ -807,6 +869,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       }));
     };
     renderer.domElement.addEventListener("pointerdown", handlePointerDown);
+    renderer.domElement.addEventListener("pointermove", handleProfilePointerMove);
+    renderer.domElement.addEventListener("pointercancel", handlePointerUp);
     renderer.domElement.addEventListener("pointerup", handlePointerUp);
     renderer.domElement.addEventListener("dblclick", handleDoubleClick);
     renderer.domElement.addEventListener("mousedown", handleChordStart);
@@ -911,7 +975,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           heapBefore,
         }));
         setCount(features.length);
-        setVisibleCount(features.length);
+        applyFilters(bounds);
         setFilterBounds(bounds);
         setFilters(bounds);
         setStatus("Catálogo cargado");
@@ -1017,9 +1081,9 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         slabMesh = new THREE.Mesh(
           built.geometry,
           new THREE.MeshBasicMaterial({
-            color: 0xd3ded8,
+              color: 0xf4d97f,
             transparent: true,
-            opacity: 0.56,
+              opacity: 0.4,
             depthWrite: false,
             side: THREE.DoubleSide,
           }),
@@ -1059,6 +1123,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       cancelAnimationFrame(animationFrame);
       resizeObserver.disconnect();
       renderer.domElement.removeEventListener("pointerdown", handlePointerDown);
+      renderer.domElement.removeEventListener("pointermove", handleProfilePointerMove);
+      renderer.domElement.removeEventListener("pointercancel", handlePointerUp);
       renderer.domElement.removeEventListener("pointerup", handlePointerUp);
       renderer.domElement.removeEventListener("dblclick", handleDoubleClick);
       renderer.domElement.removeEventListener("mousedown", handleChordStart);
@@ -1144,16 +1210,18 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       <div className="leftDock">
         <header className="viewerHeader">
           <p className="eyebrow">Catálogo INPRES · snapshot 14/09/2026</p>
-          <h1>Sismos Visuales</h1>
+          <h1>Bajo nuestros pies</h1>
+          <p className="viewerQuestion">¿Qué revelan los terremotos sobre el subsuelo? Compará San Juan con el sur de Mendoza para explorar sismos, placas y volcanismo.</p>
           <p className="viewerStatus" aria-live="polite">
             {count > 0
               ? `${visibleCount.toLocaleString("es-AR")} de ${count.toLocaleString("es-AR")} eventos visibles`
               : status}
           </p>
-          <p className="viewerSnapshot">{snapshot.events.toLocaleString("es-AR")} registros · INPRES / inpres-sismos · {snapshot.sourceCommit.slice(0,7)}</p>
+          <p className="viewerSnapshot">Sismos de Argentina · INPRES · 2011–2026</p>
+          <p className="viewerQuality">{provisionalExclusions.length} exclusión provisional por calidad · reversible en Filtros.</p>
         </header>
 
-        {onHistory ? <nav className="experienceLinks" aria-label="Historia y recorrido"><button onClick={onHistory}>← Volver a la historia</button><button onClick={onStartGuide}>Recorrido guiado</button></nav> : null}
+        {onHistory ? <nav className="experienceLinks" aria-label="Historia y recorrido"><button className="guideStart" onClick={onStartGuide}>Comparar 31°S y 35°S</button><button onClick={onHistory}>Memoria histórica</button></nav> : null}
 
         <div className="filterDock">
           <button
@@ -1277,6 +1345,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
                       Restablecer
                     </button>
                   </div>
+                  <details className="qualityPolicy"><summary>Calidad del catálogo: {provisionalExclusions.length} registro en revisión</summary><p>El registro M8,0 de San Juan del 29/01/2019 está excluido provisionalmente de la vista inicial por discrepancias graves entre fuentes. No se cambió el catálogo original ni se corrigió su magnitud.</p><label><input type="checkbox" checked={Boolean(filters.includeProvisional)} onChange={(event) => { const includeProvisional = event.currentTarget.checked; setFilters((current) => current ? { ...current, includeProvisional } : current); }} />Incluir el registro en revisión</label><a href="http://contenidos.inpres.gob.ar/epicentro3.php?s=20190129060236" target="_blank" rel="noreferrer">Ficha original INPRES</a></details>
                 </div>
               ) : <p className="panelLoading">Cargando rangos del catálogo…</p>}
             </section>
@@ -1307,12 +1376,25 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           <button
             type="button"
             className="panelTrigger"
-            disabled={!visibleCount || !slabSummary || !surfaceStatus.includes("cargados")}
+            disabled={!count || !slabSummary || !surfaceStatus.includes("cargados")}
             onClick={() => views.current?.openProfile()}
           >
             Perfil andino · {Math.abs(profileDefinition.latitude).toFixed(profileDefinition.latitude % 1 === 0 ? 0 : 2)}°S
           </button>
+          <button className="panelTrigger" onClick={() => { onGuideChange?.(null); views.current?.resetCamera(); }}>Vista inicial</button>
+          <button className="panelTrigger" aria-expanded={openPanel === "navigation"} aria-controls="navigation-panel" onClick={() => togglePanel("navigation")}>Movimiento · {navigationMode === "rotate" ? "Rotar" : "Mover"}</button>
         </nav>
+
+        {openPanel === "navigation" ? <section id="navigation-panel" className="controlPanel navigationPanel" aria-labelledby="navigation-title">
+          <div className="panelHeader"><div><p className="panelEyebrow">Explorar el mapa</p><h2 id="navigation-title">Movimiento y vistas</h2></div><button className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar movimiento">×</button></div>
+          <div className="segmentedControl" aria-label="Acción al arrastrar el mapa">
+            <button aria-pressed={navigationMode === "rotate"} onClick={() => views.current?.setNavigationMode("rotate")}>Rotar</button>
+            <button aria-pressed={navigationMode === "pan"} onClick={() => views.current?.setNavigationMode("pan")}>Mover</button>
+          </div>
+          <p>Arrastrá con el mouse o un dedo según el modo elegido. Rueda o dos dedos: acercar y alejar. Clic en un punto: inspeccionar.</p>
+          <div className="cameraPresets"><button onClick={() => views.current?.setCameraView("above")}>Desde arriba</button><button onClick={() => views.current?.setCameraView("side")}>Vista lateral</button><button onClick={() => views.current?.setCameraView("territory")}>Contexto territorial</button></div>
+          <small>Desde arriba ubicás la región; de costado ves la profundidad. La escala del relieve se indica en Capas. Para comparar geometrías usá el corte a escala 1×.</small>
+        </section> : null}
 
         {openPanel === "layers" ? (
           <section id="layers-panel" className="controlPanel layersPanel" aria-labelledby="layers-title">
@@ -1333,6 +1415,11 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
               <div><strong>Modelo Slab2</strong><small>{slabStatus}</small></div>
               <button aria-pressed={slabVisible} disabled={!slabSummary} onClick={() => views.current?.toggleSlab()}>{slabVisible ? "Visible" : "Oculto"}</button>
             </div>
+            <div className="layerGroup">
+              <label htmlFor="slab-opacity">Opacidad Slab2 · {Math.round(slabOpacity * 100)}%</label>
+              <input id="slab-opacity" type="range" min="0.1" max="0.8" step="0.05" value={slabOpacity} disabled={!slabSummary} onChange={(event) => views.current?.setSlabOpacity(Number(event.currentTarget.value))} />
+              <small>Amarillo: geometría modelada. Hipocentros y profundidad se conservan.</small>
+            </div>
             <div className="layerRow layerRow--status">
               <div><strong>Contexto cartográfico</strong><small>{surfaceStatus}</small></div>
               <span>Activo</span>
@@ -1350,10 +1437,12 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
               <p><strong>Interacción.</strong> Doble clic: centrar · rueda: zoom hacia el cursor · arrastrar: rotar · botón derecho: desplazar.</p>
               <p aria-live="polite"><strong>Traslación.</strong> {inversePanActive ? "Modo inverso activo: el movimiento también cambia la profundidad." : "Ambos botones + arrastrar mueve la escena en sentido inverso, también en profundidad."}</p>
               <p><strong>Hipocentros INPRES.</strong> Profundidad catalogada hacia abajo (−Y), escala {VERTICAL_EXAGGERATION}×.</p>
+              <p><strong>Escala horizontal 3D.</strong> Aproximación equirectangular centrada en 35°S: no permite medir pendientes exactas. El corte usa distancia geodésica y la misma escala de kilómetros en ambos ejes.</p>
               <p><strong>GEBCO 2026.</strong> Modelo continuo derivado de fuentes heterogéneas; relieve {reliefExaggeration}× y nivel del mar 0 km. Líneas doradas: IGN. Líneas grises: Natural Earth 5.1.1.</p>
               <p><strong>USGS Slab2 2018.</strong> Modelo geofísico, no observación. Profundidad 1×; el control de relieve no lo modifica.</p>
               {slabSummary ? <p>Profundidad modelada: {slabSummary.depthRangeKm[0]}–{slabSummary.depthRangeKm[1]} km. UNC: {slabSummary.uncertaintyRangeKm[0]}–{slabSummary.uncertaintyRangeKm[1]} km; mediana {slabSummary.uncertaintyMedianKm} km. Referencia vertical exacta INPRES no documentada; superposición aproximada, no clasificación.</p> : null}
               <p>Contexto GEBCO y cartográfico: 100°O–8°E, 90°S–0°. El límite oriental termina antes de África continental.</p>
+              <p><a href="/metodologia/">Metodología, fuentes, limitaciones y asistencia de IA</a></p>
             </div>
             <details className="benchmark">
               <summary>Mediciones de esta sesión</summary>
@@ -1405,13 +1494,6 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
 
       {!selected && !profileOpen ? <p className="selectionHint">Seleccioná un sismo para inspeccionarlo</p> : null}
 
-      {profileOpen ? (
-        <ProfileMapHandle
-          latitude={profileDefinition.latitude}
-          onChange={(latitude) => views.current?.setProfileLatitude(latitude)}
-        />
-      ) : null}
-
       {profileOpen ? profileEvents && profileSamples ? (
         <CuyoSection
           profile={profileDefinition}
@@ -1421,6 +1503,10 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           status={profileStatus}
           guidedIndex={guidedIndex}
           onGuideChange={onGuideChange}
+          inheritedFilters={filtersActive}
+          includeProvisional={Boolean(filters?.includeProvisional)}
+          catalogFilters={filters}
+          onResetFilters={() => { if (filterBounds) setFilters({ ...filterBounds }); }}
           onLatitudeChange={(latitude) => views.current?.setProfileLatitude(latitude)}
           onPick={(event) => views.current?.selectEvent(event)}
           onClose={() => { onGuideChange?.(null); views.current?.closeProfile(); }}

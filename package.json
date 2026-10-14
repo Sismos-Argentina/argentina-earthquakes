@@ -8,6 +8,7 @@
     "dev": "next dev",
     "prebuild": "npm run prepare:data",
     "build": "next build",
+    "postbuild": "node --experimental-strip-types tools/check-publication.mjs --strip",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test --test-isolation=none tests/*.test.mjs",
