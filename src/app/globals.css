@@ -368,9 +368,14 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
 .sectionPrimaryHeading span { color: var(--muted); font-size: 0.75rem; }
 .sectionPlot { position: relative; flex: 1; min-height: 100px; overflow: auto; }
 .sectionPlot canvas { display: block; cursor: crosshair; max-width: none; }
-.sectionPrimary--updating .sectionPlot canvas { opacity: 0.28; }
+.sectionPrimary--updating .sectionPlot canvas { visibility: hidden; pointer-events: none; }
 .sectionPlotStatus { position: sticky; top: 45%; left: 50%; z-index: 1; width: fit-content; max-width: calc(100% - 2rem); transform: translateX(-50%); padding: 0.45rem 0.65rem; border: 1px solid #567078; border-radius: 0.35rem; background: rgb(8 22 28 / 94%); color: #d8e7e1; font-size: 0.76rem; }
 .sectionAxis { display: flex; justify-content: space-between; gap: 1rem; padding: 0.3rem 0.85rem 0.5rem; color: var(--muted); font-size: 0.75rem; }
+.sectionFilterBar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; padding: 0.65rem 0.85rem; border-bottom: 1px solid #29434a; font-size: 0.78rem; }
+.sectionFilterBar label { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+.sectionFilterBar select, .sectionFilterBar button { min-height: 44px; border: 1px solid #627377; border-radius: 3px; padding: 0.45rem 0.6rem; color: var(--text); background: #102127; font: inherit; }
+.sectionFilterBar p { flex: 1 1 20rem; margin: 0; color: #e5eae1; }
+.sectionFilterBar small { flex-basis: 100%; color: var(--muted); }
 .sectionBottom { display: grid; grid-template-columns: minmax(0, 1fr) min(24vw, 330px); gap: 0.8rem; }
 .sectionReference { min-width: 0; }
 .sectionLegend { display: flex; flex-wrap: wrap; gap: 0.45rem 1rem; font-size: 0.74rem; }
@@ -378,7 +383,7 @@ h1 { margin: 0; font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 500; }
 .sectionLegend i { display: inline-block; width: 0.7rem; height: 0.7rem; border-radius: 50%; }
 .sectionLegend .sectionLegendGebco, .sectionLegend .sectionLegendSlab { width: 1.1rem; height: 0.2rem; border-radius: 0; }
 .sectionLegendGebco { background: #90c48f; }
-.sectionLegendSlab { background: #eee3ca; }
+.sectionLegendSlab { background: repeating-linear-gradient(90deg, #ffe7a3 0 6px, transparent 6px 9px); }
 .sectionActions { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
 .sectionActions button { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
 .sectionActions button[aria-pressed="true"] { border-color: #e6cf9d; }
@@ -522,6 +527,15 @@ button:disabled { cursor: default; opacity: 0.45; }
 .guidedDiscovery h3 { margin: 0.4rem 0; font-family: Georgia, serif; font-weight: 400; font-size: 1.55rem; color: #f1e9dc; }
 .guidedDiscovery p { font-size: 0.86rem; line-height: 1.5; }
 .guidedDiscovery .guidePrompt { color: #e5d8bd; }
+.guidedDiscovery .guideQuestion { color: #f1e9dc; font-size: 0.95rem; }
+.guidedDiscovery .guideEvidence { margin: 0.2rem 0; border-top: 1px solid #34505a; }
+.guidedDiscovery .guideEvidence summary { color: #efcc91; }
+.guidedDiscovery .guideEvidence p { margin: 0 0 0.6rem; }
+.guidedDiscovery a { color: #bcdadf; }
+.guideOverview h3 { margin: 0 0 0.4rem; color: #ffe7a3; font-size: 1.15rem; }
+.guideOverview nav { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.5rem 0; }
+.guideOverview button { min-height: 44px; border: 1px solid #627377; border-radius: 3px; padding: 0.5rem 0.75rem; background: #102127; color: var(--text); cursor: pointer; }
+.guideOverview button[aria-pressed="true"] { border-color: #d6b573; color: #ffe7a3; }
 .guideSample { font-weight: 700; color: #d8e7e1; }
 .guideSample span { display: block; color: var(--muted); font-size: 0.72rem; font-weight: 400; margin-top: 0.3rem; }
 .guidedDiscovery details { font-size: 0.75rem; color: var(--muted); }
@@ -532,6 +546,9 @@ button:disabled { cursor: default; opacity: 0.45; }
 .viewerSnapshot { color: var(--muted); font-size: 0.65rem; margin: 0.35rem 0 0; }
 .experienceLinks { display: flex; gap: 0.45rem; }
 .experienceLinks button { font-size: 0.72rem; padding: 0.45rem 0.65rem; background: var(--panel); }
+.experienceLinks .guideStart { border-color: #d6b573; color: #ffe7a3; }
+.informationCopy a { color: #bcdadf; }
+.legendSlab { background: #f4d97f; }
 .viewer--guided .profileMapDragLayer { display: none; }
 .viewer--guided .sectionContextCopy { max-width: 48rem; }
 .depthBandSummary { display: flex; flex-wrap: wrap; gap: 0.6rem 1.3rem; padding: 0.65rem 0.85rem; border-top: 1px solid #29434a; font-size: 0.72rem; }
@@ -572,7 +589,13 @@ button:disabled { cursor: default; opacity: 0.45; }
   .questionCopy h1 { font-size: 2.3rem; }
   .questionActions { gap: 0.4rem; }
   .questionActions button { font-size: 0.8rem; }
-  .viewer .rightDock { top: 12rem; }
+  .viewer:not(.viewer--section) { display: flex; flex-direction: column; }
+  .viewer:not(.viewer--section) .leftDock { position: relative; inset: auto; width: auto; margin: 0.7rem 0.7rem 0.5rem; gap: 0.5rem; }
+  .viewer:not(.viewer--section) .rightDock { position: relative; inset: auto; width: auto; margin: 0 0.7rem; }
+  .viewerHeader { padding: 0.35rem 0.5rem; border-radius: 4px; background: rgb(6 16 21 / 92%); }
+  .viewToolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .experienceLinks { flex-wrap: wrap; gap: 0.35rem; }
+  .experienceLinks button { min-height: 44px; }
   .viewer--panel-filters .rightDock { display: none; }
   .viewer--section .compass { display: none; }
   .guidedDiscovery { padding: 0.75rem; }
@@ -587,3 +610,51 @@ button:disabled { cursor: default; opacity: 0.45; }
 /* Fundidos siempre activos por solicitud editorial; el movimiento geométrico
    y el scroll programado siguen respetando la preferencia del sistema. */
 .competitionExperience .archiveFrame--fading { animation-duration: var(--photo-fade-duration, 1200ms) !important; }
+
+.viewerQuality { color: #dfc399; font-size: 0.68rem; margin: 0.35rem 0; }
+.qualityWarning { margin: 0.6rem 0; padding: 0.75rem; border: 1px solid #9f794c; background: #2c241c; font-size: 0.78rem; line-height: 1.55; }
+.qualityWarning p { margin: 0.4rem 0; }
+.qualityWarning ul { padding-left: 1.1rem; }
+.qualityPolicy { margin-top: 0.7rem; border-top: 1px solid var(--border); padding-top: 0.6rem; font-size: 0.76rem; line-height: 1.5; }
+.qualityPolicy summary { cursor: pointer; min-height: 44px; padding: 0.5rem 0; color: #dfc399; }
+.qualityPolicy label { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; }
+.qualityPolicy a { display: inline-block; padding: 0.4rem 0; }
+.archiveMediaWithheld { height: 100%; display: grid; align-content: center; justify-items: end; padding: 4rem 3rem 4rem 55%; background: #10252b; color: #d5e1da; }
+.archiveMediaWithheld > span { font-family: Georgia, serif; font-size: clamp(4rem, 10vw, 9rem); opacity: 0.25; }
+.archiveMediaWithheld p, .archiveMediaWithheld a { position: relative; z-index: 2; font-size: 0.78rem; line-height: 1.6; }
+@media (max-width: 700px) { .archiveMediaWithheld { padding: 1rem; justify-items: center; } .archiveMediaWithheld > span { font-size: 3rem; } .archiveMediaWithheld p { margin: 0; } }
+
+@media (min-width: 701px) and (max-width: 1150px) {
+  .leftDock { width: min(29rem, 49vw); }
+  .rightDock { width: 42vw; }
+  .viewToolbar { max-width: 100%; }
+  .viewerHeader h1 { font-size: 1.85rem; }
+}
+
+.methodologyPage { max-width: 55rem; margin: auto; padding: 2rem 1.2rem 4rem; line-height: 1.65; }
+.methodologyPage h1 { margin: 1.5rem 0; }
+.methodologyPage h2 { margin: 2rem 0 0.5rem; font-size: 1.25rem; }
+.methodologyPage a { color: #bcdadf; }
+.methodologyPage p, .methodologyPage li { color: #c5d3d3; }
+.methodologyPage code { overflow-wrap: anywhere; font-size: 0.78rem; }
+.methodologyPage .methodologyLead { color: #ffe7a3; font-size: 1.1rem; }
+
+.viewerQuestion { margin: 0.55rem 0; font-size: 0.85rem; line-height: 1.45; color: #edf4f1; max-width: 25rem; }
+.viewerHeader { padding: 0.6rem 0.7rem; border-radius: 4px; background: rgb(6 16 21 / 90%); }
+.navigationPanel p, .navigationPanel small { font-size: 0.78rem; line-height: 1.5; color: var(--muted); }
+.navigationPanel .segmentedControl button, .cameraPresets button { min-height: 44px; }
+.cameraPresets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
+.cameraPresets button { padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 4px; background: #102127; color: var(--text); cursor: pointer; }
+.sectionPrimary--light { color-scheme: light; --text: #253344; --muted: #52636c; --border: #b8c6ce; color: var(--text); background: #fafbfc; }
+.sectionPrimary--light .sectionPrimaryHeading, .sectionPrimary--light .sectionFilterBar { border-color: var(--border); }
+.sectionPrimary--light .sectionFilterBar select, .sectionPrimary--light .sectionFilterBar button { color: var(--text); background: #fff; border-color: #8c9ea8; }
+.sectionPrimary--light .sectionFilterBar p { color: var(--text); }
+.sectionPrimary--light .depthBandSummary span { color: var(--text); }
+.sectionPrimary--light .depthBandSummary b { color: var(--text); }
+.sectionPrimary--light .depthBandSummary { border-color: var(--border); }
+.sectionPlotLegend { padding: 0.5rem 0.85rem; }
+.sectionMapSlot { min-height: 190px; align-self: start; }
+.sectionPrimary--light .sectionEmpty { color: #253344; background: #fafbfc; }
+.guideAnswer { padding-left: 0.7rem; border-left: 2px solid #d6b573; color: #d6e5e0; }
+.guideAnswer a { color: #ffe7a3; }
+@media (max-width: 700px) { .viewerQuestion { font-size: 0.76rem; margin: 0.4rem 0; } }

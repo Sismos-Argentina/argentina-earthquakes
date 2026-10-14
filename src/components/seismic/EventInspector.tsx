@@ -1,4 +1,5 @@
 import { CATALOG_SOURCE_COMMIT, type InpresFeature } from "@/lib/data/inpres";
+import { eventQuality, qualityReviewDate } from "@/lib/data/catalog-quality";
 
 export default function EventInspector({
   event,
@@ -10,6 +11,7 @@ export default function EventInspector({
   onClose?: () => void;
 }) {
   const properties = event?.properties;
+  const annotation = properties ? eventQuality(properties.id) : undefined;
   return (
     <aside className={compact ? "inspector inspector--section" : "inspector"} aria-live="polite">
       <div className="inspectorHeader">
@@ -20,6 +22,7 @@ export default function EventInspector({
       </div>
       {properties ? (
         <>
+          {annotation ? <div className="qualityWarning"><strong>{annotation.label}</strong><p>{annotation.reason}</p><small>Revisión: {qualityReviewDate}. Campos originales conservados.</small><ul>{annotation.sources.map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>)}</ul></div> : null}
           <dl>
             <dt>Fecha</dt><dd>{properties.fecha}</dd>
             <dt>Hora del catálogo</dt><dd>{properties.hora}</dd>

@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "24.11.1"
+  SISMOS_ALLOW_PINNED_DOWNLOAD = "1"

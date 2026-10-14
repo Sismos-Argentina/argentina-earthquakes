@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sismos Visuales",
+  title: "Bajo nuestros pies",
   description:
-    "Exploración científica e interactiva de la sismicidad de Argentina.",
+    "Explorá los sismos bajo Argentina y compará San Juan con los Andes del sur: catálogo INPRES, relieve GEBCO y modelo Slab2.",
 };
 
 export default function RootLayout({

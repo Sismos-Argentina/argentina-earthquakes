@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import history from "@/data/competition-history.json";
 import { PHOTO_FADE_MS, PHOTO_HOLD_MS } from "@/lib/story/photographs";
+import { canPublishHistoricalPhoto } from "@/lib/story/media-policy";
 
 type Scene = typeof history.scenes[number];
 type Photo = Scene["photos"][number];
@@ -36,33 +37,34 @@ export default function HistoricalChapter({ scene, index, active, photosRunning,
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const [fading, setFading] = useState(false);
   const [readyPhotos, setReadyPhotos] = useState<Set<string>>(() => new Set());
-  const nextPhoto = (currentPhoto + 1) % scene.photos.length;
-  const photo = scene.photos[currentPhoto];
+  const photos = useMemo(() => scene.photos.filter((photo) => canPublishHistoricalPhoto(photo.id)), [scene.photos]);
+  const nextPhoto = (currentPhoto + 1) % Math.max(photos.length, 1);
+  const photo = photos[currentPhoto % Math.max(photos.length, 1)];
   const running = active && photosRunning;
   const markReady = useCallback((id: string) => {
     setReadyPhotos((previous) => previous.has(id) ? previous : new Set(previous).add(id));
   }, []);
   useEffect(() => {
     // Sólo la escena activa avanza y únicamente cuando ambas imágenes están listas.
-    if (!running || fading || scene.photos.length < 2 || !readyPhotos.has(photo.id) || !readyPhotos.has(scene.photos[nextPhoto].id)) return;
+    if (!photo || !running || fading || photos.length < 2 || !readyPhotos.has(photo.id) || !readyPhotos.has(photos[nextPhoto].id)) return;
     const timer = window.setTimeout(() => setFading(true), PHOTO_HOLD_MS);
     return () => window.clearTimeout(timer);
-  }, [running, fading, readyPhotos, photo.id, nextPhoto, scene.photos]);
+  }, [running, fading, readyPhotos, photo, nextPhoto, photos]);
   return <section id={`history-${index}`} data-scene={index} tabIndex={-1}
     ref={register} className={`archiveScene${active ? " archiveScene--active" : ""}`} aria-labelledby={`scene-title-${index}`}
     onKeyDown={(e) => { if (e.target !== e.currentTarget) return; if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); go(index + 1); } else if ((e.key === "ArrowUp" || e.key === "ArrowLeft") && index > 0) { e.preventDefault(); go(index - 1); } }}>
     <div className="archiveStage">
-      <figure className="archiveFigure" aria-label={`Archivo fotográfico de ${scene.place}, ${scene.date.slice(0,4)}`}>
-        {[currentPhoto, ...(scene.photos.length > 1 ? [nextPhoto] : [])].map((i) => <div key={scene.photos[i].id}
-          data-photo-id={scene.photos[i].id} className={`archiveFrame${i !== currentPhoto ? " archiveFrame--incoming" : ""}${i !== currentPhoto && fading ? " archiveFrame--fading" : ""}`}
+      <figure className="archiveFigure" aria-label={`Fuentes históricas de ${scene.place}, ${scene.date.slice(0,4)}`}>
+        {photo ? <>{[currentPhoto, ...(photos.length > 1 ? [nextPhoto] : [])].map((i) => <div key={photos[i].id}
+          data-photo-id={photos[i].id} className={`archiveFrame${i !== currentPhoto ? " archiveFrame--incoming" : ""}${i !== currentPhoto && fading ? " archiveFrame--fading" : ""}`}
           aria-hidden={currentPhoto !== i} style={{ "--photo-fade-duration": `${PHOTO_FADE_MS}ms`, animationPlayState: running ? "running" : "paused" } as React.CSSProperties}
           onAnimationEnd={(event) => {
             if (event.target !== event.currentTarget || event.animationName !== "archivePhotoFade" || i === currentPhoto) return;
             setCurrentPhoto(nextPhoto); setFading(false);
           }}>
-          <ArchiveImage photo={scene.photos[i]} onReady={markReady} />
+          <ArchiveImage photo={photos[i]} onReady={markReady} />
         </div>)}
-        <figcaption><span>{photo.title} · {photo.credit}</span><a href={scene.galleryUrl} target="_blank" rel="noreferrer">Ver archivo INPRES ↗</a></figcaption>
+        <figcaption><a href={scene.galleryUrl} target="_blank" rel="noreferrer">Ver fotografías en INPRES ↗</a></figcaption></> : <div className="archiveMediaWithheld"><a href={scene.galleryUrl} target="_blank" rel="noreferrer">Ver fotografías en INPRES ↗</a></div>}
       </figure>
       <div className="archiveCopy">
         <p className="storyKicker">{String(index + 1).padStart(2, "0")} / MEMORIA EN SUPERFICIE</p>
@@ -72,10 +74,10 @@ export default function HistoricalChapter({ scene, index, active, photosRunning,
         <p className="mercalliLabel">Intensidad máxima reportada · <strong>{scene.mercalli.grado_principal} Mercalli</strong></p>
         <p className="sceneNote">{scene.note}</p>
         <a className="catalogSource" href={scene.sourceUrl} target="_blank" rel="noreferrer">Relato del catálogo histórico INPRES ↗</a>
-        <div className="photoNavigation"><button aria-pressed={photosPaused} onClick={togglePhotos}>
+        {photos.length > 1 ? <div className="photoNavigation"><button aria-pressed={photosPaused} onClick={togglePhotos}>
           <span aria-hidden="true">{photosPaused ? "▶" : "Ⅱ"}</span> {photosPaused ? "Reanudar fotos" : "Pausar fotos"}
-        </button></div>
-        {index === 0 ? <p className="storyInstruction">Las fotos cambian solas. Deslizá para pasar al siguiente caso.</p> : null}
+        </button></div> : null}
+        {index === 0 ? <p className="storyInstruction">Deslizá para pasar al siguiente caso.</p> : null}
         <div className="sceneNavigation"><button disabled={index === 0} onClick={() => go(index - 1)}>← Anterior</button><button onClick={() => go(index + 1)}>{index === history.scenes.length - 1 ? "Del archivo al catálogo →" : "Continuar →"}</button></div>
       </div>
       <span className="archiveYear" aria-hidden="true">{scene.date.slice(0,4)}</span>

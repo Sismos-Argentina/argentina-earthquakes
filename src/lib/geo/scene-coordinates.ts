@@ -9,6 +9,12 @@ const KM_PER_DEGREE = 111.32;
 const LONGITUDE_SCALE =
   KM_PER_DEGREE * Math.cos((SCENE_ORIGIN.latitude * Math.PI) / 180);
 
+// Inversa de la proyección visual para ubicar el control del mini mapa.
+// Las selecciones y mediciones del corte siguen usando geodésicas WGS84.
+export function sceneToGeographic(x: number, z: number): [number, number] {
+  return [SCENE_ORIGIN.longitude + x / LONGITUDE_SCALE, SCENE_ORIGIN.latitude - z / KM_PER_DEGREE];
+}
+
 export function geographicToScene(
   longitude: number,
   latitude: number,
