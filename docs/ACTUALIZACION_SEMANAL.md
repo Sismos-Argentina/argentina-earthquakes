@@ -72,6 +72,19 @@ La primera PR, que instala código y permisos del mecanismo, requiere revisión
 humana. La ejecución programada se activa cuando el archivo está en `main`.
 La validación normal de código usa un workflow separado de sólo lectura.
 
+Si la organización impide crear PRs, GitHub rechaza habilitarlo sólo en el
+repositorio. Un propietario debe marcar **Allow GitHub Actions to create and
+approve pull requests** en [Actions de la organización](https://github.com/organizations/Sismos-Argentina/settings/actions)
+y después en [Actions del producto](https://github.com/Sismos-Argentina/argentina-earthquakes/settings/actions),
+guardando ambos cambios. Se conserva **Read repository contents and packages
+permissions** como permiso predeterminado. El mecanismo no emite reviews de
+aprobación: valida e integra únicamente su propia PR de datos.
+
+Al preparar esta implementación el 15/10/2026, GitHub confirmó que la política de
+la organización bloqueaba crear PRs. El propietario eligió habilitar ese permiso
+manualmente. Hasta completar esa configuración y el merge inicial, la revisión
+semanal y su integración automática no se consideran activadas ni verificadas.
+
 ## Prueba, diagnóstico y reversión
 
 ```sh
