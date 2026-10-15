@@ -100,7 +100,7 @@
       "place": "San Juan",
       "title": "La memoria de una ciudad",
       "text": "El catálogo registra destrucción en San Juan y daños en el norte de Mendoza.",
-      "note": "La intensidad describe los efectos reportados en superficie.",
+      "note": "INPRES registra alrededor de 10.000 víctimas fatales y daños en los departamentos vecinos y el norte de Mendoza. La intensidad IX resume efectos severos en el área afectada; no es una magnitud instrumental.",
       "sourceDescription": "Destruyó la provincia de San Juan y departamentos vecinos. Causó alrededor de 10.000 muertos sobre una población de 90.000 habitantes. También ocasionó daños en el norte de la provincia de Mendoza. La intensidad máxima del terremoto fue de IX grados de la escala Mercalli.",
       "mercalli": {
         "grado_principal": "IX",
@@ -173,7 +173,7 @@
       "place": "Caucete, San Juan",
       "title": "La huella vuelve a aparecer",
       "text": "El terremoto destruyó construcciones de Caucete y afectó otros departamentos de San Juan y el norte de Mendoza.",
-      "note": "Una fotografía conserva efectos visibles; no muestra la profundidad del hipocentro.",
+      "note": "Según INPRES, hubo 65 víctimas fatales y más de 300 heridos graves. También se dañaron construcciones en 25 de Mayo, Sarmiento, Pocito y el norte de Mendoza; en las zonas señaladas, más de la mitad de las construcciones de adobe fueron destruidas.",
       "sourceDescription": "Destruyó las construcciones del Dpto. Caucete, la duración del terremoto superó largamente el minuto en su fase destructiva. Causó la muerte de 65 personas y más de 300 heridos graves. Afectó los departamentos de 25 de Mayo, Sarmiento, Pocito y norte de Mendoza, donde las construcciones de adobe fueron destruidas en más de un 50%. La intensidad máxima del sismo fue IX grados Mercalli.",
       "mercalli": {
         "grado_principal": "IX",
@@ -246,7 +246,7 @@
       "place": "El Galpón, Salta",
       "title": "La historia también está al norte",
       "text": "INPRES documenta viviendas dañadas, demolidas y apuntaladas en El Galpón.",
-      "note": "Estos son algunos de los terremotos que recordamos. Bajo esa memoria, un catálogo de más de 80.000 eventos permite mirar otra dimensión: la profundidad.",
+      "note": "INPRES reporta una víctima fatal, 30 heridos y 170 viviendas dañadas; 20 debieron demolerse y otras fueron apuntaladas. La intensidad VII corresponde a los efectos documentados en este caso.",
       "sourceDescription": "Terremoto en El Galpón, Salta. Se reportó 1 muerto y 30 heridos. Hubo 170 viviendas dañadas, 20 debieron ser demolidas y otras apuntaladas. La intensidad fue de VII grados en la escala Mercalli.",
       "mercalli": {
         "grado_principal": "VII",

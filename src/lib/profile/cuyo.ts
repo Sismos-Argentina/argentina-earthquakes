@@ -22,6 +22,7 @@ export const LATITUDE_PROFILE = {
 } as const;
 
 export type ProfileDefinition = {
+  custom?: boolean;
   latitude: number;
   a: ProfilePoint;
   b: ProfilePoint;
@@ -31,6 +32,25 @@ export type ProfileDefinition = {
   lengthKm: number;
   initialAzimuth: number;
 };
+
+export function profileKey(profile: ProfileDefinition): string {
+  return `${profile.a.latitude}:${profile.a.longitude}:${profile.b.latitude}:${profile.b.longitude}:${profile.halfWidthKm}`;
+}
+
+export function createGeodesicProfile(a: ProfilePoint, b: ProfilePoint, halfWidthKm = 50): ProfileDefinition {
+  if (![a.longitude, a.latitude, b.longitude, b.latitude, halfWidthKm].every(Number.isFinite)
+    || [a, b].some(p => p.longitude < -85 || p.longitude > -20 || p.latitude < -72 || p.latitude > 0)
+    || halfWidthKm < 5 || halfWidthKm > 100) throw new Error("El corte debe estar dentro del área cartográfica disponible.");
+  const result = geod.Inverse(a.latitude, a.longitude, b.latitude, b.longitude);
+  const lengthKm = (result.s12 ?? NaN) / 1000;
+  if (lengthKm < 20 || lengthKm > 2000) throw new Error("Elegí extremos separados entre 20 y 2.000 km.");
+  for (let t=0;t<=1;t+=.05) {
+    const p=geod.Direct(a.latitude,a.longitude,result.azi1!,lengthKm*t*1000);
+    if(p.lon2! < -85 || p.lon2! > -20 || p.lat2! < -72 || p.lat2! > 0) throw new Error("La línea del corte sale del área cartográfica disponible.");
+  }
+  return { custom: true, latitude: (a.latitude + b.latitude) / 2, a: { ...a }, b: { ...b }, halfWidthKm,
+    initialDepthKm: 350, sampleStepKm: 5, lengthKm, initialAzimuth: result.azi1 ?? NaN };
+}
 
 const geod = geographiclib.Geodesic.WGS84;
 const inverse = geod.Inverse(CUYO.a.latitude, CUYO.a.longitude, CUYO.b.latitude, CUYO.b.longitude);
@@ -116,7 +136,7 @@ export function summarizeProfile(events: ProjectedEvent[], profile: ProfileDefin
 }
 
 function profileLine(profile: ProfileDefinition) {
-  const key = `${profile.latitude}:${profile.a.longitude}:${profile.b.longitude}`;
+  const key = profileKey(profile);
   const cached = profileLines.get(key);
   if (cached) return cached;
   const created = geod.DirectLine(
@@ -126,6 +146,7 @@ function profileLine(profile: ProfileDefinition) {
     (profile.lengthKm + 150) * 1000,
   );
   profileLines.set(key, created);
+  if (profileLines.size > 32) profileLines.delete(profileLines.keys().next().value!);
   return created;
 }
 
@@ -198,9 +219,10 @@ export function projectEvent(feature: InpresFeature): ProjectedEvent | null {
 export function projectEventToProfile(feature: InpresFeature, profile: ProfileDefinition): ProjectedEvent | null {
   const [longitude, latitude] = feature.geometry.coordinates;
   // Preselección conservadora en grados, jamás reemplaza el criterio WGS84.
+  const margin = profile.custom ? 4 : 2;
   if (
-    longitude < profile.a.longitude - 2 || longitude > profile.b.longitude + 2
-    || latitude < profile.latitude - 2 || latitude > profile.latitude + 2
+    longitude < Math.min(profile.a.longitude, profile.b.longitude) - margin || longitude > Math.max(profile.a.longitude, profile.b.longitude) + margin
+    || latitude < Math.min(profile.a.latitude, profile.b.latitude) - margin || latitude > Math.max(profile.a.latitude, profile.b.latitude) + margin
   ) return null;
   const projected = projectToProfile(profile, longitude, latitude);
   if (projected.alongKm < 0 || projected.alongKm > profile.lengthKm || projected.crossKm > profile.halfWidthKm) return null;
@@ -228,9 +250,12 @@ export function classifyDepth(depthKm: number): "superficial" | "intermedio" | "
 export function sampleGebco(artifact: GebcoArtifact, longitude: number, latitude: number): number | null {
   const { bbox, width, height, elevationMeters } = artifact.grid;
   const [west, south, east, north] = bbox;
-  const x = (longitude - west) * width / (east - west) - 0.5;
-  const y = (north - latitude) * height / (north - south) - 0.5;
-  if (x < 0 || x > width - 1 || y < 0 || y > height - 1) return null;
+  const rawX = (longitude - west) * width / (east - west) - 0.5;
+  const rawY = (north - latitude) * height / (north - south) - 0.5;
+  // Sólo redondeo numérico en un centro de celda; no extrapola fuera de la grilla.
+  if (width < 2 || height < 2 || rawX < -1e-9 || rawX > width - 1 + 1e-9 || rawY < -1e-9 || rawY > height - 1 + 1e-9) return null;
+  const x = Math.max(0, Math.min(width - 1, rawX));
+  const y = Math.max(0, Math.min(height - 1, rawY));
   const col = Math.min(width - 2, Math.floor(x));
   const row = Math.min(height - 2, Math.floor(y));
   const values = [elevationMeters[row * width + col], elevationMeters[row * width + col + 1], elevationMeters[(row + 1) * width + col], elevationMeters[(row + 1) * width + col + 1]];
@@ -247,7 +272,7 @@ export function sampleSlab(artifact: Slab2Artifact, longitude: number, latitude:
   const { west, north, stepDegrees, width, height, depthKm, uncertaintyKm } = artifact.grid;
   const x = (longitude - west) / stepDegrees;
   const y = (north - latitude) / stepDegrees;
-  if (x < 0 || x > width - 1 || y < 0 || y > height - 1) return null;
+  if (width < 2 || height < 2 || x < 0 || x > width - 1 || y < 0 || y > height - 1) return null;
   const col = Math.min(width - 2, Math.floor(x));
   const row = Math.min(height - 2, Math.floor(y));
   const indexes = [row * width + col, row * width + col + 1, (row + 1) * width + col, (row + 1) * width + col + 1];

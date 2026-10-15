@@ -1,3 +1,4 @@
+import snapshot from "../src/data/catalog-snapshot.json" with { type: "json" };
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -98,11 +99,11 @@ test("Slab2 interpola DEP y UNC en nodos WGS84 y respeta CLP/nodata", () => {
   assert.equal(sampleSlab({grid: {...grid, uncertaintyKm: [10, null, null, 30, 40, null, 50, 60, null]}}, -72.5, -30.5), null);
 });
 
-test("snapshot auditado: hash, 24.689 eventos y conteos por profundidad", async () => {
-  const bytes = await readFile(new URL("../public/data/generated/inpres-2026-09-14.geojson", import.meta.url));
-  assert.equal(createHash("sha256").update(bytes).digest("hex"), "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82");
+test("snapshot auditado: hash, 24.762 eventos y conteos por profundidad", async () => {
+  const bytes = await readFile(new URL("../public"+snapshot.url, import.meta.url));
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), snapshot.webSha256);
   const features = JSON.parse(bytes.toString("utf8")).features;
-  assert.equal(features.length, 80470);
+  assert.equal(features.length, snapshot.events);
   const selected = selectCuyoEvents(features);
   const counts = { superficial: 0, intermedio: 0, profundo: 0, over350: 0 };
   for (const { feature, alongKm, crossKm } of selected) {
@@ -110,9 +111,9 @@ test("snapshot auditado: hash, 24.689 eventos y conteos por profundidad", async 
     if (feature.properties.profundidad > 350) counts.over350++;
     assert.ok(alongKm >= 0 && alongKm <= CUYO_LENGTH_KM && crossKm <= 50);
   }
-  assert.equal(selected.length, 24689);
+  assert.equal(selected.length, 24762);
   // Digest del conjunto de IDs del CSV diagnóstico independiente de la auditoría.
   const selectedIds = selected.map(({feature}) => feature.properties.id).sort().join(String.fromCharCode(10));
-  assert.equal(createHash("sha256").update(selectedIds).digest("hex"), "b62e470155f18521589201870b90886346786a254ccfa869dec79e95a9db1238");
-  assert.deepEqual(counts, { superficial: 2797, intermedio: 21888, profundo: 4, over350: 2 });
+  assert.equal(createHash("sha256").update(selectedIds).digest("hex"), "a5e0159bc2697c335191c50f143108f659b77044757096e1b765415da7ed02a3");
+  assert.deepEqual(counts, { superficial: 2809, intermedio: 21949, profundo: 4, over350: 2 });
 });

@@ -1,0 +1,1117 @@
+{
+  "source": "Natural Earth populated places",
+  "collection": "v5.1.1",
+  "sourceCommit": "9380cca83db5f9aef52d5e762765100745f84b27",
+  "sourceUrl": "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/9380cca83db5f9aef52d5e762765100745f84b27/geojson/ne_10m_populated_places_simple.geojson",
+  "sourceSha256": "c7b8dbe8918f9b8bc2173bb343078d63d757a7f3d3663e7707e5e9ec4741f94f",
+  "licenseUrl": "https://www.naturalearthdata.com/about/terms-of-use/",
+  "selection": "iso_a2 = AR; rótulos cartográficos, no clasificación oficial de jurisdicciones",
+  "places": [
+    {
+      "name": "Buenos Aires",
+      "longitude": -58.432513,
+      "latitude": -34.610715,
+      "rank": 2.1,
+      "id": 1159151559
+    },
+    {
+      "name": "Córdoba",
+      "longitude": -64.18424,
+      "latitude": -31.398012,
+      "rank": 4,
+      "id": 1159151105
+    },
+    {
+      "name": "Bahía Blanca",
+      "longitude": -62.265021,
+      "latitude": -38.740027,
+      "rank": 5,
+      "id": 1159151099
+    },
+    {
+      "name": "Comodoro Rivadavia",
+      "longitude": -67.499999,
+      "latitude": -45.870031,
+      "rank": 5,
+      "id": 1159151091
+    },
+    {
+      "name": "Mar del Plata",
+      "longitude": -57.579984,
+      "latitude": -38.00002,
+      "rank": 5,
+      "id": 1159151101
+    },
+    {
+      "name": "Mendoza",
+      "longitude": -68.818557,
+      "latitude": -32.881384,
+      "rank": 5,
+      "id": 1159151093
+    },
+    {
+      "name": "Posadas",
+      "longitude": -55.885107,
+      "latitude": -27.357832,
+      "rank": 5,
+      "id": 1159151107
+    },
+    {
+      "name": "Puerto Deseado",
+      "longitude": -65.899968,
+      "latitude": -47.75002,
+      "rank": 5,
+      "id": 1159151087
+    },
+    {
+      "name": "Río Gallegos",
+      "longitude": -69.216587,
+      "latitude": -51.633297,
+      "rank": 5,
+      "id": 1159151089
+    },
+    {
+      "name": "Neuquén",
+      "longitude": -68.059991,
+      "latitude": -38.95004,
+      "rank": 5.1,
+      "id": 1159150285
+    },
+    {
+      "name": "Rawson",
+      "longitude": -65.099991,
+      "latitude": -43.300007,
+      "rank": 5.1,
+      "id": 1159150283
+    },
+    {
+      "name": "Rosario",
+      "longitude": -60.668253,
+      "latitude": -32.949184,
+      "rank": 5.1,
+      "id": 1159150303
+    },
+    {
+      "name": "Santa Rosa",
+      "longitude": -64.299988,
+      "latitude": -36.620001,
+      "rank": 5.1,
+      "id": 1159150289
+    },
+    {
+      "name": "Bariloche",
+      "longitude": -71.3,
+      "latitude": -41.149957,
+      "rank": 5.6,
+      "id": 1159150291
+    },
+    {
+      "name": "El Calafate",
+      "longitude": -72.300016,
+      "latitude": -50.333324,
+      "rank": 5.6,
+      "id": 1159150279
+    },
+    {
+      "name": "Formosa",
+      "longitude": -58.182816,
+      "latitude": -26.172835,
+      "rank": 5.6,
+      "id": 1159150299
+    },
+    {
+      "name": "Salta",
+      "longitude": -65.416638,
+      "latitude": -24.783359,
+      "rank": 5.6,
+      "id": 1159150295
+    },
+    {
+      "name": "San Juan",
+      "longitude": -68.519988,
+      "latitude": -31.550026,
+      "rank": 5.6,
+      "id": 1159150281
+    },
+    {
+      "name": "Santa Fe",
+      "longitude": -60.690001,
+      "latitude": -31.623872,
+      "rank": 5.6,
+      "id": 1159150301
+    },
+    {
+      "name": "Tucumán",
+      "longitude": -65.21857,
+      "latitude": -26.814054,
+      "rank": 5.6,
+      "id": 1159150297
+    },
+    {
+      "name": "Catamarca",
+      "longitude": -65.780001,
+      "latitude": -28.470008,
+      "rank": 6,
+      "id": 1159148965
+    },
+    {
+      "name": "Esquel",
+      "longitude": -71.316614,
+      "latitude": -42.900031,
+      "rank": 6,
+      "id": 1159147677
+    },
+    {
+      "name": "Goya",
+      "longitude": -59.269985,
+      "latitude": -29.139993,
+      "rank": 6,
+      "id": 1159147699
+    },
+    {
+      "name": "Gualeguaychú",
+      "longitude": -58.520004,
+      "latitude": -33.020014,
+      "rank": 6,
+      "id": 1159148973
+    },
+    {
+      "name": "La Rioja",
+      "longitude": -66.849961,
+      "latitude": -29.40995,
+      "rank": 6,
+      "id": 1159148967
+    },
+    {
+      "name": "Necochea",
+      "longitude": -58.749991,
+      "latitude": -38.559986,
+      "rank": 6,
+      "id": 1159148959
+    },
+    {
+      "name": "Olavarría",
+      "longitude": -60.329997,
+      "latitude": -36.900036,
+      "rank": 6,
+      "id": 1159147685
+    },
+    {
+      "name": "Perito Moreno",
+      "longitude": -70.933355,
+      "latitude": -46.600012,
+      "rank": 6,
+      "id": 1159148949
+    },
+    {
+      "name": "Puerto San Julián",
+      "longitude": -67.716652,
+      "latitude": -49.300002,
+      "rank": 6,
+      "id": 1159148947
+    },
+    {
+      "name": "Resistencia",
+      "longitude": -58.990027,
+      "latitude": -27.459992,
+      "rank": 6,
+      "id": 1159148971
+    },
+    {
+      "name": "Río Colorado",
+      "longitude": -64.083282,
+      "latitude": -38.966576,
+      "rank": 6,
+      "id": 1159148963
+    },
+    {
+      "name": "Río Cuarto",
+      "longitude": -64.349985,
+      "latitude": -33.130033,
+      "rank": 6,
+      "id": 1159147693
+    },
+    {
+      "name": "Rio Grande",
+      "longitude": -67.698995,
+      "latitude": -53.791446,
+      "rank": 6,
+      "id": 1159148951
+    },
+    {
+      "name": "San Luis",
+      "longitude": -66.350018,
+      "latitude": -33.299997,
+      "rank": 6,
+      "id": 1159147691
+    },
+    {
+      "name": "San Rafael",
+      "longitude": -68.333333,
+      "latitude": -34.600021,
+      "rank": 6,
+      "id": 1159148957
+    },
+    {
+      "name": "San Ramón de la Nueva Orán",
+      "longitude": -64.320012,
+      "latitude": -23.139997,
+      "rank": 6,
+      "id": 1159147697
+    },
+    {
+      "name": "San Salvador de Jujuy",
+      "longitude": -65.30003,
+      "latitude": -24.183344,
+      "rank": 6,
+      "id": 1159147695
+    },
+    {
+      "name": "Santiago del Estero",
+      "longitude": -64.266656,
+      "latitude": -27.783331,
+      "rank": 6,
+      "id": 1159148969
+    },
+    {
+      "name": "Sarmiento",
+      "longitude": -69.083313,
+      "latitude": -45.600021,
+      "rank": 6,
+      "id": 1159148955
+    },
+    {
+      "name": "Tandil",
+      "longitude": -59.150044,
+      "latitude": -37.32001,
+      "rank": 6,
+      "id": 1159147687
+    },
+    {
+      "name": "Ushuaia",
+      "longitude": -68.310001,
+      "latitude": -54.790003,
+      "rank": 6,
+      "id": 1159148953
+    },
+    {
+      "name": "Viedma",
+      "longitude": -62.997545,
+      "latitude": -40.813197,
+      "rank": 6,
+      "id": 1159147689
+    },
+    {
+      "name": "Zapala",
+      "longitude": -70.066664,
+      "latitude": -38.900017,
+      "rank": 6,
+      "id": 1159147679
+    },
+    {
+      "name": "San Antonio Oeste",
+      "longitude": -64.933282,
+      "latitude": -40.732877,
+      "rank": 6.1,
+      "id": 1159144257
+    },
+    {
+      "name": "Sierra Colorado",
+      "longitude": -67.799981,
+      "latitude": -40.58286,
+      "rank": 6.1,
+      "id": 1159144265
+    },
+    {
+      "name": "Añatuya",
+      "longitude": -62.833307,
+      "latitude": -28.466132,
+      "rank": 6.7,
+      "id": 1159144323
+    },
+    {
+      "name": "Azul",
+      "longitude": -59.87,
+      "latitude": -36.77963,
+      "rank": 6.7,
+      "id": 1159144241
+    },
+    {
+      "name": "Belen",
+      "longitude": -67.033283,
+      "latitude": -27.649593,
+      "rank": 6.7,
+      "id": 1159144277
+    },
+    {
+      "name": "Benito Juárez",
+      "longitude": -59.80003,
+      "latitude": -37.665519,
+      "rank": 6.7,
+      "id": 1159144205
+    },
+    {
+      "name": "Cafayate",
+      "longitude": -65.966604,
+      "latitude": -26.082918,
+      "rank": 6.7,
+      "id": 1159144309
+    },
+    {
+      "name": "Carhué",
+      "longitude": -62.733313,
+      "latitude": -37.182861,
+      "rank": 6.7,
+      "id": 1159144195
+    },
+    {
+      "name": "Cerrillos",
+      "longitude": -65.4833,
+      "latitude": -24.899631,
+      "rank": 6.7,
+      "id": 1159144313
+    },
+    {
+      "name": "Chamical",
+      "longitude": -66.31666,
+      "latitude": -30.349583,
+      "rank": 6.7,
+      "id": 1159144301
+    },
+    {
+      "name": "Charata",
+      "longitude": -61.199996,
+      "latitude": -27.216286,
+      "rank": 6.7,
+      "id": 1159144341
+    },
+    {
+      "name": "Chascomús",
+      "longitude": -58.016624,
+      "latitude": -35.566215,
+      "rank": 6.7,
+      "id": 1159144219
+    },
+    {
+      "name": "Chilecito",
+      "longitude": -67.499999,
+      "latitude": -29.165521,
+      "rank": 6.7,
+      "id": 1159144295
+    },
+    {
+      "name": "Chos Malal",
+      "longitude": -70.266574,
+      "latitude": -37.382952,
+      "rank": 6.7,
+      "id": 1159144105
+    },
+    {
+      "name": "Concordia",
+      "longitude": -58.029983,
+      "latitude": -31.389571,
+      "rank": 6.7,
+      "id": 1159144357
+    },
+    {
+      "name": "Darregueira",
+      "longitude": -63.166594,
+      "latitude": -37.699573,
+      "rank": 6.7,
+      "id": 1159144199
+    },
+    {
+      "name": "Frias",
+      "longitude": -65.149987,
+      "latitude": -28.649583,
+      "rank": 6.7,
+      "id": 1159144327
+    },
+    {
+      "name": "Gastre",
+      "longitude": -69.233304,
+      "latitude": -42.282963,
+      "rank": 6.7,
+      "id": 1159144081
+    },
+    {
+      "name": "General Pico",
+      "longitude": -63.77002,
+      "latitude": -35.659595,
+      "rank": 6.7,
+      "id": 1159144255
+    },
+    {
+      "name": "Juan José Castelli",
+      "longitude": -60.616647,
+      "latitude": -25.949541,
+      "rank": 6.7,
+      "id": 1159144337
+    },
+    {
+      "name": "Junín",
+      "longitude": -60.958874,
+      "latitude": -34.58457,
+      "rank": 6.7,
+      "id": 1159144223
+    },
+    {
+      "name": "La Paz",
+      "longitude": -67.549996,
+      "latitude": -33.466137,
+      "rank": 6.7,
+      "id": 1159144099
+    },
+    {
+      "name": "Las Lajas",
+      "longitude": -70.366594,
+      "latitude": -38.516268,
+      "rank": 6.7,
+      "id": 1159144109
+    },
+    {
+      "name": "Las Lomitas",
+      "longitude": -60.600007,
+      "latitude": -24.699592,
+      "rank": 6.7,
+      "id": 1159144347
+    },
+    {
+      "name": "Las Plumas",
+      "longitude": -67.28318,
+      "latitude": -43.723881,
+      "rank": 6.7,
+      "id": 1159144077
+    },
+    {
+      "name": "Libertador General San Martín",
+      "longitude": -64.789984,
+      "latitude": -23.819542,
+      "rank": 6.7,
+      "id": 1159144291
+    },
+    {
+      "name": "Lobos",
+      "longitude": -59.094672,
+      "latitude": -35.184895,
+      "rank": 6.7,
+      "id": 1159144215
+    },
+    {
+      "name": "Los Blancos",
+      "longitude": -62.60004,
+      "latitude": -23.599607,
+      "rank": 6.7,
+      "id": 1159144305
+    },
+    {
+      "name": "Malargüe",
+      "longitude": -69.583309,
+      "latitude": -35.466118,
+      "rank": 6.7,
+      "id": 1159144091
+    },
+    {
+      "name": "Mar de Ajó",
+      "longitude": -56.676603,
+      "latitude": -36.716223,
+      "rank": 6.7,
+      "id": 1159144211
+    },
+    {
+      "name": "Mercedes",
+      "longitude": -65.469968,
+      "latitude": -33.689586,
+      "rank": 6.7,
+      "id": 1159144269
+    },
+    {
+      "name": "Mercedes",
+      "longitude": -58.07998,
+      "latitude": -29.179577,
+      "rank": 6.7,
+      "id": 1159144351
+    },
+    {
+      "name": "Monte Quemado",
+      "longitude": -62.866587,
+      "latitude": -25.799628,
+      "rank": 6.7,
+      "id": 1159144331
+    },
+    {
+      "name": "Pergamino",
+      "longitude": -60.569983,
+      "latitude": -33.899599,
+      "rank": 6.7,
+      "id": 1159144233
+    },
+    {
+      "name": "Reconquista",
+      "longitude": -59.650013,
+      "latitude": -29.139528,
+      "rank": 6.7,
+      "id": 1159144375
+    },
+    {
+      "name": "Rinconada",
+      "longitude": -66.166592,
+      "latitude": -22.432908,
+      "rank": 6.7,
+      "id": 1159144283
+    },
+    {
+      "name": "Río Tercero",
+      "longitude": -64.120024,
+      "latitude": -32.1796,
+      "rank": 6.7,
+      "id": 1159144273
+    },
+    {
+      "name": "Rodeo",
+      "longitude": -69.139951,
+      "latitude": -30.215586,
+      "rank": 6.7,
+      "id": 1159144073
+    },
+    {
+      "name": "San Antonio de los Cobres",
+      "longitude": -66.350018,
+      "latitude": -24.182931,
+      "rank": 6.7,
+      "id": 1159144319
+    },
+    {
+      "name": "San Justo",
+      "longitude": -60.583289,
+      "latitude": -30.78289,
+      "rank": 6.7,
+      "id": 1159144365
+    },
+    {
+      "name": "San Pedro",
+      "longitude": -64.870004,
+      "latitude": -24.219621,
+      "rank": 6.7,
+      "id": 1159144287
+    },
+    {
+      "name": "Sunchales",
+      "longitude": -61.566614,
+      "latitude": -30.932907,
+      "rank": 6.7,
+      "id": 1159144361
+    },
+    {
+      "name": "Telsen",
+      "longitude": -66.950007,
+      "latitude": -42.399597,
+      "rank": 6.7,
+      "id": 1159144087
+    },
+    {
+      "name": "Tunuyán",
+      "longitude": -69.016677,
+      "latitude": -33.566182,
+      "rank": 6.7,
+      "id": 1159144095
+    },
+    {
+      "name": "Venado Tuerto",
+      "longitude": -61.970001,
+      "latitude": -33.749582,
+      "rank": 6.7,
+      "id": 1159144379
+    },
+    {
+      "name": "Vera",
+      "longitude": -60.216594,
+      "latitude": -29.466174,
+      "rank": 6.7,
+      "id": 1159144369
+    },
+    {
+      "name": "Victorica",
+      "longitude": -65.450021,
+      "latitude": -36.216253,
+      "rank": 6.7,
+      "id": 1159144251
+    },
+    {
+      "name": "Villalonga",
+      "longitude": -62.624309,
+      "latitude": -39.921105,
+      "rank": 6.7,
+      "id": 1159144247
+    },
+    {
+      "name": "Zárate",
+      "longitude": -59.040025,
+      "latitude": -34.089561,
+      "rank": 6.7,
+      "id": 1159144189
+    },
+    {
+      "name": "25 de Mayo",
+      "longitude": -67.683295,
+      "latitude": -37.800033,
+      "rank": 7,
+      "id": 1159131817
+    },
+    {
+      "name": "28 de Noviembre",
+      "longitude": -72.219601,
+      "latitude": -51.58929,
+      "rank": 7,
+      "id": 1159131631
+    },
+    {
+      "name": "Abra Pampa",
+      "longitude": -65.69998,
+      "latitude": -22.716664,
+      "rank": 7,
+      "id": 1159131881
+    },
+    {
+      "name": "Alta Gracia",
+      "longitude": -64.42998,
+      "latitude": -31.659994,
+      "rank": 7,
+      "id": 1159131849
+    },
+    {
+      "name": "Alto Rio Sanguer",
+      "longitude": -70.833284,
+      "latitude": -45.033286,
+      "rank": 7,
+      "id": 1159131649
+    },
+    {
+      "name": "Balcarce",
+      "longitude": -58.249995,
+      "latitude": -37.833312,
+      "rank": 7,
+      "id": 1159131813
+    },
+    {
+      "name": "Bell Ville",
+      "longitude": -62.679957,
+      "latitude": -32.60004,
+      "rank": 7,
+      "id": 1159131857
+    },
+    {
+      "name": "Chacabuco",
+      "longitude": -60.489988,
+      "latitude": -34.650044,
+      "rank": 7,
+      "id": 1159131767
+    },
+    {
+      "name": "Chepes",
+      "longitude": -66.599951,
+      "latitude": -31.349987,
+      "rank": 7,
+      "id": 1159131893
+    },
+    {
+      "name": "Chivilcoy",
+      "longitude": -60.039989,
+      "latitude": -34.899951,
+      "rank": 7,
+      "id": 1159131781
+    },
+    {
+      "name": "Choele Choel",
+      "longitude": -65.683314,
+      "latitude": -39.26661,
+      "rank": 7,
+      "id": 1159131839
+    },
+    {
+      "name": "Chumbicha",
+      "longitude": -66.233306,
+      "latitude": -28.866624,
+      "rank": 7,
+      "id": 1159131871
+    },
+    {
+      "name": "Comallo",
+      "longitude": -70.266574,
+      "latitude": -41.033324,
+      "rank": 7,
+      "id": 1159131827
+    },
+    {
+      "name": "Comandante Fontana",
+      "longitude": -59.683318,
+      "latitude": -25.3333,
+      "rank": 7,
+      "id": 1159131939
+    },
+    {
+      "name": "Comondante Luis Piedrabuena",
+      "longitude": -68.903473,
+      "latitude": -49.974549,
+      "rank": 7,
+      "id": 1159131639
+    },
+    {
+      "name": "Concepción del Uruguay",
+      "longitude": -58.239996,
+      "latitude": -32.479996,
+      "rank": 7,
+      "id": 1159131957
+    },
+    {
+      "name": "Coronel Suárez",
+      "longitude": -61.916619,
+      "latitude": -37.466616,
+      "rank": 7,
+      "id": 1159131809
+    },
+    {
+      "name": "Corrientes",
+      "longitude": -58.809987,
+      "latitude": -27.489964,
+      "rank": 7,
+      "id": 1159131953
+    },
+    {
+      "name": "Cutral Có",
+      "longitude": -69.240022,
+      "latitude": -38.940015,
+      "rank": 7,
+      "id": 1159131679
+    },
+    {
+      "name": "Doctor Pedro P. Peña",
+      "longitude": -62.29998,
+      "latitude": -22.479986,
+      "rank": 7,
+      "id": 1159131943
+    },
+    {
+      "name": "Dolores",
+      "longitude": -57.689978,
+      "latitude": -36.330045,
+      "rank": 7,
+      "id": 1159131795
+    },
+    {
+      "name": "El Maitén",
+      "longitude": -71.166623,
+      "latitude": -42.050006,
+      "rank": 7,
+      "id": 1159131653
+    },
+    {
+      "name": "Eldorado",
+      "longitude": -54.599985,
+      "latitude": -26.200017,
+      "rank": 7,
+      "id": 1159132109
+    },
+    {
+      "name": "General Conesa",
+      "longitude": -64.433287,
+      "latitude": -40.100047,
+      "rank": 7,
+      "id": 1159131835
+    },
+    {
+      "name": "General Guemes",
+      "longitude": -65.049968,
+      "latitude": -24.666622,
+      "rank": 7,
+      "id": 1159131911
+    },
+    {
+      "name": "General Roca",
+      "longitude": -67.609966,
+      "latitude": -39.019958,
+      "rank": 7,
+      "id": 1159131821
+    },
+    {
+      "name": "Gobernador Gregores",
+      "longitude": -70.250012,
+      "latitude": -48.766598,
+      "rank": 7,
+      "id": 1159131635
+    },
+    {
+      "name": "Gualeguay",
+      "longitude": -59.340006,
+      "latitude": -33.150032,
+      "rank": 7,
+      "id": 1159131965
+    },
+    {
+      "name": "Humahuaca",
+      "longitude": -65.349949,
+      "latitude": -23.199994,
+      "rank": 7,
+      "id": 1159131885
+    },
+    {
+      "name": "Ingeniero Guillermo N. Juarez",
+      "longitude": -61.849982,
+      "latitude": -23.900002,
+      "rank": 7,
+      "id": 1159131935
+    },
+    {
+      "name": "Ingeniero Jacobacci",
+      "longitude": -69.583309,
+      "latitude": -41.300026,
+      "rank": 7,
+      "id": 1159131831
+    },
+    {
+      "name": "Joaquín V. González",
+      "longitude": -64.183354,
+      "latitude": -25.083341,
+      "rank": 7,
+      "id": 1159131907
+    },
+    {
+      "name": "Las Heras",
+      "longitude": -68.801677,
+      "latitude": -32.825039,
+      "rank": 7,
+      "id": 1159131667
+    },
+    {
+      "name": "Lincoln",
+      "longitude": -61.539949,
+      "latitude": -34.880004,
+      "rank": 7,
+      "id": 1159131777
+    },
+    {
+      "name": "Nueve de Julio",
+      "longitude": -60.889989,
+      "latitude": -35.445964,
+      "rank": 7,
+      "id": 1159131791
+    },
+    {
+      "name": "Pampa del Infierno",
+      "longitude": -61.166587,
+      "latitude": -26.516587,
+      "rank": 7,
+      "id": 1159131925
+    },
+    {
+      "name": "Paraná",
+      "longitude": -60.533344,
+      "latitude": -31.733323,
+      "rank": 7,
+      "id": 1159131971
+    },
+    {
+      "name": "Paso Río Mayo",
+      "longitude": -70.266574,
+      "latitude": -45.683376,
+      "rank": 7,
+      "id": 1159131643
+    },
+    {
+      "name": "Pedro Luro",
+      "longitude": -62.683316,
+      "latitude": -39.483341,
+      "rank": 7,
+      "id": 1159131799
+    },
+    {
+      "name": "Presidencia Roque Saenz Pena",
+      "longitude": -60.450016,
+      "latitude": -26.790007,
+      "rank": 7,
+      "id": 1159131921
+    },
+    {
+      "name": "Puerto Madryn",
+      "longitude": -65.04002,
+      "latitude": -42.770013,
+      "rank": 7,
+      "id": 1159131657
+    },
+    {
+      "name": "Punta Alta",
+      "longitude": -62.079968,
+      "latitude": -38.879967,
+      "rank": 7,
+      "id": 1159131757
+    },
+    {
+      "name": "Rafaela",
+      "longitude": -61.499978,
+      "latitude": -31.250045,
+      "rank": 7,
+      "id": 1159131979
+    },
+    {
+      "name": "San Francisco",
+      "longitude": -62.089968,
+      "latitude": -31.430034,
+      "rank": 7,
+      "id": 1159131845
+    },
+    {
+      "name": "San Lorenzo",
+      "longitude": -58.769989,
+      "latitude": -28.120003,
+      "rank": 7,
+      "id": 1159131947
+    },
+    {
+      "name": "San Martín",
+      "longitude": -68.490016,
+      "latitude": -33.069985,
+      "rank": 7,
+      "id": 1159131671
+    },
+    {
+      "name": "San Nicolas",
+      "longitude": -60.240003,
+      "latitude": -33.330021,
+      "rank": 7,
+      "id": 1159131761
+    },
+    {
+      "name": "Susques",
+      "longitude": -66.483317,
+      "latitude": -23.416673,
+      "rank": 7,
+      "id": 1159131889
+    },
+    {
+      "name": "Tartagal",
+      "longitude": -63.810018,
+      "latitude": -22.550007,
+      "rank": 7,
+      "id": 1159131903
+    },
+    {
+      "name": "Tinogasta",
+      "longitude": -67.566584,
+      "latitude": -28.066622,
+      "rank": 7,
+      "id": 1159131875
+    },
+    {
+      "name": "Trancas",
+      "longitude": -65.283313,
+      "latitude": -26.216657,
+      "rank": 7,
+      "id": 1159131917
+    },
+    {
+      "name": "Trelew",
+      "longitude": -65.329951,
+      "latitude": -43.250036,
+      "rank": 7,
+      "id": 1159131661
+    },
+    {
+      "name": "Tres Arroyos",
+      "longitude": -60.269949,
+      "latitude": -38.369972,
+      "rank": 7,
+      "id": 1159131803
+    },
+    {
+      "name": "Uspallata",
+      "longitude": -69.345985,
+      "latitude": -32.593115,
+      "rank": 7,
+      "id": 1159131675
+    },
+    {
+      "name": "Veinticinco de Mayo",
+      "longitude": -60.179981,
+      "latitude": -35.429996,
+      "rank": 7,
+      "id": 1159131785
+    },
+    {
+      "name": "Victoria",
+      "longitude": -60.179981,
+      "latitude": -32.610013,
+      "rank": 7,
+      "id": 1159131961
+    },
+    {
+      "name": "Villa Ángela",
+      "longitude": -60.716666,
+      "latitude": -27.583292,
+      "rank": 7,
+      "id": 1159131929
+    },
+    {
+      "name": "Villa Carlos Paz",
+      "longitude": -64.500001,
+      "latitude": -31.420009,
+      "rank": 7,
+      "id": 1159131867
+    },
+    {
+      "name": "Villa Constitución",
+      "longitude": -60.350022,
+      "latitude": -33.230027,
+      "rank": 7,
+      "id": 1159131975
+    },
+    {
+      "name": "Villa María",
+      "longitude": -63.260025,
+      "latitude": -32.410026,
+      "rank": 7,
+      "id": 1159131853
+    },
+    {
+      "name": "Villa Rumipal",
+      "longitude": -64.483284,
+      "latitude": -32.183321,
+      "rank": 7,
+      "id": 1159131863
+    },
+    {
+      "name": "Yacuíba",
+      "longitude": -63.699998,
+      "latitude": -22.030039,
+      "rank": 7,
+      "id": 1159131899
+    },
+    {
+      "name": "Campana",
+      "longitude": -58.959978,
+      "latitude": -34.159996,
+      "rank": 8,
+      "id": 1159131765
+    },
+    {
+      "name": "La Plata",
+      "longitude": -57.954436,
+      "latitude": -34.923321,
+      "rank": 8,
+      "id": 1159144229
+    },
+    {
+      "name": "Luján",
+      "longitude": -59.110454,
+      "latitude": -34.56991,
+      "rank": 8,
+      "id": 1159144237
+    },
+    {
+      "name": "Mercedes",
+      "longitude": -59.440026,
+      "latitude": -34.660018,
+      "rank": 8,
+      "id": 1159131775
+    }
+  ]
+}

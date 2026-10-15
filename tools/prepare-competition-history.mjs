@@ -24,15 +24,15 @@ const selection = [
     alt: "Fotografía de archivo: muros derrumbados, vigas expuestas y escombros en Angaco, San Juan, en 1894." },
   { date: "1944-01-15", photoId: "7dd69738", place: "San Juan", title: "La memoria de una ciudad",
     text: "El catálogo registra destrucción en San Juan y daños en el norte de Mendoza.",
-    note: "La intensidad describe los efectos reportados en superficie.",
+    note: "INPRES registra alrededor de 10.000 víctimas fatales y daños en los departamentos vecinos y el norte de Mendoza. La intensidad IX resume efectos severos en el área afectada; no es una magnitud instrumental.",
     alt: "Fotografía de archivo: fachada dañada de la Catedral de San Juan y escombros junto a la calle después del terremoto de 1944." },
   { date: "1977-11-23", photoId: "008290c6", place: "Caucete, San Juan", title: "La huella vuelve a aparecer",
     text: "El terremoto destruyó construcciones de Caucete y afectó otros departamentos de San Juan y el norte de Mendoza.",
-    note: "Una fotografía conserva efectos visibles; no muestra la profundidad del hipocentro.",
+    note: "Según INPRES, hubo 65 víctimas fatales y más de 300 heridos graves. También se dañaron construcciones en 25 de Mayo, Sarmiento, Pocito y el norte de Mendoza; en las zonas señaladas, más de la mitad de las construcciones de adobe fueron destruidas.",
     alt: "Fotografía de archivo: construcción de adobe derrumbada, árboles y escombros en Caucete después del terremoto de 1977." },
   { date: "2015-10-17", photoId: "d75bfc2b", place: "El Galpón, Salta", title: "La historia también está al norte",
     text: "INPRES documenta viviendas dañadas, demolidas y apuntaladas en El Galpón.",
-    note: "Estos son algunos de los terremotos que recordamos. Bajo esa memoria, un catálogo de más de 80.000 eventos permite mirar otra dimensión: la profundidad.",
+    note: "INPRES reporta una víctima fatal, 30 heridos y 170 viviendas dañadas; 20 debieron demolerse y otras fueron apuntaladas. La intensidad VII corresponde a los efectos documentados en este caso.",
     alt: "Fotografía de archivo: viviendas con muros dañados y escombros en una calle de El Galpón, Salta, después del terremoto de 2015." },
 ];
 const media = [];
@@ -103,4 +103,15 @@ const provenance = { provider: "Sismos-Argentina/inpres-sismos", providerCommit,
 await mkdir(path.join(root, "src/data"), { recursive: true });
 await writeFile(path.join(root, "src/data/competition-history.json"), JSON.stringify({ schemaVersion: 1, provenance, scenes }, null, 2) + "\n");
 await writeFile(path.join(root, "public/data/generated/historical/media-manifest.json"), JSON.stringify({ schemaVersion: 1, provenance, publication: "local-prototype-only", media }, null, 2) + "\n");
-console.log(`${scenes.length} escenas, ${media.length} derivados existentes, ${media.reduce((n, m) => n + m.bytes, 0)} bytes.`);
+const events = historical.eventos.map(event => {
+  const galleries = photos.galerias.filter(g => g.ambito === "argentina" &&
+    (g.fecha_iso === event.fecha_iso || event.fotos?.some(p => g.fotos.some(photo => photo.id === p.id))));
+  return { id:event.id, date:event.fecha_iso, place:event.ubicacion, description:event.descripcion,
+    intensity:event.intensidad_mercalli, sourceUrl:historical.source.catalog_url,
+    galleries:galleries.map(g=>({url:g.pagina_fuente,date:g.fecha_iso})) };
+});
+if (events.length !== 80 || events.some(e=>!e.description || !e.intensity?.grado_principal)) throw new Error("Archivo histórico incompleto");
+await writeFile(path.join(root,"src/data/historical-archive.json"), JSON.stringify({schemaVersion:1,provenance,
+  selection:"Diez casos con galería de INPRES; no es un ranking de magnitud o daños.",
+  featured:events.filter(e=>e.galleries.length).map(e=>e.id),events},null,2)+"\n");
+console.log(`${scenes.length} escenas, ${events.length} registros históricos y ${media.length} derivados preservados.`);

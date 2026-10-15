@@ -2,6 +2,10 @@ import * as THREE from "three";
 
 import type { GebcoProfile } from "@/lib/data/gebco";
 import { geographicToScene } from "@/lib/geo/scene-coordinates";
+import type { GebcoArtifact } from "@/lib/data/gebco";
+import type { RegionBounds } from "@/lib/geo/region";
+import { sampleGebcoElevationMeters } from "@/lib/terrain/create-gebco-geometry";
+import places from "@/data/place-labels.json";
 
 type LabelDefinition = {
   text: string;
@@ -43,7 +47,7 @@ function createLabelSprite(definition: LabelDefinition, profile: GebcoProfile) {
   canvas.height = 128;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Canvas 2D no disponible para rótulos.");
-  context.font = "600 38px system-ui, sans-serif";
+  context.font = "600 84px system-ui, sans-serif";
   context.textAlign = "center";
   context.textBaseline = "middle";
   context.letterSpacing = "4px";
@@ -51,9 +55,9 @@ function createLabelSprite(definition: LabelDefinition, profile: GebcoProfile) {
   context.shadowBlur = 10;
   context.lineWidth = 7;
   context.strokeStyle = "rgba(3, 10, 13, 0.9)";
-  context.strokeText(definition.text, canvas.width / 2, canvas.height / 2);
+  context.strokeText(definition.text, canvas.width / 2, canvas.height / 2,740);
   context.fillStyle = labelColor(definition.tone);
-  context.fillText(definition.text, canvas.width / 2, canvas.height / 2);
+  context.fillText(definition.text, canvas.width / 2, canvas.height / 2,740);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -65,8 +69,13 @@ function createLabelSprite(definition: LabelDefinition, profile: GebcoProfile) {
   const sprite = new THREE.Sprite(material);
   const [x, , z] = geographicToScene(definition.longitude, definition.latitude, 0);
   sprite.position.set(x, 55, z);
-  const width = profile === "context" ? 900 : 620;
-  sprite.scale.set(width, width / 6, 1);
+  sprite.userData.placeLabel=true;
+  sprite.userData.profile=profile;
+  sprite.onBeforeRender=(renderer,_scene,camera)=>{
+    const view=camera as THREE.PerspectiveCamera,world=sprite.getWorldPosition(new THREE.Vector3());
+    const pixel=2*view.position.distanceTo(world)*Math.tan(THREE.MathUtils.degToRad(view.fov/2))/Math.max(renderer.domElement.clientHeight,1);
+    sprite.scale.set(pixel*125,pixel*21,1);sprite.updateMatrixWorld();
+  };
   sprite.renderOrder = 6;
   return sprite;
 }
@@ -85,4 +94,36 @@ export function disposeMapLabels(group: THREE.Group) {
     object.material.map?.dispose();
     object.material.dispose();
   });
+}
+
+export function createRegionalPlaceLabels(bounds:RegionBounds, terrain:GebcoArtifact) {
+  const group=new THREE.Group();group.userData.placeLabels=true;
+  const candidates=places.places.filter(p=>p.longitude>=bounds[0]&&p.longitude<=bounds[2]&&p.latitude>=bounds[1]&&p.latitude<=bounds[3]).sort((a,b)=>a.rank-b.rank).slice(0,28);
+  for(const place of candidates){
+    const sprite=createLabelSprite({text:place.name,longitude:place.longitude,latitude:place.latitude},"scientific");
+    sprite.userData.placeLabel=true;
+    sprite.position.y=(sampleGebcoElevationMeters(terrain,place.longitude,place.latitude)??0)/1000+.8;
+    sprite.onBeforeRender=(renderer,_scene,camera)=>{
+      const view=camera as THREE.PerspectiveCamera,pos=sprite.getWorldPosition(new THREE.Vector3()),scale=sprite.parent!.getWorldScale(new THREE.Vector3());
+      const pixel=2*view.position.distanceTo(pos)*Math.tan(THREE.MathUtils.degToRad(view.fov/2))/Math.max(renderer.domElement.clientHeight,1);
+      sprite.scale.set(pixel*110/scale.x,pixel*18/scale.y,1);sprite.updateMatrixWorld();
+    };
+    group.add(sprite);
+  }
+  return group;
+}
+
+export function updatePlaceLabels(root:THREE.Object3D,camera:THREE.Camera,width:number,height:number) {
+  root.updateMatrixWorld(true);
+  const boxes:number[][]=[];
+  const labels:THREE.Object3D[]=[];root.traverse(o=>{if(o.userData.placeLabel||o.userData.axisLabel)labels.push(o);});
+  labels.sort((a,b)=>(b.userData.labelPriority??1)-(a.userData.labelPriority??1));
+  for(const object of labels){
+    const p=object.getWorldPosition(new THREE.Vector3()).project(camera),x=(p.x+1)*width/2,y=(1-p.y)*height/2;
+    const labelWidth=object.userData.screenWidth??110,labelHeight=object.userData.axisLabel?24:18;
+    const shift=object.userData.labelPriority===3?34:0;
+    const box=[x-labelWidth/2-shift,y-labelHeight/2,labelWidth,labelHeight];
+    object.visible=p.z>-1&&p.z<1&&x>labelWidth/2+shift&&x<width-labelWidth/2&&y>labelHeight/2&&y<height-labelHeight/2&&!boxes.some(b=>box[0]<b[0]+b[2]&&box[0]+box[2]>b[0]&&box[1]<b[1]+b[3]&&box[1]+box[3]>b[1]);
+    if(object.visible)boxes.push(box);
+  }
 }

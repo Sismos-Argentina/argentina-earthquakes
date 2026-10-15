@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "reviewedAt": "2026-10-13",
-  "snapshotSha256": "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82",
-  "policy": "Anotaciones independientes del catÃ¡logo original. Solo provisional-exclusion queda fuera de la visualizaciÃ³n inicial; puede reincluirse explÃ­citamente. Las discrepancias entre escalas no autorizan correcciones automÃ¡ticas.",
+  "snapshotSha256": "eb856bc832c11ff3d16d644cd96be717d5791aa7c0e2db291578349596a8ccbf",
+  "policy": "Anotaciones independientes del catálogo original. Solo provisional-exclusion queda fuera de la visualización inicial; puede reincluirse explícitamente. Las discrepancias entre escalas no autorizan correcciones automáticas.",
   "entries": [
     {
       "id": "f69ff9337367a750",
       "status": "provisional-exclusion",
-      "label": "M8,0 sin corroboraciÃ³n independiente",
-      "reason": "INPRES publica M8 y 10 km para el 29/01/2019. USGS no registra un gran evento equivalente. ISC contiene un candidato temporal SJA de ML2,0, a unos 40 km y 98,9 km de profundidad, no revisado por ISC. La asociaciÃ³n no estÃ¡ certificada; no se reemplazan los campos originales.",
+      "label": "M8,0 sin corroboración independiente",
+      "reason": "INPRES publica M8 y 10 km para el 29/01/2019. USGS no registra un gran evento equivalente. ISC contiene un candidato temporal SJA de ML2,0, a unos 40 km y 98,9 km de profundidad, no revisado por ISC. La asociación no está certificada; no se reemplazan los campos originales.",
       "sources": [
         {
           "label": "Ficha original INPRES",
@@ -57,7 +57,7 @@
       "id": "cd1d35d2463ac283",
       "status": "magnitude-discrepancy",
       "label": "Magnitudes de agencias diferentes",
-      "reason": "INPRES reporta M7,1 con escala no preservada; USGS e ISC reportan mb6,4 para un candidato coincidente en tiempo y regiÃ³n. Se conserva: la magnitud y su escala requieren cotejo, no una sustituciÃ³n automÃ¡tica.",
+      "reason": "INPRES reporta M7,1 con escala no preservada; USGS e ISC reportan mb6,4 para un candidato coincidente en tiempo y región. Se conserva: la magnitud y su escala requieren cotejo, no una sustitución automática.",
       "sources": [
         {
           "label": "Evento USGS us20003k8b",
@@ -102,7 +102,7 @@
       "id": "67a43d2fc2a103f5",
       "status": "magnitude-discrepancy",
       "label": "Magnitudes de agencias diferentes",
-      "reason": "INPRES reporta M7,6 con escala no preservada; USGS reporta Mww7,0 e ISC MW7,1 para candidatos coincidentes en tiempo y regiÃ³n. El evento se conserva y la discrepancia queda visible.",
+      "reason": "INPRES reporta M7,6 con escala no preservada; USGS reporta Mww7,0 e ISC MW7,1 para candidatos coincidentes en tiempo y región. El evento se conserva y la discrepancia queda visible.",
       "sources": [
         {
           "label": "Evento USGS us20003k7w",
@@ -146,8 +146,8 @@
     {
       "id": "4df71e4c86efc2a3",
       "status": "depth-review",
-      "label": "Profundidad extrema pendiente de revisiÃ³n",
-      "reason": "Mendoza, 05/04/2018: 750 km y M3,3. No se obtuvo corroboraciÃ³n en la ventana ISC consultada. La ausencia en otro catÃ¡logo no demuestra un error; permanece visible, sin modificar su profundidad.",
+      "label": "Profundidad extrema pendiente de revisión",
+      "reason": "Mendoza, 05/04/2018: 750 km y M3,3. No se obtuvo corroboración en la ventana ISC consultada. La ausencia en otro catálogo no demuestra un error; permanece visible, sin modificar su profundidad.",
       "sources": [
         {
           "label": "Consulta ISC de la ventana",

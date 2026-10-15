@@ -1,3 +1,4 @@
+import snapshot from "../src/data/catalog-snapshot.json" with { type: "json" };
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -8,14 +9,14 @@ import { canPublishHistoricalPhoto } from "../src/lib/story/media-policy.ts";
 
 const read = async (p) => JSON.parse(await readFile(new URL(`../${p}`, import.meta.url), "utf8"));
 const quality = await read("src/data/catalog-quality.json");
-const bytes = await readFile(new URL("../public/data/generated/inpres-2026-09-14.geojson", import.meta.url));
+const bytes = await readFile(new URL("../public"+snapshot.url, import.meta.url));
 const features = JSON.parse(bytes).features;
 
 test("exclusión M8 reversible, sin mutación ni reemplazo de campos", () => {
   assert.equal(createHash("sha256").update(bytes).digest("hex"), quality.snapshotSha256);
   const bounds = catalogFilterBounds(features);
-  assert.equal(features.filter((feature) => matchesCatalogFilters(feature, bounds)).length, 80469);
-  assert.equal(features.filter((feature) => matchesCatalogFilters(feature, { ...bounds, includeProvisional: true })).length, 80470);
+  assert.equal(features.filter((feature) => matchesCatalogFilters(feature, bounds)).length, snapshot.events-1);
+  assert.equal(features.filter((feature) => matchesCatalogFilters(feature, { ...bounds, includeProvisional: true })).length, snapshot.events);
   for (const entry of quality.entries) {
     const feature = features.find((f) => f.properties.id === entry.id);
     assert.deepEqual(feature, entry.originalRecord);

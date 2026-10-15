@@ -1,5 +1,5 @@
-# Snapshot INPRES 2026-09-14, Slab2 02.23.18 y datasets geográficos locales
-ae37584d4e5b45ad9225a10f74d5a44609bf202bee8fdca2f295af2025344a44  inpres/sismos.geojson
+# Snapshot INPRES 2026-10-14, Slab2 02.23.18 y datasets geográficos locales
+d1a53fa2743f08b49288756b0116892ed4b8d1f4e10d3017cd27362e8549327e  inpres/sismos.geojson
 46c5bced98c9e01aec61cb8abef241deee10ce6ba29daa8be043f35d739d09d9  gebco/GEBCO_18_Sep_2026_2b57c69752b6.zip
 ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad35138a7f6  natural-earth/ne_10m_admin_0_countries.zip
 a1fa49dabca0b92c9933af18cf60430c1d07997aece75e736abfd9d90c650b3b  slab2/Slab2_sam.xml
@@ -21,9 +21,9 @@ a3856e102bdc7272df3093996aea2c1c4e1120750438af67e5d1edb5faaccc09  generated/slab
 8fd4a0df2c3616837fdcadac5a9534ebcb0821c1de80bdb415c2fe33855c7a17  ign/pais.json
 
 # Artefactos del prototipo de competencia 2026-10-06; rutas relativas al producto
-9a14a03ef07196b1e1b0a800e49d11058c5cdbd9b0462235ccdfe80f9042a481  src/data/catalog-snapshot.json
-eca14f896e5a3064d0d49e333f14a363e9c49336fc92d9345eb022f3f998443d  src/data/competition-presets.json
-c70127a1972667ec2031ad3e8e7d7c96a13310bbed57cdd753dd061349a8a033  src/data/competition-history.json
+409838fd771216d2eba30f0e8589e08815ca7719920218b3742012eb241fd72a  src/data/catalog-snapshot.json
+1a61d8bfb8ebb0423afb8e2212c5c68a4bf8bc0833080a99f4de13e502f0528f  src/data/competition-presets.json
+37b4ec2ef40559e71a3b56a484e45c1e24fa4c90ed56b9257e4be3e3584191bc  src/data/competition-history.json
 c1f51e91421e797699db95e63db8dc0ae34355e9564a3befada7c16f726f1f5e  public/data/generated/historical/media-manifest.json
 73fc0bd16fa26fbcd07f75cc70836cfe50e599d0611f40f1a1c218db1f031b52  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-480.webp
 b4f5d592dceae133af2896a2f93744b569884f59db6d4ece54cd57aff673e4ee  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-1600.webp
@@ -65,3 +65,7 @@ dd11557fa72a7044274a85cad3ae80ca542febfc431a07c270a4d115726fed59  public/data/ge
 75c9307675bb4f9ff98d68f018cf15740c539735bf3105c6ba6b79de9808423f  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/04-el-galpon-salta-73427a3d-1600.webp
 ec95691335a64079e60556e6b45b5803e9050338f1f9f3ffb8f714f663224643  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/06-el-galpon-salta-d4bf6b0b-480.webp
 826b2b8304e86e0a9e94dea857e34739e177bb54604982795dc8d8a5b8bab0e2  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/06-el-galpon-salta-d4bf6b0b-1600.webp
+2ca0bc31735e93b1b24298c25af5dc9f262a130013a25f083b0a608b8fa709b9  src/data/place-labels.json
+c551bfe8501ae83d2f8f955ec1e9351223c918ef9487e8f00350a61e76299ce6  src/data/historical-archive.json
+e1a3f4781ee940ac6c721c46e91eae51297e7f43d4ac9414c5f9fdea716016af  src/data/catalog-quality.json
+c648e699e2f1f5f8c821f23ae629affa83180ae0dbccb6f11427836fcfb1e1df  src/data/flat-slab-guide.json

@@ -17,7 +17,7 @@ La interfaz debe identificar la categoría cuando exista riesgo de confusión.
 
 ## 2. INPRES: contrato original disponible
 
-Fuente inmediata: `inpres-sismos/data/sismos.csv`. Snapshot auditado: 80.470 registros, del 16/07/2011 al 14/09/2026. El repositorio proveedor puede continuar actualizándose sin modificar este contrato documentado.
+Fuente inmediata: `inpres-sismos/data/sismos.csv`. Snapshot actual: 80.850 registros, del 16/07/2011 al 14/10/2026. El snapshot anterior de septiembre se conserva identificado en Git y en la evidencia del refresh. El repositorio proveedor puede continuar actualizándose sin modificar este contrato documentado.
 
 | Campo | Tipo raw | Tipo de consumo esperado | Unidad/formato | Origen | Calidad y limitaciones |
 |---|---|---|---|---|---|
@@ -169,8 +169,7 @@ Los metadatos y derivados de las 20 fotografías seleccionadas se preservan, per
 `src/data/historical-rights.json` mantiene su reproducción bloqueada mientras no
 haya evidencia de permisos. El build retira únicamente sus derivados de `out/`.
 El bloque de fotografías muestra el enlace a la galería original de INPRES; no
-presenta el texto de autor pendiente de verificación. Incorporar los 80 eventos
-o ampliar las galerías queda fuera de esta entrega.
+presenta el texto de autor pendiente de verificación. La ampliación autorizada del 15/10 incorpora los 80 relatos e intensidades en historical-archive.json, con diez casos con galería y búsqueda cronológica. No amplía permisos ni reproduce fotos adicionales.
 
 Las asociaciones foto–evento son derivadas. Nueve coinciden por fecha exacta y
 Sampacho explicita la discrepancia `1934-06-11` (catálogo) frente a `1934-06-10`

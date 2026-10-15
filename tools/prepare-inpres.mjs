@@ -8,19 +8,12 @@ const localSource = path.resolve(
   projectRoot,
   "../inpres-sismos/data/exports/sismos.geojson",
 );
-const output = path.join(
-  projectRoot,
-  "public/data/generated/inpres-2026-09-14.geojson",
-);
-
-// Snapshot from inpres-sismos, not a live feed.
-const sourceCommit = "81e230c782972a2996a32f1ef21d56a2ef22e2e7";
-const sourceSha256 =
-  "ae37584d4e5b45ad9225a10f74d5a44609bf202bee8fdca2f295af2025344a44";
+const snapshot = JSON.parse(await readFile(path.join(projectRoot,"src/data/catalog-snapshot.json"),"utf8"));
+const output = path.join(projectRoot,"public",snapshot.url);
+const {sourceCommit,sourceSha256,webSha256} = snapshot;
 const sourceUrl = `https://raw.githubusercontent.com/Sismos-Argentina/inpres-sismos/${sourceCommit}/data/exports/sismos.geojson`;
-const expectedCount = 80470;
-const expectedInvalidLocations = 31;
-const webSha256 = "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82";
+const expectedCount = snapshot.events;
+const expectedInvalidLocations = snapshot.invalidLocations ?? 31;
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
@@ -31,7 +24,7 @@ async function loadSource() {
   try {
     const webBytes = await readFile(output);
     if (sha256(webBytes) === webSha256) {
-      console.log("Snapshot web local verificado: 80.470 eventos, 14/09/2026.");
+      console.log(`Snapshot web local verificado: ${snapshot.events} eventos, ${snapshot.date}.`);
       process.exit(0);
     }
   } catch (error) {
@@ -112,6 +105,7 @@ for (const [index, feature] of catalog.features.entries()) {
   }
 }
 
+if (sha256(webText) !== webSha256) throw new Error("El hash web no coincide con el snapshot fijado.");
 await mkdir(path.dirname(output), { recursive: true });
 await writeFile(output, webText, "utf8");
 console.log(
