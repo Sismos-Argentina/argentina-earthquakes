@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "prepare:data": "node tools/prepare-inpres.mjs",
+    "catalog:refresh": "node --experimental-strip-types tools/refresh-catalog.mjs",
+    "catalog:verify": "node tools/verify-catalog-deploy.mjs",
     "predev": "npm run prepare:data",
     "dev": "next dev",
     "prebuild": "npm run prepare:data",

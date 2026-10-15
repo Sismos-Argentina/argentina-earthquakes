@@ -1,4 +1,4 @@
-import snapshot from "../src/data/catalog-snapshot.json" with { type: "json" };
+import { auditCatalogBytes, auditSnapshot } from "./helpers/audit-catalog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -100,10 +100,10 @@ test("Slab2 interpola DEP y UNC en nodos WGS84 y respeta CLP/nodata", () => {
 });
 
 test("snapshot auditado: hash, 24.762 eventos y conteos por profundidad", async () => {
-  const bytes = await readFile(new URL("../public"+snapshot.url, import.meta.url));
-  assert.equal(createHash("sha256").update(bytes).digest("hex"), snapshot.webSha256);
+  const bytes = await auditCatalogBytes();
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), auditSnapshot.webSha256);
   const features = JSON.parse(bytes.toString("utf8")).features;
-  assert.equal(features.length, snapshot.events);
+  assert.equal(features.length, auditSnapshot.events);
   const selected = selectCuyoEvents(features);
   const counts = { superficial: 0, intermedio: 0, profundo: 0, over350: 0 };
   for (const { feature, alongKm, crossKm } of selected) {

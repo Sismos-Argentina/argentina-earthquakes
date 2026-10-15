@@ -17,7 +17,7 @@ La interfaz debe identificar la categoría cuando exista riesgo de confusión.
 
 ## 2. INPRES: contrato original disponible
 
-Fuente inmediata: `inpres-sismos/data/sismos.csv`. Snapshot actual: 80.850 registros, del 16/07/2011 al 14/10/2026. El snapshot anterior de septiembre se conserva identificado en Git y en la evidencia del refresh. El repositorio proveedor puede continuar actualizándose sin modificar este contrato documentado.
+Fuente inmediata: `inpres-sismos/data/sismos.csv`. La revisión del 15/10 utilizó 80.850 registros, del 16/07/2011 al 14/10/2026. La identidad vigente se consulta en `src/data/catalog-snapshot.json`; las versiones anteriores se conservan por commit y checksum. La actualización semanal sólo admite altas validadas de forma automática, sin modificar este contrato ni los valores de registros anteriores; ver [Actualización semanal](ACTUALIZACION_SEMANAL.md).
 
 | Campo | Tipo raw | Tipo de consumo esperado | Unidad/formato | Origen | Calidad y limitaciones |
 |---|---|---|---|---|---|

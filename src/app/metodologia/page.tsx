@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import guide from "@/data/flat-slab-guide.json";
 import snapshot from "@/data/catalog-snapshot.json";
+import CatalogUpdateNote from "@/components/seismic/CatalogUpdateNote";
 
 export const metadata: Metadata = { title: "Metodología | Bajo nuestros pies" };
 
@@ -19,7 +20,8 @@ export default function MethodologyPage() {
       <li><strong>Interpretación:</strong> la relación entre subducción subhorizontal, cuña del manto y magmatismo se apoya en Gao et al. (2021). La visualización no demuestra por sí sola esa explicación.</li>
     </ul>
     <h2>Catálogo y revisión de calidad</h2>
-    <p>Snapshot instrumental: {snapshot.events.toLocaleString("es-AR")} registros, {snapshot.startDate.split("-").reverse().join("/")}–{snapshot.date.split("-").reverse().join("/")}, incluidos eventos fuera de Argentina. Procede de INPRES mediante el export normalizado de <a href="https://github.com/Sismos-Argentina/inpres-sismos" target="_blank" rel="noreferrer">inpres-sismos</a>. Los accesos de 30 días y un año terminan en la última fecha de este snapshot; no representan un servicio de sismos en tiempo real.</p>
+    <p>Snapshot instrumental: {snapshot.events.toLocaleString("es-AR")} registros, {snapshot.startDate.split("-").reverse().join("/")}–{snapshot.date.split("-").reverse().join("/")}, incluidos eventos fuera de Argentina. Procede de INPRES mediante el export normalizado de <a href="https://github.com/Sismos-Argentina/inpres-sismos" target="_blank" rel="noreferrer">inpres-sismos</a>. Los accesos de 30 días y un año terminan en la última fecha del catálogo. La actualización se revisa cada semana; no es un servicio en tiempo real ni de alertas. Si una revisión falla, se conserva la última versión publicada.</p>
+    <CatalogUpdateNote date={snapshot.date}/>
     <details><summary>Identidad reproducible del catálogo</summary><p>Commit de la fuente: <code>{snapshot.sourceCommit}</code>; SHA-256 del GeoJSON web: <code>{guide.web.sha256}</code>.</p></details>
     <p>Se excluye provisionalmente de la visualización un registro que INPRES reporta como M8 el 29/01/2019, sin corroboración equivalente en USGS e ISC. El original no se corrige ni se borra. Se puede reincluir desde Información y fuentes (?) → Catálogo y criterios; el inspector explica la discrepancia. Quedan {(snapshot.events-1).toLocaleString("es-AR")} eventos habilitados por defecto. Otras discrepancias de magnitud o profundidad permanecen visibles con anotaciones; las escalas no siempre están documentadas.</p>
     <p><a href="http://contenidos.inpres.gob.ar/epicentro3.php?s=20190129060236" target="_blank" rel="noreferrer">Ficha INPRES del registro en revisión</a> · <a href="https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-01-28&endtime=2019-01-31&latitude=-31.076&longitude=-68.439&maxradiuskm=300&minmagnitude=2" target="_blank" rel="noreferrer">Consulta USGS</a> · <a href="https://www.isc.ac.uk/fdsnws/event/1/query?eventid=617802051&includeallorigins=true&includeallmagnitudes=true&format=xml" target="_blank" rel="noreferrer">Candidato temporal ISC</a>. La coincidencia temporal del candidato ISC no demuestra identidad con el registro INPRES.</p>

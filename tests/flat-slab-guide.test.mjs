@@ -1,4 +1,5 @@
 import snapshot from "../src/data/catalog-snapshot.json" with { type: "json" };
+import { auditCatalogBytes, auditSnapshot } from "./helpers/audit-catalog.mjs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -9,8 +10,10 @@ import { createLatitudeProfile, selectProfileEvents, positionAtProfile, sampleSl
 import { navigateStory } from "../src/lib/story/navigation.ts";
 
 test("comparación: mismo snapshot y corredor, conteos completos y exclusión reversible", async () => {
-  const bytes = await readFile(new URL("../public"+snapshot.url, import.meta.url));
-  assert.equal(createHash("sha256").update(bytes).digest("hex"), guide.web.sha256);
+  const bytes = await auditCatalogBytes();
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), auditSnapshot.webSha256);
+  assert.equal(guide.web.sha256, snapshot.webSha256);
+  assert.equal(guide.web.date, snapshot.date);
   const features = JSON.parse(bytes).features;
   const result = [];
   for (const stop of guide.stops) {
