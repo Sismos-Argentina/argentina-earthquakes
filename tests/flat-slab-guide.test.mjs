@@ -1,3 +1,4 @@
+import snapshot from "../src/data/catalog-snapshot.json" with { type: "json" };
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -8,7 +9,7 @@ import { createLatitudeProfile, selectProfileEvents, positionAtProfile, sampleSl
 import { navigateStory } from "../src/lib/story/navigation.ts";
 
 test("comparación: mismo snapshot y corredor, conteos completos y exclusión reversible", async () => {
-  const bytes = await readFile(new URL("../public/data/generated/inpres-2026-09-14.geojson", import.meta.url));
+  const bytes = await readFile(new URL("../public"+snapshot.url, import.meta.url));
   assert.equal(createHash("sha256").update(bytes).digest("hex"), guide.web.sha256);
   const features = JSON.parse(bytes).features;
   const result = [];
@@ -25,8 +26,8 @@ test("comparación: mismo snapshot y corredor, conteos completos y exclusión re
     assert.equal(raw.filter(({ feature }) => allowedInVisualization(feature, true)).length, raw.length);
   }
   assert.deepEqual(result, [
-    { latitude: -31, raw: 24689, eligible: 24688, magnitude31: 4348 },
-    { latitude: -35, raw: 201, eligible: 201, magnitude31: 102 },
+    { latitude: -31, raw: 24762, eligible: 24761, magnitude31: 4359 },
+    { latitude: -35, raw: 202, eligible: 202, magnitude31: 102 },
   ]);
 });
 

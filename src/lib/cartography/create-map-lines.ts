@@ -80,8 +80,8 @@ export function createCartographyGroup(
       artifact.layers.ignProvinces,
       terrain,
       displayBbox,
-      0xffd892,
-      0.95,
+      0x263c4d,
+      1,
     ),
   );
   return group;

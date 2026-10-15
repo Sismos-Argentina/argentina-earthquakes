@@ -1,6 +1,6 @@
 # Manifiesto de datasets
 
-Estado: inventario inicial consolidado el 15 de septiembre de 2026; artefactos web actualizados el 19 de septiembre de 2026.
+Estado: inventario inicial del 15 de septiembre de 2026; catálogo instrumental y archivo histórico revisados el 15 de octubre de 2026.
 
 Los paths raw son externos al repositorio. Se expresan respecto del directorio de trabajo que actualmente contiene `argentina-earthquakes`, `inpres-sismos` y `data`. Una herramienta futura deberá aceptar un directorio configurable y no depender de esa disposición.
 
@@ -8,7 +8,7 @@ Los paths raw son externos al repositorio. Se expresan respecto del directorio d
 
 | Dataset | Categoría | Versión | Estado para MVP |
 |---|---|---|---|
-| INPRES vía `inpres-sismos` | catálogo sísmico | commit `81e230c`, 14/09/2026 | disponible; contrato incompleto pero no bloqueante |
+| INPRES vía `inpres-sismos` | catálogo sísmico | commit `a870881`, 14/10/2026 | disponible; contrato incompleto pero no bloqueante |
 | Slab2 South America | modelo tectónico | 02.23.18 / publicación 2018 | artefacto web disponible; modelo diferenciado de observaciones |
 | GEBCO | modelo de elevación/batimetría | GEBCO_2026 | dos recortes web disponibles; extensión y detalle separados |
 | IGN | cartografía oficial | versión no registrada | geometría web incluida; origen/versión exactos por completar |
@@ -29,20 +29,20 @@ Los cuatro artefactos web versionados son derivados livianos; los archivos raw p
 |---|---|
 | Fuente | Instituto Nacional de Prevención Sísmica; obtención y exportación mediante `inpres-sismos` |
 | Origen | `https://github.com/Sismos-Argentina/inpres-sismos` (el remoto local histórico usa `LuisOVaras/inpres-sismos`) |
-| Versión auditada | commit `81e230c782972a2996a32f1ef21d56a2ef22e2e7` |
-| Fecha del export | 2026-09-14T16:23:13Z |
-| Formato baseline | GeoJSON FeatureCollection, 80.470 puntos |
+| Versión auditada | commit `a87088128f5e87566979e4c9bc186dcdff85b47a` |
+| Fecha del export | 2026-10-14T15:10:58Z |
+| Formato baseline | GeoJSON FeatureCollection, 80.850 puntos |
 | CRS | EPSG:4326 / coordenadas `[longitud, latitud]` |
-| Tamaño | 41.059.737 bytes |
+| Tamaño | 41.252.711 bytes |
 | Cobertura declarada por metadata | longitud -78,661 a 174,99; latitud -64,982 a 47,81; incluye eventos fuera del área científica principal |
-| Período | 16/07/2011 a 14/09/2026 |
+| Período | 16/07/2011 a 14/10/2026 |
 | Licencia | datos públicos de INPRES; el repositorio no contiene archivo `LICENSE`. Condiciones precisas de redistribución/atribución pendientes de verificación |
 | Raw local | `../inpres-sismos/data/exports/sismos.geojson` |
-| Artefacto web actual | GeoJSON completo servido same-origin, preparado por `tools/prepare-inpres.mjs`; 41.059.768 bytes, SHA-256 `685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82` |
+| Artefacto web actual | GeoJSON completo servido same-origin, preparado por `tools/prepare-inpres.mjs`; 41.252.742 bytes, SHA-256 `eb856bc832c11ff3d16d644cd96be717d5791aa7c0e2db291578349596a8ccbf` |
 | Formato posterior | GeoJSON se conserva por ahora; no se presupone formato binario |
 | Transformaciones necesarias | validación de esquema; parseo; separación de atributos de render/inspector si las mediciones lo requieren; proyección documentada; filtro espacial explícito |
 
-Checksum SHA-256: `ae37584d4e5b45ad9225a10f74d5a44609bf202bee8fdca2f295af2025344a44`.
+Checksum SHA-256: `d1a53fa2743f08b49288756b0116892ed4b8d1f4e10d3017cd27362e8549327e`.
 
 ## Slab2 South America
 
@@ -149,6 +149,27 @@ Checksum SHA-256: `ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad35138a
 
 ## Política de artefactos web
 
+### Lugares argentinos — revisión 14/10/2026
+
+Rótulos cartográficos de Natural Earth, colección fijada `v5.1.1`,
+commit `9380cca83db5f9aef52d5e762765100745f84b27`, archivo
+`geojson/ne_10m_populated_places_simple.geojson` del repositorio
+`nvkelso/natural-earth-vector`. Fuente SHA-256:
+`c7b8dbe8918f9b8bc2173bb343078d63d757a7f3d3663e7707e5e9ec4741f94f`.
+
+Se seleccionan 158 puntos con `iso_a2 = AR`, conservando nombre, longitud,
+latitud, identificador y rango de zoom. Coordenadas EPSG:4326; selección,
+proyección visual y ocultamiento de rótulos solapados son recursos
+cartográficos, no una clasificación oficial completa de localidades o límites.
+Se mantiene IGN para la cartografía argentina. No incorpora eventos sísmicos.
+
+Generador: `tools/cartography/prepare-place-labels.mjs`; resultado:
+`src/data/place-labels.json`, SHA-256
+`2ca0bc31735e93b1b24298c25af5dc9f262a130013a25f083b0a608b8fa709b9`.
+El generador verifica la fuente por hash y acepta un archivo descargado
+externamente al repositorio, o recupera esa URL inmutable.
+[Licencia Natural Earth: dominio público](https://www.naturalearthdata.com/about/terms-of-use/).
+
 Los artefactos finales se evaluarán individualmente. Este manifiesto no decide si deben versionarse o generarse durante build/deploy. `public/data/generated/` no está ignorado globalmente.
 
 ## Selección histórica para el prototipo de competencia — 06/10/2026
@@ -180,3 +201,7 @@ Cada entrada tiene crédito visible sin autor inventado y licencia pendiente.
 Disponibilidad pública no equivale a permiso de reutilización. Antes de publicar
 medios, confirmar autorización y atribución por imagen. El prototipo no ofrece un
 selector sólo texto; conserva un fallback interno cuando una imagen falla.
+
+## Cierre 15/10/2026
+
+Refresh instrumental fijado al commit a87088128f5e87566979e4c9bc186dcdff85b47a: 380 altas, cero bajas y cero registros anteriores modificados. Archivo histórico src/data/historical-archive.json: 80 registros, 10 con galería, preparado sin descargas por tools/prepare-competition-history.mjs a partir del proveedor histórico fijado; conserva intensidad y relatos sin inventar magnitudes. Las fotografías siguen enlazadas al archivo oficial y sus derivados no se publican.

@@ -2,15 +2,37 @@
   "schemaVersion": 1,
   "question": "¿Por qué hay sismos en San Juan mientras se interrumpe el arco volcánico de los Andes?",
   "answer": "La placa de Nazca sigue descendiendo y la región registra sismos. Según Gao et al. (2021), su tramo subhorizontal reduce la cuña de manto caliente que favorece el magmatismo. Sismos y volcanismo responden a procesos distintos: uno puede continuar mientras el otro disminuye.",
-  "web": { "date": "2026-09-14", "period": "16/07/2011–14/09/2026", "sha256": "685b6564a42ee3bac5744ec7c195af2ba2936725ea3578483925dac5326c5a82" },
-  "comparison": { "halfWidthKm": 50, "depthKm": 700, "scale": 1, "longitudeFrom": -73, "longitudeTo": -61, "filters": "Período completo y todas las magnitudes habilitadas al iniciar; filtro opcional compartido por ambas paradas." },
+  "web": {
+    "date": "2026-10-14",
+    "period": "16/07/2011–14/10/2026",
+    "sha256": "eb856bc832c11ff3d16d644cd96be717d5791aa7c0e2db291578349596a8ccbf"
+  },
+  "comparison": {
+    "halfWidthKm": 50,
+    "depthKm": 700,
+    "scale": 1,
+    "longitudeFrom": -73,
+    "longitudeTo": -61,
+    "filters": "Período completo y todas las magnitudes habilitadas al iniciar; filtro opcional compartido por ambas paradas."
+  },
   "sources": [
-    { "id": "gao-2021", "label": "Gao et al. (2021), §§3.1, 4 y conclusiones", "url": "https://doi.org/10.1029/2021GL095509", "scope": "Interpretación de tomografía: subducción plana, cierre de la cuña del manto y menor actividad magmática; reapertura de la cuña bajo Payenia al aumentar la inclinación." },
-    { "id": "slab2", "label": "Hayes et al. (2018), USGS Slab2", "url": "https://doi.org/10.5066/F7PV6JNV", "scope": "Geometría modelada DEP y su incertidumbre UNC; no observación directa ni clasificación de eventos." }
+    {
+      "id": "gao-2021",
+      "label": "Gao et al. (2021), §§3.1, 4 y conclusiones",
+      "url": "https://doi.org/10.1029/2021GL095509",
+      "scope": "Interpretación de tomografía: subducción plana, cierre de la cuña del manto y menor actividad magmática; reapertura de la cuña bajo Payenia al aumentar la inclinación."
+    },
+    {
+      "id": "slab2",
+      "label": "Hayes et al. (2018), USGS Slab2",
+      "url": "https://doi.org/10.5066/F7PV6JNV",
+      "scope": "Geometría modelada DEP y su incertidumbre UNC; no observación directa ni clasificación de eventos."
+    }
   ],
   "stops": [
     {
-      "id": "san-juan-31s", "latitude": -31,
+      "id": "san-juan-31s",
+      "latitude": -31,
       "title": "31°S · San Juan y la placa subhorizontal",
       "observation": "El catálogo muestra una concentración de hipocentros intermedios y eventos superficiales en esta franja. Cada punto conserva la profundidad reportada por INPRES.",
       "model": "Seguí la línea discontinua: Slab2 representa un tramo de menor pendiente bajo la región pampeana. La geometría varía a lo largo del corte; la placa no es perfectamente horizontal.",
@@ -18,7 +40,8 @@
       "prompt": "Buscá el tramo de menor pendiente y después comparalo con 35°S. La proximidad de un sismo a la línea no determina su origen tectónico."
     },
     {
-      "id": "mendoza-35s", "latitude": -35,
+      "id": "mendoza-35s",
+      "latitude": -35,
       "title": "35°S · una geometría más inclinada",
       "observation": "En el mismo período y con el mismo corredor, esta franja contiene menos hipocentros catalogados. La cobertura y la completitud regional impiden convertir esa diferencia en una tasa de actividad o riesgo.",
       "model": "Slab2 representa un descenso más marcado hacia el este que a 31°S. Ambos cortes usan los mismos píxeles por kilómetro y muestran de 0 a 700 km de profundidad.",

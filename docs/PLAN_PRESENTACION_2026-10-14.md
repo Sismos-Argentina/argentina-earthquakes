@@ -1,5 +1,7 @@
 # Presentación de Bajo nuestros pies en Contar con Datos 2026
 
+> Antecedente del 14/10. El cierre autorizado del 15/10 amplía este alcance: nuevo snapshot al 14/10, archivo histórico de 80 casos y revisión completa de controles y selección táctil. Estado y pruebas actuales: [Cierre local 15/10](CIERRE_2026-10-15.md). Los conteos y recortes que siguen describen la versión anterior.
+
 Presentar una obra en **Exploración Interactiva**: un mapa 3D para explorar sismos y dos cortes comparables que explican la diferencia entre la sismicidad y el volcanismo de los Andes. Mantener Three.js para esta entrega. El cierre oficial es el **15 de octubre**; conviene completar la presentación el 14 y reservar el 15 para contingencias. Las [bases oficiales](https://images.udesa.edu.ar/sites/default/files/2026-07/Bases-y-Condiciones-Contar-con-Datos-2026.pdf) no especifican una hora de cierre.
 
 ## Preguntas que responde la obra
@@ -15,11 +17,11 @@ La explicación debe poder entenderse en un minuto: pregunta inicial → 31°S �
 
 ## Decisiones sobre mapa y controles
 
-El [visor CONICET UNSJ](https://observatoriosismologico.com.ar/) facilita la consulta territorial mediante Leaflet y ofrece movimientos separados en Plotly. El 14/10 se probaron arrastres de 120 × 50 px en Pan, Turntable, Orbital y Zoom. Pan desplaza el centro y mantiene la orientación; Turntable conserva la vertical; Orbital puede inclinarla. Nuestro modo Rotar conserva la vertical y Mover traslada la vista. Ambas acciones son explícitas y tienen ayuda para mouse y tacto.
+El [visor CONICET UNSJ](https://observatoriosismologico.com.ar/) facilita la consulta territorial mediante Leaflet y ofrece movimientos separados en Plotly. La revisión local ahora incorpora desplazamiento, zoom, giro con vertical fija y giro libre. La navegación habitual es el modo inicial; las herramientas explícitas son opcionales. Su comportamiento se cotejó con gestos reales. El estado y pruebas de esta propuesta están en [Revisión local 14/10](REVISION_LOCAL_2026-10-14.md).
 
-Para este concurso, mantener el mapa actual con vistas desde arriba, lateral y contexto territorial. La vista superior sirve para ubicar regiones y el corte resuelve la lectura de profundidad. Una incorporación de Leaflet exigiría verificar sincronización, selección, límites, leyendas y móvil en un segundo mapa. Ese trabajo queda para después del concurso; no aporta tanto como cerrar la explicación y la navegación ya verificadas.
+Se mantiene Three.js y se agrega un mapa 2D con la cartografía y catálogo compartidos, sin Leaflet ni un nuevo servicio de mapas. Permite seleccionar una zona para explorar su volumen 3D o elegir extremos para un corte geodésico A–B. La zona conserva un mapa de ubicación. Ambas herramientas tienen regreso explícito y usan los filtros vigentes.
 
-Se incorporaron fondo claro por defecto y opción oscura en el gráfico, paletas correspondientes, leyenda visible antes del corte, título «Corte del subsuelo», respuesta bibliográfica abierta y exportación PNG del gráfico completo con filtros, conteos, escala y fuentes. El mini mapa muestra la geodésica real y su arrastre mueve la latitud mediante la proyección de la escena, conservando WGS84 para las mediciones.
+El fondo del corte es oscuro por defecto y tiene opción clara, con paletas correspondientes. La leyenda identifica la placa de Nazca como modelo Slab2; las coordenadas y cálculos se consultan en un detalle. Se mantiene la respuesta bibliográfica y la exportación PNG con filtros, conteos, escala y fuentes. El inspector ocupa un costado cuando hay espacio y aparece en el flujo de lectura en pantallas pequeñas. No se añade una licencia a las fotos por provenir de un organismo público: memoria conserva sus enlaces oficiales.
 
 La comparación de catálogos con CONICET sigue limitada: la consulta **01–14/09/2026, M≥3**, coincidente con nuestro snapshot, respondió **HTTP 502**. Su interfaz conservó datos recientes y mostró el error. No usar esos eventos para afirmar diferencias de cobertura, precisión o rendimiento. Una comparación numérica futura debe filtrar ambas muestras por la misma fecha, magnitud, profundidad y región geográfica; provincia, rectángulo y corredor geodésico tienen soportes distintos.
 

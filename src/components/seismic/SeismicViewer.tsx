@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { TrackballControls } from "three/addons/controls/TrackballControls.js";
 
 import {
   assertCartographyArtifact,
@@ -26,32 +27,41 @@ import {
 } from "@/lib/cartography/create-map-lines";
 import {
   createMapLabels,
+  createRegionalPlaceLabels,
+  updatePlaceLabels,
 } from "@/lib/cartography/create-map-labels";
 import {
   geographicToScene,
   sceneToGeographic,
-  VERTICAL_EXAGGERATION,
 } from "@/lib/geo/scene-coordinates";
-import { createGebcoGeometry } from "@/lib/terrain/create-gebco-geometry";
+import { sampleGebcoElevationMeters, createGebcoGeometry } from "@/lib/terrain/create-gebco-geometry";
 import { createSlab2Geometry } from "@/lib/slab2/create-slab2-geometry";
 import {
   catalogFilterBounds,
-  depthPresetRange,
   matchesCatalogFilters,
-  sameCatalogFilters,
   type CatalogFilterBounds,
   type CatalogFilters,
 } from "@/lib/filters/catalog";
 import CuyoSection from "./CuyoSection";
-import DualRangeFilter from "./DualRangeFilter";
+import { sameCatalogFilters } from "@/lib/filters/catalog";
+import ViewerControls, { type ControlPanel } from "./ViewerControls";
+import { eventColor, type EventColorMode } from "@/lib/geo/event-colors";
 import EventInspector from "./EventInspector";
+import EventHover from "./EventHover";
+import RegionalLocator from "./RegionalLocator";
+import PlanView from "./PlanView";
+import { createAnalysisAxes, depthTickStep, disposeAnalysisGroup } from "@/lib/geo/analysis-axes";
+import { cropGebco, cropSlab, insideRegion, type RegionBounds } from "@/lib/geo/region";
 import presets from "@/data/flat-slab-guide.json";
-import { provisionalExclusions } from "@/lib/data/catalog-quality";
+
 import {
   CUYO_PROFILE,
   LATITUDE_PROFILE,
   corridorEdgeForProfile,
   createLatitudeProfile,
+  createGeodesicProfile,
+  profileKey,
+  sampleSlab,
   positionAtProfile,
   projectEventToProfile,
   sampleProfile,
@@ -61,8 +71,7 @@ import {
 } from "@/lib/profile/cuyo";
 
 type ReliefExaggeration = 1 | 5 | 10;
-type ControlPanel = "filters" | "layers" | "information" | "navigation";
-type NavigationMode = "rotate" | "pan";
+type NavigationMode = "turntable" | "orbital" | "pan" | "zoom";
 
 type Metrics = {
   decodedBytes?: number;
@@ -92,9 +101,13 @@ type Metrics = {
   slabVertices?: number;
   slabTriangles?: number;
   filterMs?: number;
+  geometryCount?: number;
+  heapCurrent?: number;
 };
 
 type ViewActions = {
+  setColorMode: (value: EventColorMode) => void;
+  setTerrainOpacity: (value: number) => void;
   setRelief: (value: ReliefExaggeration) => void;
   toggleSlab: () => void;
   setSlabOpacity: (opacity: number) => void;
@@ -109,6 +122,12 @@ type ViewActions = {
   setProfileLatitude: (latitude: number) => void;
   startGuidedProfile: (latitude: number, bounds: CatalogFilters) => void;
   setReducedMotion: (value: boolean) => void;
+  chooseArea: (kind: "region" | "profile") => void;
+  cancelArea: () => void;
+  closeRegion: () => void;
+  openRegion: (bounds: RegionBounds) => void;
+  setCustomProfile: (a: [number,number], b: [number,number]) => void;
+  showPlan: (value: boolean) => void;
 };
 
 type TerrainLayer = {
@@ -125,22 +144,6 @@ function heapBytes(): number | undefined {
     memory?: { usedJSHeapSize: number };
   };
   return withMemory.memory?.usedJSHeapSize;
-}
-
-function formatMs(value: number | undefined) {
-  return value === undefined ? "—" : `${value.toFixed(0)} ms`;
-}
-
-function formatMiB(value: number | undefined) {
-  return value === undefined
-    ? "no disponible"
-    : `${(value / 1048576).toFixed(1)} MiB`;
-}
-
-function depthColor(depthKm: number): [number, number, number] {
-  if (depthKm < 70) return [0.96, 0.66, 0.34];
-  if (depthKm < 300) return [0.32, 0.78, 0.87];
-  return [0.72, 0.58, 0.93];
 }
 
 function createSeaLevel(bbox: [number, number, number, number]) {
@@ -235,20 +238,23 @@ function createTerrainLayer(
   reliefExaggeration: ReliefExaggeration,
   options: {
     surfaceOnly?: boolean;
+    labels?: boolean;
   } = {},
 ) {
   const built = createGebcoGeometry(terrain);
   const terrainMesh = new THREE.Mesh(
     built.geometry,
-    new THREE.MeshLambertMaterial({
+    new THREE.MeshBasicMaterial({
       vertexColors: true,
+      toneMapped: false,
       side: THREE.DoubleSide,
       transparent: false,
       opacity: 1,
       depthWrite: true,
-      depthTest: profile !== "scientific",
+      depthTest: true,
     }),
   );
+  terrainMesh.userData.terrainSurface=true;
   terrainMesh.renderOrder = profile === "scientific" ? 3 : 2;
 
   const displayBbox =
@@ -265,7 +271,7 @@ function createTerrainLayer(
   return {
     layer: {
       group,
-      labels: options.surfaceOnly ? new THREE.Group() : createMapLabels(profile),
+      labels: options.surfaceOnly || options.labels === false ? new THREE.Group() : createMapLabels(profile),
       surface: terrainMesh,
     },
     vertices: built.vertices,
@@ -288,7 +294,7 @@ function transferSizeFor(urls: string[]): number | undefined {
     : undefined;
 }
 
-export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHistory, onStartGuide, reducedMotion = false }: {
+export default function SeismicViewer({ guidedIndex = null, onGuideChange, onStartGuide, reducedMotion = false }: {
   guidedIndex?: number | null;
   onGuideChange?: (index: number | null) => void;
   onHistory?: () => void;
@@ -305,8 +311,20 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
   const [slabStatus, setSlabStatus] = useState("Cargando modelo Slab2…");
   const [slabVisible, setSlabVisible] = useState(false);
   const [slabOpacity, setSlabOpacity] = useState(0.4);
-  const [inversePanActive, setInversePanActive] = useState(false);
-  const [navigationMode, setNavigationModeReact] = useState<NavigationMode>("rotate");
+  const [, setInversePanActive] = useState(false);
+  const [navigationMode, setNavigationModeReact] = useState<NavigationMode>("turntable");
+  const [hovered, setHovered] = useState<{ event: InpresFeature; x: number; y: number } | null>(null);
+  const [modelHover, setModelHover] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [areaSelection, setAreaSelection] = useState<"region" | "profile" | null>(null);
+  const [areaStatus, setAreaStatus] = useState("");
+  const [activeRegion, setActiveRegion] = useState<RegionBounds | null>(null);
+  const [regionDepth, setRegionDepth] = useState(700);
+  const [colorMode, setColorMode] = useState<EventColorMode>("depth");
+  const [terrainOpacity, setTerrainOpacity] = useState(1);
+  const [map2d, setMap2d] = useState(false);
+  const [mapEvents, setMapEvents] = useState<InpresFeature[]>([]);
+  const [mapCartography, setMapCartography] = useState<CartographyArtifact | null>(null);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
   const [slabSummary, setSlabSummary] = useState<Slab2Artifact["summary"] | null>(null);
   const [count, setCount] = useState(0);
   const [visibleCount, setVisibleCount] = useState(0);
@@ -330,6 +348,17 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
 
     let disposed = false;
     let animationFrame = 0;
+    let renderDirty = true;
+    let interacting = false;
+    let motionReduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    type CameraPose={position:THREE.Vector3;target:THREE.Vector3;up:THREE.Vector3};
+    let cameraTransition:{from:CameraPose;to:CameraPose;start:number}|null=null;
+    let surfaceOpacity = 1;
+    let currentColorMode:EventColorMode="depth";
+    const diagnostic = ["localhost","127.0.0.1"].includes(window.location.hostname) && new URLSearchParams(window.location.search).get("diagnostico")==="1";
+    const invalidate = () => { renderDirty=true; if(!disposed && !document.hidden && !animationFrame) animationFrame=requestAnimationFrame(animate); };
+    const visibilityChanged = () => { if(document.hidden){cancelAnimationFrame(animationFrame);animationFrame=0;}else invalidate(); };
+    document.addEventListener("visibilitychange",visibilityChanged);
     let pendingFirstRender = false;
     let catalogReady = false;
     let surfaceReady = false;
@@ -344,17 +373,27 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     let catalogPoints: THREE.Points | null = null;
     let selectedPoint: THREE.Points | null = null;
     let selectedDepthLine: THREE.Line | null = null;
-    let depthGuide: THREE.LineSegments | null = null;
+    let depthGuide: THREE.Group | null = null;
     let slabMesh: THREE.Mesh | null = null;
     let scientificTerrain: GebcoArtifact | null = null;
     let profileSlab: Slab2Artifact | null = null;
-    let cachedProfile: { latitude: number; events: ProjectedEvent[]; samples: ProfileSample[] } | null = null;
+    let cachedProfile: { key: string; events: ProjectedEvent[]; samples: ProfileSample[] } | null = null;
     let profileTimer: ReturnType<typeof setTimeout> | null = null;
     let profileDebounce: ReturnType<typeof setTimeout> | null = null;
     let profileGeneration = 0;
     let currentProfile = CUYO_PROFILE;
     let slabEnabled = false;
-    let beforeProfile: { camera: THREE.Vector3; target: THREE.Vector3; relief: ReliefExaggeration } | null = null;
+    let beforeProfile: { camera: THREE.Vector3; target: THREE.Vector3; up: THREE.Vector3; relief: ReliefExaggeration } | null = null;
+    let region: RegionBounds | null = null;
+    let regionalGroup: THREE.Group | null = null;
+    let regionalSlab: THREE.Mesh | null = null;
+    let regionalTerrain: THREE.Group | null = null;
+    let regionalAxes: THREE.Group | null = null;
+    let planActive = false;
+    let choosingArea: "region" | "profile" | null = null;
+    let beforeRegion: { camera: THREE.Vector3; target: THREE.Vector3; up: THREE.Vector3 } | null = null;
+    let regionDepthKm = 700;
+    let cartographySource: CartographyArtifact | null = null;
     let currentRelief: ReliefExaggeration = INITIAL_RELIEF_EXAGGERATION;
     const terrainLayers: Partial<Record<GebcoProfile, TerrainLayer>> = {};
     const fetchController = new AbortController();
@@ -362,7 +401,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
 
     const markLayerReady = () => {
       if (catalogReady && surfaceReady) {
-        pendingFirstRender = true;
+        pendingFirstRender = true; invalidate();
         setMetrics((previous) => ({ ...previous, heapAfter: heapBytes() }));
       }
     };
@@ -377,6 +416,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
+    renderer.localClippingEnabled = true;
     host.appendChild(renderer.domElement);
 
     scene.add(new THREE.HemisphereLight(0xbfe6ef, 0x132129, 1.25));
@@ -385,36 +425,63 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     scene.add(sun);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    controls.addEventListener("change", invalidate);
+    controls.addEventListener("start",()=>{cameraTransition=null;interacting=true;invalidate();});
+    controls.addEventListener("end",()=>{interacting=false;invalidate();});
+    controls.enableDamping = !motionReduced;
+    controls.dampingFactor = .15;
     controls.screenSpacePanning = true;
     controls.zoomToCursor = true;
     controls.minDistance = 30;
     controls.maxDistance = 70000;
-    let currentNavigationMode: NavigationMode = "rotate";
+    const orbital = new TrackballControls(camera, renderer.domElement);
+    orbital.addEventListener("change",invalidate);
+    orbital.addEventListener("start",()=>{cameraTransition=null;interacting=true;invalidate();});
+    orbital.addEventListener("end",()=>{interacting=false;invalidate();});
+    orbital.enabled = false; orbital.staticMoving = true; orbital.panSpeed = .6; orbital.rotateSpeed = 1.2;
+    orbital.minDistance = 30; orbital.maxDistance = 70000; orbital.keys = ["", "", ""];
+    orbital.target = controls.target;
+    const cameraPose=():CameraPose=>({position:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone()});
+    const applyCameraPose=(pose:CameraPose)=>{camera.position.copy(pose.position);controls.target.copy(pose.target);camera.up.copy(pose.up);camera.lookAt(controls.target);};
+    const animateCameraFrom=(from:CameraPose)=>{
+      cameraTransition=null;
+      if(!motionReduced){const to=cameraPose();applyCameraPose(from);cameraTransition={from,to,start:performance.now()};}
+      invalidate();
+    };
+    let currentNavigationMode: NavigationMode = "turntable";
+    const syncControls = () => {
+      const allowed = !beforeProfile && !choosingArea && !planActive;
+      controls.enabled = allowed && currentNavigationMode === "turntable";
+      orbital.enabled = allowed && currentNavigationMode !== "turntable";
+    };
     const setNavigationMode = (mode: NavigationMode) => {
       stopChord();
       currentNavigationMode = mode;
-      controls.mouseButtons.LEFT = mode === "rotate" ? THREE.MOUSE.ROTATE : THREE.MOUSE.PAN;
-      controls.touches.ONE = mode === "rotate" ? THREE.TOUCH.ROTATE : THREE.TOUCH.PAN;
-      renderer.domElement.style.cursor = mode === "pan" ? "move" : "grab";
+      orbital.noRotate = mode !== "orbital";
+      orbital.mouseButtons.LEFT = mode === "pan" ? THREE.MOUSE.PAN : mode === "zoom" ? THREE.MOUSE.DOLLY : THREE.MOUSE.ROTATE;
+      if (mode === "turntable") { camera.up.set(0, 1, 0); controls.update(); }
+      syncControls();
+      renderer.domElement.style.cursor = mode === "pan" ? "move" : mode === "zoom" ? "ns-resize" : "grab";
       setNavigationModeReact(mode);
     };
     let footprint = createProfileFootprint(CUYO_PROFILE);
     scene.add(footprint);
     let guidedProfile = false;
     const setProfileCamera = (profile: ProfileDefinition) => {
-      const [x, , z] = geographicToScene(-67, profile.latitude, 0);
+      const center = positionAtProfile(profile, profile.lengthKm / 2);
+      const [x, , z] = geographicToScene(center.longitude, center.latitude, 0);
       const damping = controls.enableDamping;
       controls.enableDamping = false; controls.update();
       controls.target.set(x, 0, z);
       // Vista superior y norte arriba; A–B ocupa su lugar geográfico real.
-      camera.position.set(x, 700, z + 0.1);
+      camera.up.set(0, 1, 0); camera.position.set(x, Math.max(160, profile.lengthKm * .6), z + 0.1);
       controls.update(); controls.enableDamping = damping;
     };
 
     const setInitialCamera = () => {
       const [x, , z] = geographicToScene(-67, -31, 0);
       controls.target.set(x, -100, z);
+      camera.up.set(0, 1, 0);
       camera.position.set(x, 3800, z + 3800);
       controls.update();
     };
@@ -423,13 +490,15 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       for (const layer of Object.values(terrainLayers)) {
         if (layer) layer.group.scale.y = value;
       }
-      setReliefExaggeration(value);
+      if (regionalTerrain) regionalTerrain.scale.y = value;
+      setReliefExaggeration(value); invalidate();
     };
     const toggleSlab = () => {
       if (!slabMesh) return;
       slabEnabled = !slabEnabled;
-      slabMesh.visible = slabEnabled;
-      setSlabVisible(slabEnabled);
+      slabMesh.visible = slabEnabled && !region;
+      if (regionalSlab) regionalSlab.visible = slabEnabled;
+      setSlabVisible(slabEnabled); invalidate();
     };
     const selectEvent = (feature: InpresFeature) => {
       const [x, y, z] = geographicToScene(...feature.geometry.coordinates, feature.properties.profundidad);
@@ -445,13 +514,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       }
       selectedFeature = feature;
       setOpenPanel(null);
-      setSelected(feature);
+      setSelected(feature); invalidate();
     };
     const clearSelection = () => {
       selectedFeature = null;
       if (selectedPoint) selectedPoint.visible = false;
       if (selectedDepthLine) selectedDepthLine.visible = false;
-      setSelected(null);
+      setSelected(null); invalidate();
     };
     const applyFilters = (nextFilters: CatalogFilters) => {
       currentFilters = nextFilters;
@@ -463,6 +532,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       for (let index = 0; index < features.length; index++) {
         const feature = features[index];
         if (!matchesCatalogFilters(feature, nextFilters)) continue;
+        if (region && !insideRegion(...feature.geometry.coordinates, region)) continue;
         const source = index * 3;
         const target = visible * 3;
         filteredPositions[target] = catalogPositions[source];
@@ -475,6 +545,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         visible++;
       }
       visibleFeatures.length = visible;
+      setMapEvents(visibleFeatures.slice());
 
       const position = catalogPoints.geometry.getAttribute("position") as THREE.BufferAttribute;
       const color = catalogPoints.geometry.getAttribute("color") as THREE.BufferAttribute;
@@ -483,10 +554,11 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       catalogPoints.geometry.setDrawRange(0, visible);
       catalogPoints.geometry.computeBoundingSphere();
 
-      if (selectedFeature && !matchesCatalogFilters(selectedFeature, nextFilters)) {
+      if (selectedFeature && (!matchesCatalogFilters(selectedFeature, nextFilters) || !visibleFeatures.includes(selectedFeature))) {
         clearSelection();
       }
-      setVisibleCount(visible);
+      setVisibleCount(visible); invalidate();
+      setHovered(null); setModelHover(null);
       setMetrics((previous) => ({
         ...previous,
         filterMs: performance.now() - started,
@@ -499,15 +571,97 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       if (profileDebounce) clearTimeout(profileDebounce);
       footprint.visible = false;
       setProfileOpen(false);
-      controls.enabled = true;
+      if (catalogPoints) catalogPoints.visible = true;
+      if (depthGuide) depthGuide.visible = !region;
       renderer.domElement.style.cursor = currentNavigationMode === "pan" ? "move" : "grab";
       if (beforeProfile) {
         setRelief(beforeProfile.relief);
         camera.position.copy(beforeProfile.camera);
         controls.target.copy(beforeProfile.target);
+        camera.up.copy(beforeProfile.up);
         controls.update();
         beforeProfile = null;
       }
+      syncControls();
+    };
+    const showPlan = (value: boolean) => {
+      cameraTransition=null;
+      if (!value) { choosingArea=null; setAreaSelection(null); }
+      planActive = value; setMap2d(value); invalidate(); setHovered(null); setModelHover(null); syncControls();
+    };
+    const closeRegion = () => {
+      if (!region) return;
+      region = null; setActiveRegion(null);
+      if (regionalGroup) { scene.remove(regionalGroup); disposeAnalysisGroup(regionalGroup); }
+      regionalGroup = null; regionalSlab = null; regionalTerrain = null; regionalAxes = null;
+      for (const layer of Object.values(terrainLayers)) if (layer) { layer.group.visible = true; layer.labels.visible = true; }
+      if (slabMesh) slabMesh.visible = slabEnabled;
+      if (depthGuide) depthGuide.visible = true;
+      if (beforeRegion) { camera.position.copy(beforeRegion.camera); camera.up.copy(beforeRegion.up); controls.target.copy(beforeRegion.target); }
+      beforeRegion = null; clearSelection();
+      if (currentFilters) applyFilters(currentFilters);
+    };
+    const fitRegionCamera=(view:"above"|"side"|"oblique")=>{
+      if(!region)return;
+      const [x0,,z0]=geographicToScene(region[0],region[3],0),[x1,,z1]=geographicToScene(region[2],region[1],0);
+      const damping=controls.enableDamping;controls.enableDamping=false;controls.update();
+      const center=new THREE.Vector3((x0+x1)/2,-regionDepthKm/2,(z0+z1)/2);
+      const dir=(view==="above"?new THREE.Vector3(0,1,.001):view==="side"?new THREE.Vector3(.15,0,1):new THREE.Vector3(.35,.65,1)).normalize();
+      const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),dir).normalize(),up=new THREE.Vector3().crossVectors(dir,right);
+      const tanV=Math.tan(THREE.MathUtils.degToRad(camera.fov/2)),tanH=tanV*camera.aspect;
+      let distance=30;
+      for(const x of [x0,x1])for(const y of [0,-regionDepthKm])for(const z of [z0,z1]){
+        const offset=new THREE.Vector3(x,y,z).sub(center);
+        distance=Math.max(distance,Math.abs(offset.dot(right))/tanH+offset.dot(dir),Math.abs(offset.dot(up))/tanV+offset.dot(dir));
+      }
+      controls.target.copy(center);camera.up.set(0,1,0);camera.position.copy(center).addScaledVector(dir,distance*1.12);
+      controls.update();controls.enableDamping=damping;invalidate();
+    };
+    const openRegion = (bounds: RegionBounds) => {
+      if (!scientificTerrain || !cartographySource) throw new Error("Esperá a que termine de cargar el mapa.");
+      closeProfile(); closeRegion(); showPlan(false); choosingArea = null; setAreaSelection(null); setAreaStatus("");
+      beforeRegion = { camera: camera.position.clone(), target: controls.target.clone(), up: camera.up.clone() };
+      region = bounds; if(diagnostic)host.dataset.regionBounds=JSON.stringify(bounds); setActiveRegion(bounds); clearSelection();
+      if (currentFilters) applyFilters(currentFilters);
+      for (const layer of Object.values(terrainLayers)) if (layer) { layer.group.visible = false; layer.labels.visible = false;
+        layer.group.traverse(o => (o as THREE.Mesh).geometry?.dispose()); }
+      if (slabMesh) slabMesh.visible = false;
+      if (depthGuide) depthGuide.visible = false;
+      regionalGroup = new THREE.Group();
+      const terrain = createTerrainLayer("scientific", cropGebco(scientificTerrain, bounds), cartographySource, currentRelief, {labels:false});
+      regionalTerrain = terrain.layer.group; regionalGroup.add(regionalTerrain);
+      regionalTerrain.add(createRegionalPlaceLabels(bounds,scientificTerrain));
+      changeSurfaceOpacity(surfaceOpacity);
+      const [x0,,z0] = geographicToScene(bounds[0], bounds[3], 0), [x1,,z1] = geographicToScene(bounds[2], bounds[1], 0);
+      const planes = [new THREE.Plane(new THREE.Vector3(1,0,0),-x0),new THREE.Plane(new THREE.Vector3(-1,0,0),x1),
+        new THREE.Plane(new THREE.Vector3(0,0,1),-z0),new THREE.Plane(new THREE.Vector3(0,0,-1),z1)];
+      regionalTerrain.traverse(o => { const material=(o as THREE.Mesh).material;
+        if(material) for(const m of Array.isArray(material)?material:[material]) m.clippingPlanes=planes; });
+      let maxDepth = visibleFeatures.reduce((depth,f)=>Math.max(depth,f.properties.profundidad),200);
+      if (profileSlab) {
+        const clipped = cropSlab(profileSlab,bounds);
+        const validDepths = clipped.grid.depthKm.filter((v):v is number=>v!==null);
+        if (clipped.grid.width>=2 && clipped.grid.height>=2 && validDepths.length) {
+          maxDepth = validDepths.reduce((depth,value)=>Math.max(depth,value),maxDepth);
+          const geometry = createSlab2Geometry(clipped).geometry;
+          regionalSlab = new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:0xf4d97f,transparent:true,
+            opacity:(slabMesh?.material as THREE.MeshBasicMaterial)?.opacity ?? .4,depthWrite:false,side:THREE.DoubleSide,clippingPlanes:planes}));
+          const wire = new THREE.LineSegments(new THREE.WireframeGeometry(geometry),new THREE.LineBasicMaterial({color:0xffe7a3,transparent:true,opacity:.22,depthWrite:false,clippingPlanes:planes}));
+          regionalSlab.add(wire); regionalSlab.visible=slabEnabled; regionalGroup.add(regionalSlab);
+        }
+      }
+      maxDepth=Math.ceil(maxDepth/100)*100;regionDepthKm=maxDepth;setRegionDepth(maxDepth);
+      regionalAxes=createAnalysisAxes(bounds,maxDepth);regionalGroup.add(regionalAxes);scene.add(regionalGroup);
+      fitRegionCamera("oblique");
+      setNavigationMode("turntable"); controls.update(); syncControls();
+    };
+    const chooseArea = (kind: "region" | "profile") => {
+      closeProfile();closeRegion();clearSelection();choosingArea=kind;setAreaSelection(kind);setAreaStatus("");showPlan(true);
+    };
+    const setCustomProfile = (a: [number,number], b: [number,number]) => {
+      const profile = createGeodesicProfile({longitude:a[0],latitude:a[1]},{longitude:b[0],latitude:b[1]});
+      choosingArea=null;setAreaSelection(null);showPlan(false);closeRegion();currentProfile=profile;
+      cachedProfile=null;moveFootprint(profile);setProfileDefinition(profile);guidedProfile=false;openProfile();
     };
     const moveFootprint = (profile: ProfileDefinition) => {
       const wasVisible = footprint.visible;
@@ -529,13 +683,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     };
     const calculateProfile = (profile: ProfileDefinition) => {
       if (!features.length || !scientificTerrain || !profileSlab) return;
-      if (cachedProfile?.latitude === profile.latitude) {
+      if (cachedProfile?.key === profileKey(profile)) {
         setProfileEvents(cachedProfile.events);
         setProfileSamples(cachedProfile.samples);
         setProfileStatus("");
         return;
       }
-      setProfileStatus(`Calculando selección geodésica WGS84 a ${Math.abs(profile.latitude).toFixed(2)}°S…`);
+      setProfileStatus(profile.custom ? "Calculando selección geodésica WGS84 entre A y B…" : `Calculando selección geodésica WGS84 a ${Math.abs(profile.latitude).toFixed(2)}°S…`);
       const generation = ++profileGeneration;
       const result: ProjectedEvent[] = [];
       let next = 0;
@@ -551,7 +705,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           profileTimer = setTimeout(processChunk, 0);
         } else {
           const samples = sampleProfile(scientificTerrain!, profileSlab!, profile);
-          cachedProfile = { latitude: profile.latitude, events: result, samples };
+          cachedProfile = { key: profileKey(profile), events: result, samples };
           setProfileEvents(result);
           setProfileSamples(samples);
           if (selectedFeature && !result.some(({ feature }) => feature.properties.id === selectedFeature?.properties.id)) {
@@ -578,26 +732,62 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     const openProfile = () => {
       if (!features.length || !scientificTerrain || !profileSlab) return;
       if (beforeProfile) return;
-      beforeProfile = { camera: camera.position.clone(), target: controls.target.clone(), relief: currentRelief };
+      closeRegion();showPlan(false);choosingArea=null;setAreaSelection(null);
+      beforeProfile = { camera: camera.position.clone(), target: controls.target.clone(), up: camera.up.clone(), relief: currentRelief };
       setRelief(1);
       moveFootprint(currentProfile);
       footprint.visible = true;
       setProfileOpen(true);
-      controls.enabled = false;
+      if(catalogPoints){catalogPoints.visible=false;catalogPoints.geometry.dispose();}
+      if(selectedPoint)selectedPoint.visible=false;if(selectedDepthLine)selectedDepthLine.visible=false;
+      if(depthGuide)depthGuide.visible=false;
+      syncControls();
       setProfileCamera(currentProfile);
       calculateProfile(currentProfile);
     };
+    const changeSurfaceOpacity=(value:number)=>{
+      surfaceOpacity=value;
+      for(const group of [regionalTerrain,...Object.values(terrainLayers).map(v=>v?.group)])group?.traverse(o=>{
+        if(o instanceof THREE.Mesh && o.userData.terrainSurface && o.material instanceof THREE.MeshBasicMaterial){o.material.opacity=value;o.material.transparent=value<1;o.material.depthWrite=value===1;o.material.needsUpdate=true;}
+      });
+      invalidate();
+    };
+    const changeColorMode=(mode:EventColorMode)=>{
+      currentColorMode=mode;
+      if(catalogColors)for(let i=0;i<features.length;i++){
+        const props=features[i].properties;
+        const color=new THREE.Color().setRGB(...eventColor(mode==="depth"?props.profundidad:props.magnitud,mode),THREE.SRGBColorSpace);
+        catalogColors.set([color.r,color.g,color.b],i*3);
+      }
+      if(filteredColors&&catalogPoints)for(let i=0;i<visibleFeatures.length;i++){
+        const props=visibleFeatures[i].properties;
+        const color=new THREE.Color().setRGB(...eventColor(mode==="depth"?props.profundidad:props.magnitud,mode),THREE.SRGBColorSpace);
+        filteredColors.set([color.r,color.g,color.b],i*3);
+      }
+      if(catalogPoints)(catalogPoints.geometry.getAttribute("color") as THREE.BufferAttribute).needsUpdate=true;
+      invalidate();
+    };
     views.current = {
+      setColorMode:changeColorMode,
+      setTerrainOpacity:changeSurfaceOpacity,
       setRelief,
       toggleSlab,
       setSlabOpacity: (opacity) => {
         if (slabMesh) (slabMesh.material as THREE.MeshBasicMaterial).opacity = opacity;
-        setSlabOpacity(opacity);
+        if (regionalSlab) (regionalSlab.material as THREE.MeshBasicMaterial).opacity = opacity;
+        setSlabOpacity(opacity); invalidate();
       },
       openProfile: () => { guidedProfile = false; openProfile(); },
       closeProfile,
+      chooseArea,
+      cancelArea: () => { choosingArea=null;setAreaSelection(null);setAreaStatus("");syncControls(); },
+      closeRegion,
+      openRegion,
+      setCustomProfile,
+      showPlan,
       resetCamera: () => {
-        closeProfile();
+        const from=cameraPose();
+        closeProfile();closeRegion();choosingArea=null;setAreaSelection(null);showPlan(false);
         clearSelection();
         stopChord();
         const damping = controls.enableDamping;
@@ -605,15 +795,21 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         controls.update();
         setInitialCamera();
         controls.enableDamping = damping;
-        setNavigationMode("rotate");
+        setNavigationMode("turntable");
         setOpenPanel(null);
+        animateCameraFrom(from);
       },
       setNavigationMode,
       setCameraView: (view) => {
+        const from=cameraPose();
         closeProfile(); clearSelection(); stopChord();
+        if (region && view === "territory") closeRegion();
         const damping = controls.enableDamping;
         controls.enableDamping = false; controls.update();
         const [x, , z] = geographicToScene(-67, -35, 0);
+        if(region){fitRegionCamera(view==="above"?"above":"side");setNavigationMode("turntable");controls.enableDamping=damping;animateCameraFrom(from);return;}
+
+        camera.up.set(0,1,0);
         controls.target.set(x, -150, z);
         camera.position.set(x, view === "above" ? 5000 : -150, z + (view === "above" ? 1 : 3600));
         if (view === "territory") {
@@ -625,13 +821,15 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         }
         controls.update(); controls.enableDamping = damping;
         setOpenPanel(null);
+        animateCameraFrom(from);
       },
       selectEvent,
       clearSelection,
       setFilters: applyFilters,
       setProfileLatitude,
-      setReducedMotion: (value) => { controls.enableDamping = !value; },
+      setReducedMotion: (value) => { motionReduced=value;controls.enableDamping = !value;if(value&&cameraTransition){applyCameraPose(cameraTransition.to);cameraTransition=null;invalidate();} },
       startGuidedProfile: (latitude, bounds) => {
+        closeRegion();showPlan(false);choosingArea=null;setAreaSelection(null);
         guidedProfile = true;
         setOpenPanel(null);
         clearSelection();
@@ -643,79 +841,94 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     };
     setInitialCamera();
 
-    const [guideX, , guideZ] = geographicToScene(-81, -20, 0);
-    const guideVertices: number[] = [guideX, 0, guideZ, guideX, -750, guideZ];
-    for (let depth = 0; depth <= 750; depth += 150) {
-      guideVertices.push(
-        guideX - 35,
-        -depth,
-        guideZ,
-        guideX + 35,
-        -depth,
-        guideZ,
-      );
-    }
-    depthGuide = new THREE.LineSegments(
-      new THREE.BufferGeometry().setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(guideVertices, 3),
-      ),
-      new THREE.LineBasicMaterial({ color: 0x93a7a7 }),
-    );
-    scene.add(depthGuide);
+    let axesKey="",regionalAxesKey="";
+    const refreshAxes = () => {
+      if(beforeProfile||planActive)return;
+      const distance=camera.position.distanceTo(controls.target),tanH=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect;
+      const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);right.y=0;
+      if(right.lengthSq()<.01)right.set(1,0,0);right.normalize();
+      const anchor=controls.target.clone().addScaledVector(right,-distance*tanH*.5);
+      const snap=Math.max(.1,distance/60);anchor.x=Math.round(anchor.x/snap)*snap;anchor.z=Math.round(anchor.z/snap)*snap;
+      const [lon,lat]=sceneToGeographic(anchor.x,anchor.z),[east]=sceneToGeographic(anchor.x+distance*tanH*.1,anchor.z);
+      const rulerBounds:RegionBounds=[lon,lat,east,lat+.01];
+      const max=region?regionDepthKm:800,center=Math.max(0,-controls.target.y);
+      const a=new THREE.Vector3(anchor.x,-center,anchor.z).project(camera),b=new THREE.Vector3(anchor.x,-center-100,anchor.z).project(camera);
+      const pxPerKm=Math.hypot((a.x-b.x)*host.clientWidth,(a.y-b.y)*host.clientHeight)/200;
+      const step=depthTickStep(pxPerKm),halfRange=host.clientHeight/Math.max(.1,pxPerKm)*.65;
+      const range=[Math.max(0,center-halfRange),Math.min(max,center+halfRange)];
+      const key=[step,max,Math.ceil(range[0]/step),Math.floor(range[1]/step),Boolean(region)].join(":");
+      if(key!==axesKey){
+        axesKey=key;
+        if(depthGuide){scene.remove(depthGuide);disposeAnalysisGroup(depthGuide);}
+        depthGuide=createAnalysisAxes(rulerBounds,max,true,step,range);
+        // Trasladar la regla en lugar de reconstruir sus texturas en cada arrastre.
+        depthGuide.userData.anchor=[anchor.x,anchor.z];scene.add(depthGuide);
+      }
+      const previousAnchor=depthGuide!.userData.anchor as number[];
+      depthGuide!.position.set(anchor.x-previousAnchor[0],0,anchor.z-previousAnchor[1]);
+      depthGuide!.visible=true;
+      if(region&&regionalGroup){
+        const regionKey=[region.join(","),step,Math.floor(range[0]/step),Math.ceil(range[1]/step)].join(":");
+        if(regionKey!==regionalAxesKey){
+          regionalAxesKey=regionKey;
+          if(regionalAxes){regionalGroup.remove(regionalAxes);disposeAnalysisGroup(regionalAxes);}
+          regionalAxes=createAnalysisAxes(region,max,false,step,range,false);regionalGroup.add(regionalAxes);
+        }
+      }else regionalAxesKey="";
+      if(diagnostic)host.dataset.depthStep=String(step);
+    };
 
     const resize = () => {
       const width = Math.max(host.clientWidth, 1);
       const height = Math.max(host.clientHeight, 1);
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
+      renderer.setSize(width, height, false); invalidate();
+      orbital.handleResize();
     };
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(host);
     resize();
 
-    let frameCount = 0;
-    let lastFpsSample = performance.now();
-    const animate = () => {
-      if (disposed) return;
-      animationFrame = requestAnimationFrame(animate);
-      controls.update();
-      if (catalogPoints) {
-        // Desde arriba, priorizar el relieve; de costado, recuperar el volumen.
-        // Cambia sólo la presentación: xyz, filtros y selección se conservan.
-        const tilt = Math.min(1, controls.getPolarAngle() / (Math.PI / 3));
-        const prominence = tilt * tilt * (3 - 2 * tilt);
-        const material = catalogPoints.material as THREE.PointsMaterial;
-        material.size = 1.5 + 0.8 * prominence;
-        material.opacity = 0.32 + 0.38 * prominence;
+    let frameCount=0;
+    let lastFpsSample=performance.now();
+    function animate() {
+      animationFrame=0;
+      if(disposed||document.hidden)return;
+      if(cameraTransition){
+        const {from,to,start}=cameraTransition,t=Math.min(1,(performance.now()-start)/320),ease=t*t*(3-2*t);
+        camera.position.lerpVectors(from.position,to.position,ease);controls.target.lerpVectors(from.target,to.target,ease);camera.up.lerpVectors(from.up,to.up,ease).normalize();camera.lookAt(controls.target);renderDirty=true;
+        if(t===1){cameraTransition=null;controls.update();}
+      }else if(orbital.enabled)orbital.update();else if(controls.enabled)controls.update();
+      if(renderDirty){
+        renderDirty=false;
+        if(catalogPoints){
+          const material=catalogPoints.material as THREE.PointsMaterial;
+          material.size=visibleFeatures.length<=500?8:visibleFeatures.length<=5000?5:2.2*Math.max(1,Math.min(3,1500/camera.position.distanceTo(controls.target)));
+          material.opacity=visibleFeatures.length<=500?.95:.75;
+        }
+        if(compassNeedle.current){
+          const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion),up=new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion);
+          compassNeedle.current.style.transform=`rotate(${Math.atan2(-right.z,-up.z)}rad)`;
+          compassNeedle.current.style.visibility=Math.hypot(right.z,up.z)>1e-6?"visible":"hidden";
+        }
+        camera.updateMatrixWorld();refreshAxes();
+        updatePlaceLabels(scene,camera,host!.clientWidth,host!.clientHeight);
+        if(!planActive)renderer.render(scene,camera);
+        if(pendingFirstRender){pendingFirstRender=false;setMetrics(previous=>({...previous,firstRenderMs:performance.now()-startedAt}));}
+        frameCount++;
+        const now=performance.now();
+        if(diagnostic){
+          host!.dataset.cameraPose=JSON.stringify({position:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray()});
+          if(now-lastFpsSample>=1000){
+            setMetrics(previous=>({...previous,fps:frameCount*1000/(now-lastFpsSample),drawCalls:renderer.info.render.calls,geometryCount:renderer.info.memory.geometries,heapCurrent:heapBytes()}));
+            frameCount=0;lastFpsSample=now;
+          }
+        }
       }
-      if (compassNeedle.current) {
-        compassNeedle.current.style.transform = `rotate(${controls.getAzimuthalAngle()}rad)`;
-      }
-      renderer.render(scene, camera);
-
-      const now = performance.now();
-      if (pendingFirstRender) {
-        pendingFirstRender = false;
-        setMetrics((previous) => ({
-          ...previous,
-          firstRenderMs: now - startedAt,
-        }));
-      }
-      frameCount++;
-      if (now - lastFpsSample >= 1000) {
-        const fps = (frameCount * 1000) / (now - lastFpsSample);
-        setMetrics((previous) => ({
-          ...previous,
-          fps,
-          drawCalls: renderer.info.render.calls,
-        }));
-        frameCount = 0;
-        lastFpsSample = now;
-      }
-    };
-    animate();
+      if((interacting||cameraTransition)&&!animationFrame)animationFrame=requestAnimationFrame(animate);
+    }
+    invalidate();
 
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
@@ -729,12 +942,12 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       raycaster.setFromCamera(pointer, camera);
     };
     const handleDoubleClick = (event: MouseEvent) => {
-      if (beforeProfile) return;
+      if (beforeProfile || planActive) return;
       // Recentrar conserva distancia y orientación. La superficie visible da
       // la ubicación horizontal; fuera de GEBCO se usa el plano del mar.
       setRayFromPointer(event);
-      const surfaces = [terrainLayers.scientific, terrainLayers.context]
-        .flatMap((layer) => layer ? [layer.surface] : []);
+      const surfaces = region && regionalTerrain ? regionalTerrain.children.filter((o):o is THREE.Mesh=>o instanceof THREE.Mesh)
+        : [terrainLayers.scientific, terrainLayers.context].flatMap((layer) => layer ? [layer.surface] : []);
       const point = raycaster.intersectObjects(surfaces, false)[0]?.point;
       const destination = point ?? raycaster.ray.intersectPlane(
         seaLevelPlane,
@@ -765,7 +978,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       chordEngaged = false;
       profileDrag = null;
       setInversePanActive(false);
-      controls.enabled = !beforeProfile;
+      syncControls();
       renderer.domElement.style.cursor = currentNavigationMode === "pan" ? "move" : "grab";
     };
     const startChord = (clientX: number, clientY: number) => {
@@ -775,6 +988,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       chordLastY = clientY;
       pointerDown = null;
       controls.enabled = false;
+      orbital.enabled = false;
       renderer.domElement.style.cursor = "move";
     };
     const handleChordStart = (event: MouseEvent) => {
@@ -822,7 +1036,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
     const preventCanvasContextMenu = (event: MouseEvent) => event.preventDefault();
     const handlePointerDown = (event: PointerEvent) => {
       if (beforeProfile) {
-        if (guidedProfile) return;
+        if (guidedProfile || currentProfile.custom) return;
         const view = camera.clone(); view.updateMatrixWorld();
         const latitude = profilePointerLatitude(event, view);
         if (latitude !== null) {
@@ -858,7 +1072,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         3,
         camera.position.distanceTo(controls.target) * 0.003,
       );
-      const hit = raycaster.intersectObject(catalogPoints, false)[0];
+      const hit = raycaster.intersectObject(catalogPoints, false).find(hit=>!hiddenByTerrain(hit.distance));
       if (hit?.index !== undefined) {
         const feature = visibleFeatures[hit.index];
         if (feature) selectEvent(feature);
@@ -868,18 +1082,99 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         pickingMs: performance.now() - pickStart,
       }));
     };
+    const hiddenByTerrain=(distance:number)=>{
+      if(surfaceOpacity<1||!scientificTerrain||camera.position.y<=0||Math.abs(raycaster.ray.direction.y)<1e-6)return false;
+      let t=-raycaster.ray.origin.y/raycaster.ray.direction.y;
+      for(let i=0;i<4;i++){
+        if(t<0||t>=distance)return false;
+        const p=raycaster.ray.at(t,new THREE.Vector3()),[lon,lat]=sceneToGeographic(p.x,p.z);
+        if(region&&!insideRegion(lon,lat,region))return false;
+        const meters=sampleGebcoElevationMeters(scientificTerrain,lon,lat);
+        if(meters===null)return false;
+        t=(meters/1000*currentRelief-raycaster.ray.origin.y)/raycaster.ray.direction.y;
+      }
+      return t>0&&t<distance-1;
+    };
+    let lastHoverAt=0;
+    const handleHover = (event: PointerEvent) => {
+      if(event.pointerType==="touch" || event.buttons || beforeProfile || planActive || choosingArea || !catalogPoints?.visible) return;
+      const now=performance.now();if(now-lastHoverAt<90)return;lastHoverAt=now;
+      setRayFromPointer(event);raycaster.params.Points.threshold=Math.max(1,camera.position.distanceTo(controls.target)*.0035);
+      const hit=raycaster.intersectObject(catalogPoints,false).find(hit=>!hiddenByTerrain(hit.distance));
+      const feature=hit?.index!==undefined?visibleFeatures[hit.index]:undefined;
+      if(feature){setHovered({event:feature,x:event.clientX,y:event.clientY});setModelHover(null);return;}
+      setHovered(null);
+      const model=region?regionalSlab:slabMesh;
+      if(slabEnabled&&model?.visible&&profileSlab){
+        const hit=raycaster.intersectObject(model,false)[0];
+        if(hit&&!hiddenByTerrain(hit.distance)){const[lon,lat]=sceneToGeographic(hit.point.x,hit.point.z);
+          const sample=(!region||insideRegion(lon,lat,region))?sampleSlab(profileSlab,lon,lat):null;
+          if(sample){setModelHover({text:`Placa de Nazca · modelo Slab2\n${lat.toFixed(3)}° lat · ${lon.toFixed(3)}° lon\nProfundidad ≈ ${sample.depthKm.toFixed(1)} km · incertidumbre ± ${sample.uncertaintyKm.toFixed(1)} km\nNo clasifica el origen de un sismo.`,x:event.clientX,y:event.clientY});return;}
+        }
+      }
+      setModelHover(null);
+    };
+    const clearHover = () => {setHovered(null);setModelHover(null);};
+    controls.addEventListener("start",clearHover);orbital.addEventListener("start",clearHover);
+    const touchPointers=new Map<number,{x:number;y:number}>();
+    let touchState:{camera:THREE.Vector3;target:THREE.Vector3;x:number;y:number;distance:number}|null=null;
+    let touchMoved=false;
+    const resetTouchState=()=>{
+      const points=Array.from(touchPointers.values());if(!points.length){touchState=null;return;}
+      touchState={camera:camera.position.clone(),target:controls.target.clone(),x:points.reduce((s,p)=>s+p.x,0)/points.length,
+        y:points.reduce((s,p)=>s+p.y,0)/points.length,distance:points.length>1?Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y):0};
+    };
+    const touchStart=(event:PointerEvent)=>{
+      if(event.pointerType==="touch")cameraTransition=null;
+      if(event.pointerType!=="touch"||beforeProfile||planActive||choosingArea||!["pan","zoom"].includes(currentNavigationMode))return;
+      touchPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});
+      if(touchPointers.size===1){pointerDown={x:event.clientX,y:event.clientY};touchMoved=false;}else touchMoved=true;
+      resetTouchState();orbital.enabled=false;controls.enabled=false;clearHover();
+      renderer.domElement.setPointerCapture(event.pointerId);event.stopImmediatePropagation();
+    };
+    const touchMove=(event:PointerEvent)=>{
+      if(!touchPointers.has(event.pointerId)||!touchState)return;
+      touchPointers.set(event.pointerId,{x:event.clientX,y:event.clientY});const points=Array.from(touchPointers.values());
+      const x=points.reduce((s,p)=>s+p.x,0)/points.length,y=points.reduce((s,p)=>s+p.y,0)/points.length;
+      const dx=x-touchState.x,dy=y-touchState.y;if(Math.hypot(dx,dy)>5)touchMoved=true;
+      const offset=touchState.camera.clone().sub(touchState.target),distance=offset.length();
+      if(points.length>1 || currentNavigationMode==="zoom"){
+        const factor=points.length>1?touchState.distance/Math.max(1,Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y)):Math.exp(dy*.006);
+        camera.position.copy(touchState.target).add(offset.multiplyScalar(Math.min(70000,Math.max(30,distance*factor))/distance));
+      }else{
+        const perPixel=2*distance*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))/renderer.domElement.clientHeight;
+        const delta=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(-dx*perPixel)
+          .add(new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,1).multiplyScalar(dy*perPixel));
+        camera.position.copy(touchState.camera).add(delta);controls.target.copy(touchState.target).add(delta);
+      }
+      camera.lookAt(controls.target);camera.updateMatrixWorld();invalidate();event.stopImmediatePropagation();
+    };
+    const touchEnd=(event:PointerEvent)=>{
+      if(!touchPointers.has(event.pointerId))return;
+      touchPointers.delete(event.pointerId);if(renderer.domElement.hasPointerCapture(event.pointerId))renderer.domElement.releasePointerCapture(event.pointerId);
+      if(touchPointers.size){resetTouchState();}else{touchState=null;syncControls();if(touchMoved||event.type==="pointercancel")pointerDown=null;else handlePointerUp(event);}
+      event.stopImmediatePropagation();
+    };
     renderer.domElement.addEventListener("pointerdown", handlePointerDown);
     renderer.domElement.addEventListener("pointermove", handleProfilePointerMove);
     renderer.domElement.addEventListener("pointercancel", handlePointerUp);
     renderer.domElement.addEventListener("pointerup", handlePointerUp);
+    renderer.domElement.addEventListener("pointermove",handleHover);
+    renderer.domElement.addEventListener("pointerleave",clearHover);
+    renderer.domElement.addEventListener("pointerdown",touchStart,true);
+    renderer.domElement.addEventListener("pointermove",touchMove,true);
+    renderer.domElement.addEventListener("pointerup",touchEnd,true);
+    renderer.domElement.addEventListener("pointercancel",touchEnd,true);
     renderer.domElement.addEventListener("dblclick", handleDoubleClick);
     renderer.domElement.addEventListener("mousedown", handleChordStart);
     renderer.domElement.addEventListener("contextmenu", preventCanvasContextMenu);
     document.addEventListener("pointermove", handleChordMove, true);
     document.addEventListener("mouseup", handleChordMouseUp, true);
-    window.addEventListener("blur", stopChord);
+    const handleBlur = () => { touchPointers.clear(); touchState=null; pointerDown=null; stopChord(); };
+    window.addEventListener("blur", handleBlur);
 
     const loadCatalog = async () => {
+      setShowDiagnostics(["localhost","127.0.0.1"].includes(window.location.hostname) && new URLSearchParams(window.location.search).get("diagnostico")==="1");
       try {
         const heapBefore = heapBytes();
         const fetchStart = performance.now();
@@ -909,7 +1204,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           const [x, y, z] = geographicToScene(longitude, latitude, depth);
           const offset = index * 3;
           catalogPositions.set([x, y, z], offset);
-          catalogColors.set(depthColor(depth), offset);
+          const rgb=new THREE.Color().setRGB(...eventColor(currentColorMode==="depth"?depth:feature.properties.magnitud,currentColorMode),THREE.SRGBColorSpace);
+          catalogColors.set([rgb.r,rgb.g,rgb.b], offset);
         }
         filteredPositions = catalogPositions.slice();
         filteredColors = catalogColors.slice();
@@ -918,16 +1214,22 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute("position", new THREE.BufferAttribute(filteredPositions, 3));
         geometry.setAttribute("color", new THREE.BufferAttribute(filteredColors, 3));
+        const dot=document.createElement("canvas");dot.width=32;dot.height=32;
+        const dotContext=dot.getContext("2d")!;dotContext.fillStyle="#ffffff";dotContext.beginPath();dotContext.arc(16,16,14,0,Math.PI*2);dotContext.fill();
+        const dotMap=new THREE.CanvasTexture(dot);
         catalogPoints = new THREE.Points(
           geometry,
           new THREE.PointsMaterial({
-            size: 1.5,
+            size: 2.2,
+            map: dotMap,
+            alphaTest: .25,
             sizeAttenuation: false,
             vertexColors: true,
             transparent: true,
             opacity: 0.32,
-            // Lectura del volumen a través del relieve: conserva xyz hipocentral.
-            depthTest: false,
+            // La superficie opaca oculta hipocentros que están detrás.
+            depthTest: true,
+            toneMapped: false,
             depthWrite: false,
           }),
         );
@@ -1017,6 +1319,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         const parseMs = performance.now() - parseStart;
         if (disposed) return;
         scientificTerrain = scientificRaw;
+        cartographySource = cartographyRaw;setMapCartography(cartographyRaw);
 
         const buildStart = performance.now();
         const scientific = createTerrainLayer(
@@ -1034,6 +1337,12 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         );
         terrainLayers.scientific = scientific.layer;
         terrainLayers.context = context.layer;
+        changeSurfaceOpacity(surfaceOpacity);
+        const [wx,,nz]=geographicToScene(scientificTerrain.grid.bbox[0],scientificTerrain.grid.bbox[3],0),[ex,,sz]=geographicToScene(scientificTerrain.grid.bbox[2],scientificTerrain.grid.bbox[1],0);
+        const contextMaterial=context.layer.surface.material as THREE.Material;
+        contextMaterial.clippingPlanes=[new THREE.Plane(new THREE.Vector3(-1,0,0),wx),new THREE.Plane(new THREE.Vector3(1,0,0),-ex),new THREE.Plane(new THREE.Vector3(0,0,-1),nz),new THREE.Plane(new THREE.Vector3(0,0,1),-sz)];
+        contextMaterial.clipIntersection=true;
+
         for (const layer of Object.values(terrainLayers)) {
           if (!layer) continue;
           scene.add(layer.group, layer.labels);
@@ -1058,6 +1367,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           setSurfaceStatus(
             `Superficie/cartografía no disponible: ${error instanceof Error ? error.message : "error desconocido"}`,
           );
+          // La cartografía liviana permite usar 2D aunque falle la descarga del relieve.
+          try {
+            const response = await fetch(CARTOGRAPHY_URL, { signal: fetchController.signal });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const cartography: unknown = await response.json(); assertCartographyArtifact(cartography);
+            if (!disposed) { cartographySource = cartography; setMapCartography(cartography); }
+          } catch { /* El aviso de carga permanece visible; no se fabrican límites ni terreno. */ }
         }
       }
     };
@@ -1092,7 +1408,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         slabMesh.visible = slabEnabled;
         scene.add(slabMesh);
         setSlabSummary(raw.summary);
-        setSlabStatus("Modelo Slab2 disponible");
+        setSlabStatus("Modelo Slab2 disponible"); invalidate();
         const entries = performance.getEntriesByName(response.url, "resource") as PerformanceResourceTiming[];
         setMetrics((previous) => ({
           ...previous,
@@ -1117,6 +1433,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
 
     return () => {
       disposed = true;
+      document.removeEventListener("visibilitychange",visibilityChanged);
       fetchController.abort();
       if (profileTimer) clearTimeout(profileTimer);
       if (profileDebounce) clearTimeout(profileDebounce);
@@ -1126,14 +1443,21 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
       renderer.domElement.removeEventListener("pointermove", handleProfilePointerMove);
       renderer.domElement.removeEventListener("pointercancel", handlePointerUp);
       renderer.domElement.removeEventListener("pointerup", handlePointerUp);
+      renderer.domElement.removeEventListener("pointermove",handleHover);
+      renderer.domElement.removeEventListener("pointerleave",clearHover);
+      renderer.domElement.removeEventListener("pointerdown",touchStart,true);
+      renderer.domElement.removeEventListener("pointermove",touchMove,true);
+      renderer.domElement.removeEventListener("pointerup",touchEnd,true);
+      renderer.domElement.removeEventListener("pointercancel",touchEnd,true);
       renderer.domElement.removeEventListener("dblclick", handleDoubleClick);
       renderer.domElement.removeEventListener("mousedown", handleChordStart);
       renderer.domElement.removeEventListener("contextmenu", preventCanvasContextMenu);
       document.removeEventListener("pointermove", handleChordMove, true);
       document.removeEventListener("mouseup", handleChordMouseUp, true);
-      window.removeEventListener("blur", stopChord);
+      window.removeEventListener("blur", handleBlur);
       views.current = null;
       controls.dispose();
+      orbital.dispose();
       scene.traverse((object) => {
         if ("geometry" in object && object.geometry instanceof THREE.BufferGeometry) {
           object.geometry.dispose();
@@ -1178,27 +1502,28 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
 
   useEffect(() => {
     const closePanel = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenPanel(null);
+      if (event.key === "Escape" && !event.defaultPrevented) {
+        if (openPanel) setOpenPanel(null);
+        else views.current?.cancelArea();
+      }
     };
     window.addEventListener("keydown", closePanel);
     return () => window.removeEventListener("keydown", closePanel);
-  }, []);
+  }, [openPanel]);
 
-  const filtersAreDefault = Boolean(
-    filters && filterBounds && sameCatalogFilters(filters, filterBounds),
-  );
-  const filtersActive = Boolean(filters && filterBounds && !filtersAreDefault);
-  const togglePanel = (panel: ControlPanel) => {
-    setOpenPanel((current) => current === panel ? null : panel);
-  };
-
+  const filtersActive=Boolean(filters&&filterBounds&&!sameCatalogFilters(filters,filterBounds));
+  const catalogFailed=status.startsWith("No se pudo cargar el catálogo");
+  const surfaceFailed=surfaceStatus.includes("no disponible");
+  const slabFailed=slabStatus.includes("no disponible");
+  const resourceFailure=catalogFailed||surfaceFailed||slabFailed;
   return (
     <main className={[
       "viewer",
       guidedIndex !== null ? "viewer--guided" : "",
       profileOpen ? "viewer--section" : "",
+      map2d ? "viewer--plan" : "",
+      activeRegion ? "viewer--region" : "",
       selected ? "viewer--has-selection" : "",
-      openPanel ? "viewer--panel-open" : "",
       openPanel ? `viewer--panel-${openPanel}` : "",
     ].filter(Boolean).join(" ")}>
       <div
@@ -1207,295 +1532,33 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
         aria-label="Escena tridimensional de sismos INPRES, relieve GEBCO, cartografía y modelo geofísico Slab2"
       />
 
-      <div className="leftDock">
-        <header className="viewerHeader">
-          <p className="eyebrow">Catálogo INPRES · snapshot 14/09/2026</p>
-          <h1>Bajo nuestros pies</h1>
-          <p className="viewerQuestion">¿Qué revelan los terremotos sobre el subsuelo? Compará San Juan con el sur de Mendoza para explorar sismos, placas y volcanismo.</p>
-          <p className="viewerStatus" aria-live="polite">
-            {count > 0
-              ? `${visibleCount.toLocaleString("es-AR")} de ${count.toLocaleString("es-AR")} eventos visibles`
-              : status}
-          </p>
-          <p className="viewerSnapshot">Sismos de Argentina · INPRES · 2011–2026</p>
-          <p className="viewerQuality">{provisionalExclusions.length} exclusión provisional por calidad · reversible en Filtros.</p>
-        </header>
-
-        {onHistory ? <nav className="experienceLinks" aria-label="Historia y recorrido"><button className="guideStart" onClick={onStartGuide}>Comparar 31°S y 35°S</button><button onClick={onHistory}>Memoria histórica</button></nav> : null}
-
-        <div className="filterDock">
-          <button
-            type="button"
-            className="panelTrigger filterTrigger"
-            aria-expanded={openPanel === "filters"}
-            aria-controls="filters-panel"
-            onClick={() => togglePanel("filters")}
-          >
-            Filtros · {visibleCount.toLocaleString("es-AR")} visibles
-            {filtersActive ? <><i className="activeDot" aria-hidden="true" /><span className="srOnly">Filtros activos</span></> : null}
-          </button>
-          {openPanel === "filters" ? (
-            <section id="filters-panel" className="controlPanel filterPanel" aria-labelledby="filters-title">
-              <div className="panelHeader">
-                <div>
-                  <p className="panelEyebrow">Catálogo visible</p>
-                  <h2 id="filters-title">Filtros</h2>
-                </div>
-                <button type="button" className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar filtros">×</button>
-              </div>
-              {filters && filterBounds ? (
-                <div className="catalogFiltersBody">
-                  <fieldset className="filterDates">
-                    <legend>Fecha del catálogo</legend>
-                    <label>
-                      Desde
-                      <input
-                        type="date"
-                        min={filterBounds.dateFrom}
-                        max={filterBounds.dateTo}
-                        value={filters.dateFrom}
-                        onChange={(event) => {
-                          const value = event.currentTarget.value;
-                          if (!value) return;
-                          setFilters((current) => current ? {
-                            ...current,
-                            dateFrom: value,
-                            dateTo: value > current.dateTo ? value : current.dateTo,
-                          } : current);
-                        }}
-                      />
-                    </label>
-                    <label>
-                      Hasta
-                      <input
-                        type="date"
-                        min={filterBounds.dateFrom}
-                        max={filterBounds.dateTo}
-                        value={filters.dateTo}
-                        onChange={(event) => {
-                          const value = event.currentTarget.value;
-                          if (!value) return;
-                          setFilters((current) => current ? {
-                            ...current,
-                            dateFrom: value < current.dateFrom ? value : current.dateFrom,
-                            dateTo: value,
-                          } : current);
-                        }}
-                      />
-                    </label>
-                  </fieldset>
-
-                  <DualRangeFilter
-                    label="Magnitud reportada"
-                    min={filterBounds.magnitudeMin}
-                    max={filterBounds.magnitudeMax}
-                    minValue={filters.magnitudeMin}
-                    maxValue={filters.magnitudeMax}
-                    step={0.1}
-                    onChange={(magnitudeMin, magnitudeMax) => setFilters((current) => current ? {
-                      ...current,
-                      magnitudeMin,
-                      magnitudeMax,
-                    } : current)}
-                  />
-
-                  <div className="depthFilterGroup">
-                    <DualRangeFilter
-                      label="Profundidad catalogada"
-                      min={filterBounds.depthMin}
-                      max={filterBounds.depthMax}
-                      minValue={filters.depthMin}
-                      maxValue={filters.depthMax}
-                      step={1}
-                      unit=" km"
-                      markers={[{ value: 70, label: "70" }, { value: 300, label: "300" }]}
-                      onChange={(depthMin, depthMax) => setFilters((current) => current ? {
-                        ...current,
-                        depthMin,
-                        depthMax,
-                      } : current)}
-                    />
-                    <div className="depthPresets" aria-label="Accesos rápidos de profundidad">
-                      {([
-                        ["shallow", "Superficiales", "0–<70"],
-                        ["intermediate", "Intermedios", "70–<300"],
-                        ["deep", "Profundos", "≥300"],
-                      ] as const).map(([preset, label, range]) => {
-                        const values = depthPresetRange(filterBounds, preset);
-                        const active = filters.depthMin === values.depthMin && filters.depthMax === values.depthMax;
-                        return (
-                          <button
-                            type="button"
-                            key={preset}
-                            aria-pressed={active}
-                            onClick={() => setFilters((current) => current ? { ...current, ...values } : current)}
-                          >
-                            {label}<small>{range} km</small>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="filterFooter">
-                    <span aria-live="polite">
-                      {visibleCount.toLocaleString("es-AR")} de {count.toLocaleString("es-AR")}
-                    </span>
-                    <button type="button" disabled={filtersAreDefault} onClick={() => setFilters(filterBounds)}>
-                      Restablecer
-                    </button>
-                  </div>
-                  <details className="qualityPolicy"><summary>Calidad del catálogo: {provisionalExclusions.length} registro en revisión</summary><p>El registro M8,0 de San Juan del 29/01/2019 está excluido provisionalmente de la vista inicial por discrepancias graves entre fuentes. No se cambió el catálogo original ni se corrigió su magnitud.</p><label><input type="checkbox" checked={Boolean(filters.includeProvisional)} onChange={(event) => { const includeProvisional = event.currentTarget.checked; setFilters((current) => current ? { ...current, includeProvisional } : current); }} />Incluir el registro en revisión</label><a href="http://contenidos.inpres.gob.ar/epicentro3.php?s=20190129060236" target="_blank" rel="noreferrer">Ficha original INPRES</a></details>
-                </div>
-              ) : <p className="panelLoading">Cargando rangos del catálogo…</p>}
-            </section>
-          ) : null}
-        </div>
-      </div>
-
-      <div className="rightDock">
-        <nav className="viewToolbar" aria-label="Controles de la vista">
-          <button
-            type="button"
-            className="panelTrigger"
-            aria-expanded={openPanel === "layers"}
-            aria-controls="layers-panel"
-            onClick={() => togglePanel("layers")}
-          >
-            Capas · relieve {reliefExaggeration}×{slabVisible ? " · Slab2" : ""}
-          </button>
-          <button
-            type="button"
-            className="panelTrigger panelTrigger--icon"
-            aria-expanded={openPanel === "information"}
-            aria-controls="information-panel"
-            onClick={() => togglePanel("information")}
-          >
-            Información
-          </button>
-          <button
-            type="button"
-            className="panelTrigger"
-            disabled={!count || !slabSummary || !surfaceStatus.includes("cargados")}
-            onClick={() => views.current?.openProfile()}
-          >
-            Perfil andino · {Math.abs(profileDefinition.latitude).toFixed(profileDefinition.latitude % 1 === 0 ? 0 : 2)}°S
-          </button>
-          <button className="panelTrigger" onClick={() => { onGuideChange?.(null); views.current?.resetCamera(); }}>Vista inicial</button>
-          <button className="panelTrigger" aria-expanded={openPanel === "navigation"} aria-controls="navigation-panel" onClick={() => togglePanel("navigation")}>Movimiento · {navigationMode === "rotate" ? "Rotar" : "Mover"}</button>
-        </nav>
-
-        {openPanel === "navigation" ? <section id="navigation-panel" className="controlPanel navigationPanel" aria-labelledby="navigation-title">
-          <div className="panelHeader"><div><p className="panelEyebrow">Explorar el mapa</p><h2 id="navigation-title">Movimiento y vistas</h2></div><button className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar movimiento">×</button></div>
-          <div className="segmentedControl" aria-label="Acción al arrastrar el mapa">
-            <button aria-pressed={navigationMode === "rotate"} onClick={() => views.current?.setNavigationMode("rotate")}>Rotar</button>
-            <button aria-pressed={navigationMode === "pan"} onClick={() => views.current?.setNavigationMode("pan")}>Mover</button>
-          </div>
-          <p>Arrastrá con el mouse o un dedo según el modo elegido. Rueda o dos dedos: acercar y alejar. Clic en un punto: inspeccionar.</p>
-          <div className="cameraPresets"><button onClick={() => views.current?.setCameraView("above")}>Desde arriba</button><button onClick={() => views.current?.setCameraView("side")}>Vista lateral</button><button onClick={() => views.current?.setCameraView("territory")}>Contexto territorial</button></div>
-          <small>Desde arriba ubicás la región; de costado ves la profundidad. La escala del relieve se indica en Capas. Para comparar geometrías usá el corte a escala 1×.</small>
-        </section> : null}
-
-        {openPanel === "layers" ? (
-          <section id="layers-panel" className="controlPanel layersPanel" aria-labelledby="layers-title">
-            <div className="panelHeader">
-              <div><p className="panelEyebrow">Vista 3D</p><h2 id="layers-title">Capas</h2></div>
-              <button type="button" className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar capas">×</button>
-            </div>
-            <div className="layerGroup">
-              <div className="layerHeading"><strong>Relieve GEBCO</strong><span>{reliefExaggeration}× activo</span></div>
-              <div className="segmentedControl" aria-label="Exageración vertical del relieve">
-                {([1, 5, 10] as const).map((value) => (
-                  <button key={value} aria-pressed={reliefExaggeration === value} onClick={() => views.current?.setRelief(value)}>{value}×</button>
-                ))}
-              </div>
-              <small>La exageración modifica sólo la superficie y sus límites; no cambia hipocentros ni Slab2.</small>
-            </div>
-            <div className="layerRow">
-              <div><strong>Modelo Slab2</strong><small>{slabStatus}</small></div>
-              <button aria-pressed={slabVisible} disabled={!slabSummary} onClick={() => views.current?.toggleSlab()}>{slabVisible ? "Visible" : "Oculto"}</button>
-            </div>
-            <div className="layerGroup">
-              <label htmlFor="slab-opacity">Opacidad Slab2 · {Math.round(slabOpacity * 100)}%</label>
-              <input id="slab-opacity" type="range" min="0.1" max="0.8" step="0.05" value={slabOpacity} disabled={!slabSummary} onChange={(event) => views.current?.setSlabOpacity(Number(event.currentTarget.value))} />
-              <small>Amarillo: geometría modelada. Hipocentros y profundidad se conservan.</small>
-            </div>
-            <div className="layerRow layerRow--status">
-              <div><strong>Contexto cartográfico</strong><small>{surfaceStatus}</small></div>
-              <span>Activo</span>
-            </div>
-          </section>
-        ) : null}
-
-        {openPanel === "information" ? (
-          <section id="information-panel" className="controlPanel informationPanel" aria-labelledby="information-title">
-            <div className="panelHeader">
-              <div><p className="panelEyebrow">Lectura y método</p><h2 id="information-title">Información</h2></div>
-              <button type="button" className="panelClose" onClick={() => setOpenPanel(null)} aria-label="Cerrar información">×</button>
-            </div>
-            <div className="informationCopy">
-              <p><strong>Interacción.</strong> Doble clic: centrar · rueda: zoom hacia el cursor · arrastrar: rotar · botón derecho: desplazar.</p>
-              <p aria-live="polite"><strong>Traslación.</strong> {inversePanActive ? "Modo inverso activo: el movimiento también cambia la profundidad." : "Ambos botones + arrastrar mueve la escena en sentido inverso, también en profundidad."}</p>
-              <p><strong>Hipocentros INPRES.</strong> Profundidad catalogada hacia abajo (−Y), escala {VERTICAL_EXAGGERATION}×.</p>
-              <p><strong>Escala horizontal 3D.</strong> Aproximación equirectangular centrada en 35°S: no permite medir pendientes exactas. El corte usa distancia geodésica y la misma escala de kilómetros en ambos ejes.</p>
-              <p><strong>GEBCO 2026.</strong> Modelo continuo derivado de fuentes heterogéneas; relieve {reliefExaggeration}× y nivel del mar 0 km. Líneas doradas: IGN. Líneas grises: Natural Earth 5.1.1.</p>
-              <p><strong>USGS Slab2 2018.</strong> Modelo geofísico, no observación. Profundidad 1×; el control de relieve no lo modifica.</p>
-              {slabSummary ? <p>Profundidad modelada: {slabSummary.depthRangeKm[0]}–{slabSummary.depthRangeKm[1]} km. UNC: {slabSummary.uncertaintyRangeKm[0]}–{slabSummary.uncertaintyRangeKm[1]} km; mediana {slabSummary.uncertaintyMedianKm} km. Referencia vertical exacta INPRES no documentada; superposición aproximada, no clasificación.</p> : null}
-              <p>Contexto GEBCO y cartográfico: 100°O–8°E, 90°S–0°. El límite oriental termina antes de África continental.</p>
-              <p><a href="/metodologia/">Metodología, fuentes, limitaciones y asistencia de IA</a></p>
-            </div>
-            <details className="benchmark">
-              <summary>Mediciones de esta sesión</summary>
-              <dl>
-                <dt>GeoJSON recibido</dt><dd>{formatMiB(metrics.decodedBytes)}</dd>
-                <dt>Transferencia INPRES</dt><dd>{formatMiB(metrics.transferBytes)}</dd>
-                <dt>Fetch / parse INPRES</dt><dd>{formatMs(metrics.fetchMs)} / {formatMs(metrics.parseMs)}</dd>
-                <dt>BufferGeometry sismos</dt><dd>{formatMs(metrics.buildMs)}</dd>
-                <dt>GEBCO recibido</dt><dd>{formatMiB(metrics.terrainBytes)}</dd>
-                <dt>Cartografía recibida</dt><dd>{formatMiB(metrics.cartographyBytes)}</dd>
-                <dt>Transferencia superficie</dt><dd>{formatMiB(metrics.surfaceTransferBytes)}</dd>
-                <dt>Fetch / parse superficie</dt><dd>{formatMs(metrics.surfaceFetchMs)} / {formatMs(metrics.surfaceParseMs)}</dd>
-                <dt>Construcción superficie</dt><dd>{formatMs(metrics.surfaceBuildMs)}</dd>
-                <dt>Vértices / triángulos GEBCO</dt><dd>{metrics.terrainVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.terrainTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
-                <dt>Slab2 recibido / transferido</dt><dd>{formatMiB(metrics.slabBytes)} / {formatMiB(metrics.slabTransferBytes)}</dd>
-                <dt>Fetch / parse / geometría Slab2</dt><dd>{formatMs(metrics.slabFetchMs)} / {formatMs(metrics.slabParseMs)} / {formatMs(metrics.slabBuildMs)}</dd>
-                <dt>Nodos válidos / triángulos Slab2</dt><dd>{metrics.slabVertices?.toLocaleString("es-AR") ?? "—"} / {metrics.slabTriangles?.toLocaleString("es-AR") ?? "—"}</dd>
-                <dt>Primer frame completo</dt><dd>{formatMs(metrics.firstRenderMs)}</dd>
-                <dt>Heap antes / después</dt><dd>{formatMiB(metrics.heapBefore)} / {formatMiB(metrics.heapAfter)}</dd>
-                <dt>FPS aprox.</dt><dd>{metrics.fps?.toFixed(0) ?? "—"}</dd>
-                <dt>Último picking</dt><dd>{formatMs(metrics.pickingMs)}</dd>
-                <dt>Último filtrado</dt><dd>{formatMs(metrics.filterMs)}</dd>
-                <dt>Draw calls</dt><dd>{metrics.drawCalls ?? "—"}</dd>
-              </dl>
-              <small>Mediciones orientativas del navegador. Para comparar formalmente usar build de producción y caché fría.</small>
-            </details>
-          </section>
-        ) : null}
-
-        <div className="compass" aria-label="Orientación dinámica del norte">
-          <span ref={compassNeedle} className="compassNeedle">↑</span>
-          <b>N</b>
-        </div>
-      </div>
-
-      <aside className="depthLegend" aria-label="Leyenda de profundidad y capas activas">
-        <strong>Profundidad</strong>
-        <span><i className="legendShallow" />Superficial · &lt;70 km</span>
-        <span><i className="legendIntermediate" />Intermedia · 70–&lt;300 km</span>
-        <span><i className="legendDeep" />Profunda · ≥300 km</span>
-        <small>Clasificación descriptiva</small>
-        <small>Hipocentros visibles a través del relieve</small>
-        <div className="legendLayers">
-          <small>Capas activas</small>
-          <span><i className="legendLand" />GEBCO · relieve {reliefExaggeration}×</span>
-          {slabVisible ? <span><i className="legendSlab" />Slab2</span> : null}
-        </div>
-      </aside>
-
-      {!selected && !profileOpen ? <p className="selectionHint">Seleccioná un sismo para inspeccionarlo</p> : null}
+      <ViewerControls count={count} visible={visibleCount} status={catalogFailed?"Catálogo no disponible":status} filters={filters} bounds={filterBounds}
+        onFilters={setFilters} panel={openPanel} onPanel={setOpenPanel} actions={{showPlan:v=>views.current?.showPlan(v),chooseArea:v=>views.current?.chooseArea(v),resetCamera:()=>views.current?.resetCamera(),setRelief:v=>views.current?.setRelief(v),toggleSlab:()=>views.current?.toggleSlab(),setSlabOpacity:v=>views.current?.setSlabOpacity(v),setNavigationMode:v=>views.current?.setNavigationMode(v),setCameraView:v=>views.current?.setCameraView(v)}}
+        map2d={map2d} ready={Boolean(count&&mapCartography)} navigationMode={navigationMode} relief={reliefExaggeration}
+        surfaceReady={surfaceStatus.includes("cargados")} slabAvailable={Boolean(slabSummary)} analysisReady={Boolean(count&&mapCartography&&slabSummary&&surfaceStatus.includes("cargados"))}
+        slabVisible={slabVisible} slabOpacity={slabOpacity} colorMode={colorMode}
+        onColorMode={mode=>{setColorMode(mode);views.current?.setColorMode(mode);}}
+        terrainOpacity={terrainOpacity} onTerrainOpacity={value=>{setTerrainOpacity(value);views.current?.setTerrainOpacity(value);}}
+        onGuide={onStartGuide} onLeaveGuide={()=>onGuideChange?.(null)}/>
+      {!profileOpen&&!map2d?<div className="compass"><span ref={compassNeedle} className="compassNeedle">↑</span><b>N</b></div>:null}
+      {activeRegion&&!map2d&&!profileOpen?<aside className="regionBanner" aria-label="Ubicación de la zona 3D">
+        <div><strong>Zona 3D · {visibleCount.toLocaleString("es-AR")} sismos</strong><small>Profundidad 1× · 0–{regionDepth} km</small><button onClick={()=>views.current?.closeRegion()}>Volver al mapa completo</button></div>
+        {mapCartography?<RegionalLocator bounds={activeRegion} cartography={mapCartography} onOpen={()=>views.current?.showPlan(true)}/>:null}
+      </aside>:null}
+      {map2d&&mapCartography?<PlanView key={areaSelection??"browse"} events={mapEvents} cartography={mapCartography} selection={areaSelection} region={activeRegion} colorMode={colorMode}
+        onRegion={bounds=>views.current?.openRegion(bounds)} onProfile={(a,b)=>views.current?.setCustomProfile(a,b)}
+        onPick={event=>views.current?.selectEvent(event)} onCancel={()=>views.current?.cancelArea()} onClose={()=>{views.current?.cancelArea();views.current?.showPlan(false);}}/>:null}
+      {areaStatus?<p role="status">{areaStatus}</p>:null}
+      {resourceFailure&&!profileOpen?<div className="resourceNotice" role="status"><p>{catalogFailed?"No se pudo cargar el catálogo de sismos.":surfaceFailed?"El relieve no se pudo cargar. El mapa 2D seguirá disponible si se cargan los límites.":"El modelo de Nazca no se pudo cargar. Podés explorar los sismos; los cortes requieren ese modelo."}</p>{count>0&&visibleCount===0?<p>No hay sismos con los filtros actuales en esta zona.</p>:null}<button onClick={()=>window.location.reload()}>Reintentar carga</button></div>:null}
+      {count>0&&visibleCount===0&&!profileOpen&&!map2d&&!resourceFailure?<p className="emptyNotice" role="status">No hay sismos con estos filtros en la zona elegida. Probá ampliar la fecha o elegir otra zona.</p>:null}
+      {hovered&&!profileOpen&&!map2d?<EventHover {...hovered}/>:null}
+      {modelHover&&!profileOpen&&!map2d?<div className="eventHover modelHover" role="tooltip" style={{left:Math.min(modelHover.x+15,window.innerWidth-290),top:Math.min(modelHover.y+15,window.innerHeight-120)}}>{modelHover.text}</div>:null}
+      {showDiagnostics?<output hidden data-session-metrics={JSON.stringify(metrics)}>{surfaceStatus} · {slabStatus}</output>:null}
 
       {profileOpen ? profileEvents && profileSamples ? (
         <CuyoSection
+          colorMode={colorMode}
+          onColorMode={mode=>{setColorMode(mode);views.current?.setColorMode(mode);}}
           profile={profileDefinition}
           events={profileEvents}
           samples={profileSamples}
@@ -1507,6 +1570,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onHis
           includeProvisional={Boolean(filters?.includeProvisional)}
           catalogFilters={filters}
           onResetFilters={() => { if (filterBounds) setFilters({ ...filterBounds }); }}
+          onClearSelection={()=>views.current?.clearSelection()}
+          onChooseProfile={()=>{onGuideChange?.(null);views.current?.chooseArea("profile");}}
           onLatitudeChange={(latitude) => views.current?.setProfileLatitude(latitude)}
           onPick={(event) => views.current?.selectEvent(event)}
           onClose={() => { onGuideChange?.(null); views.current?.closeProfile(); }}

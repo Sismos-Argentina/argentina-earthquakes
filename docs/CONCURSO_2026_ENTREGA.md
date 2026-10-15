@@ -1,18 +1,20 @@
 # Bajo nuestros pies para el concurso Contar con Datos 2026
 
-Obra propuesta para **Exploración Interactiva**. La entrega utiliza el catálogo instrumental fijado al 14/09/2026 y una comparación guiada de San Juan 31°S con 35°S. La publicación de esta versión requiere aprobación del responsable. El formulario y las declaraciones legales los completa la persona participante.
+Obra propuesta para **Exploración Interactiva**. La entrega utiliza el catálogo instrumental fijado al 14/10/2026 y una comparación guiada de San Juan 31°S con 35°S. La publicación de esta versión requiere aprobación del responsable. El formulario y las declaraciones legales los completa la persona participante.
 
 ## Metodología para el formulario
 
-Bajo nuestros pies permite explorar la sismicidad bajo Argentina y preguntar por qué hay sismos en San Juan mientras se interrumpe el arco volcánico andino. Utiliza 80.470 registros de INPRES del 16/07/2011 al 14/09/2026, normalizados por inpres-sismos. Un registro M8 de 2019 se excluye provisionalmente por discrepancias entre fuentes; el original se conserva y puede reincluirse.
+Bajo nuestros pies explora dónde ocurren los sismos y cómo se distribuyen en profundidad bajo Argentina. Utiliza 80.850 registros de INPRES (16/07/2011–14/10/2026), normalizados por inpres-sismos. Conserva sus valores originales; un registro de 2019 se excluye provisionalmente por discrepancias entre fuentes y puede reincluirse.
 
-Los hipocentros se muestran junto al relieve GEBCO 2026 y la geometría USGS Slab2 2018, distinguiendo observaciones y modelos. Dos cortes, con extremos a 31°S y 35°S, seleccionan eventos dentro de ±50 km de una geodésica WGS84. Comparten período, escala 1×, rango vertical 0–700 km y filtro opcional de magnitud; no se limita la cantidad de eventos. Slab2 conserva sus huecos e incertidumbre.
+Los puntos se contrastan visualmente con el relieve GEBCO 2026 y la superficie de la placa de Nazca modelada por USGS Slab2 2018, distinguiendo observaciones y modelos. Los mapas permiten filtrar, consultar eventos y elegir zonas 3D. Los cortes proyectan sismos de una franja de 100 km sobre una línea geodésica WGS84.
 
-La interpretación sobre subducción subhorizontal y magmatismo se apoya en Gao et al. (2021). Los conteos no miden riesgo y la proximidad al modelo no clasifica sismos. Codex asistió en código, revisión y documentación. Las fotografías sin permisos demostrados no se reproducen. La autoría y aprobación final corresponden al responsable humano.
+La comparación de San Juan (31°S) y el sur de Mendoza (35°S) mantiene período, filtros, rango 0–700 km y escala 1×. Se muestran todos los registros seleccionados; Slab2 conserva incertidumbre y huecos. El fondo oscuro puede cambiarse a claro; la exageración del relieve se indica separadamente.
+
+La interpretación sobre subducción subhorizontal y magmatismo cita Gao et al. (2021). Los conteos no equivalen a riesgo y el modelo no clasifica cada sismo. Codex asistió en programación, revisión y redacción.
 
 ## Fuentes que deben acompañar el formulario
 
-- [INPRES](https://www.inpres.gob.ar/) y [export normalizado del proveedor](https://github.com/Sismos-Argentina/inpres-sismos/tree/81e230c782972a2996a32f1ef21d56a2ef22e2e7/data/exports). La obra incluye eventos fuera de Argentina y conserva el snapshot identificado por commit y checksum.
+- [INPRES](https://www.inpres.gob.ar/) y [export normalizado del proveedor](https://github.com/Sismos-Argentina/inpres-sismos/tree/a87088128f5e87566979e4c9bc186dcdff85b47a/data/exports). La obra incluye eventos fuera de Argentina y conserva el snapshot identificado por commit y checksum.
 - [USGS Slab2 2018](https://doi.org/10.5066/F7PV6JNV), modelo de geometría DEP, incertidumbre UNC y dominio CLP.
 - [GEBCO 2026](https://www.gebco.net/data-products-gridded-bathymetry-data/gebco2026-grid), relieve y batimetría modelados.
 - [IGN](https://www.ign.gob.ar/) y [Natural Earth](https://www.naturalearthdata.com/), contexto cartográfico. Versiones y transformaciones en los manifiestos del repositorio.
@@ -40,7 +42,7 @@ El video debe grabarse de la versión aprobada y publicada. No se generó ni sub
 
 Completar seudónimo y datos del formulario; revisar la explicación geológica y declaración de IA; autorizar y comprobar publicación; grabar y alojar el video de la aplicación; verificar acceso público a la obra y metodología; aceptar personalmente las declaraciones legales. La fecha de cierre verificada es **15/10/2026**; no consta una hora límite específica.
 
-La candidatura interactiva es una obra distinta de una eventual Historia Visual. No se presupone que una misma obra pueda inscribirse dos veces por compartir dominio. Las cuatro fichas históricas son material complementario, no una segunda candidatura preparada.
+La candidatura interactiva es una obra distinta de una eventual Historia Visual. No se presupone que una misma obra pueda inscribirse dos veces por compartir dominio. El archivo de 80 casos históricos es material complementario, no una segunda candidatura preparada.
 
 El [plan de presentación del 14 de octubre](PLAN_PRESENTACION_2026-10-14.md) ordena responsables, dependencias, criterios de aceptación y recortes. La [verificación final](research/FINAL_REVIEW_2026-10-14.md) registra las pruebas y comparaciones.
 
