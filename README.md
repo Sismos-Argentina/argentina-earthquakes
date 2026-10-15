@@ -2,7 +2,7 @@
 
 Visualización científica e interactiva de los sismos catalogados en Argentina y su distribución en profundidad. El usuario puede explorar el catálogo real en 3D, inspeccionar eventos y superponer modelos geográficos y geofísicos diferenciados.
 
-**Estado:** snapshot de 80.850 eventos INPRES (2011–14/10/2026), relieve GEBCO 2026, cartografía IGN/Natural Earth y primera superficie diagnóstica Slab2 South America 2018. La proyección horizontal es una aproximación local sustituible. Ninguna superposición clasifica tectónicamente los eventos. Fecha objetivo del MVP: 15 de octubre de 2026.
+**Estado:** catálogo INPRES identificado en [catalog-snapshot.json](src/data/catalog-snapshot.json), relieve GEBCO 2026, cartografía IGN/Natural Earth y superficie diagnóstica Slab2 South America 2018. La proyección horizontal es una aproximación local sustituible. Ninguna superposición clasifica tectónicamente los eventos. Fecha objetivo del MVP: 15 de octubre de 2026.
 
 ## Principios
 
@@ -40,10 +40,10 @@ npm run build
 
 ## Snapshot y transformación web
 
-- Proveedor: `Sismos-Argentina/inpres-sismos`, commit `a87088128f5e87566979e4c9bc186dcdff85b47a`.
-- Entrada: `data/exports/sismos.geojson`, SHA-256 `d1a53fa2743f08b49288756b0116892ed4b8d1f4e10d3017cd27362e8549327e`, 41.252.711 bytes.
-- El export contiene 31 `NaN` en `ubicacion_original`, sintaxis inválida para `JSON.parse`. `tools/prepare-inpres.mjs` verifica el hash, convierte **sólo esos 31 valores** a `null` y valida los 80.850 puntos. No cambia coordenadas, profundidad, magnitud ni otros campos.
-- Salida estática same-origin: `public/data/generated/inpres-2026-10-14.geojson`, SHA-256 `eb856bc832c11ff3d16d644cd96be717d5791aa7c0e2db291578349596a8ccbf`, 41.252.742 bytes. Se genera localmente y está ignorada de forma específica; no se versiona el dataset pesado.
+- Proveedor: `Sismos-Argentina/inpres-sismos`. El commit exacto está en `sourceCommit` de [catalog-snapshot.json](src/data/catalog-snapshot.json).
+- Entrada: `data/exports/sismos.geojson`; `sourceSha256` conserva su identidad.
+- `tools/prepare-inpres.mjs` verifica el hash y convierte **sólo los `NaN` de `ubicacion_original`** a `null`, según `invalidLocations`. No cambia coordenadas, profundidad, magnitud ni otros campos.
+- Salida estática same-origin: ruta `url` y checksum `webSha256` de ese archivo. El GeoJSON pesado se genera desde la fuente fijada y no se versiona. Cantidad y cobertura también se consultan en esa identidad, sin duplicarlas como constantes editoriales.
 - Opcional: `SISMOS_INPRES_GEOJSON` indica una ruta de entrada alternativa; debe coincidir con el checksum fijado.
 
 La vista inicial se centra en el área científica y mantiene cargado el catálogo completo; la navegación libre permite abrir el encuadre hasta el contexto territorial. Las acciones aparecen una sola vez: directamente en pantallas amplias, parcialmente bajo «Más» en tamaños intermedios y bajo «Explorar» en móvil. «Filtros» combina fecha, magnitud y profundidad, simultáneamente cuando caben o mediante pestañas. El control flotante «Capas» agrupa superficie, relieve y placa de Nazca; «Información y fuentes» (?) conserva metodología y criterios. Las mediciones técnicas sólo se habilitan mediante `?diagnostico=1`. Para comparar rendimiento, usar build de producción y `docs/BENCHMARK_PLAN.md`.
@@ -99,4 +99,17 @@ los conteos de la comparación actual de 31°S y 35°S.
 
 ## Revisión local del 15/10
 
-Barra compacta, filtros por tarea, selección rectangular por mouse o un dedo con confirmación, grilla y regla adaptativas, degradé de profundidad y opción de magnitud. Los detalles, datos actualizados y pruebas están en [CIERRE_2026-10-15](docs/CIERRE_2026-10-15.md). Memoria permite consultar los 80 registros históricos y enlaza las galerías de INPRES. El scraping diario y el sitio estático siguen siendo procesos separados; no se activó un refresh diario automático del producto.
+Barra compacta, filtros por tarea, selección rectangular por mouse o un dedo con confirmación, grilla y regla adaptativas, degradé de profundidad y opción de magnitud. Los detalles y pruebas de esa versión están en [CIERRE_2026-10-15](docs/CIERRE_2026-10-15.md). Memoria permite consultar los 80 registros históricos y enlaza las galerías de INPRES.
+
+## Actualización semanal
+
+El workflow revisa el proveedor los viernes a las 08:43 de Argentina, y admite
+ejecución manual. Sólo integra PRs de datos generados después de validar esquema,
+comparación append-only, tests y build. Sin novedades no genera commits; ante una
+anomalía conserva el último catálogo publicado. Los detalles y requisitos de
+activación están en [Actualización semanal](docs/ACTUALIZACION_SEMANAL.md).
+
+`npm run catalog:refresh -- --check` verifica sin cambiar el producto; `--write`
+prepara la actualización sin publicarla. `npm run catalog:verify` comprueba la
+identidad y hash en el sitio público. Las pruebas numéricas auditadas del 14/10
+permanecen fijadas y separadas del snapshot vigente; el bot no modifica tests.

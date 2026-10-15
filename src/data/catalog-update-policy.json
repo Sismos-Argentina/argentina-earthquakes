@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "frequency": "weekly",
+  "weekdayUTC": 5,
+  "hourUTC": 11,
+  "minuteUTC": 43,
+  "timeZone": "America/Argentina/Buenos_Aires",
+  "cron": "43 11 * * 5",
+  "provider": "Sismos-Argentina/inpres-sismos",
+  "workflow": "scraping_daily.yml",
+  "siteUrl": "https://bajonuestrospies.online",
+  "maximumSourceAgeDays": 9,
+  "maximumAddedEvents": 2000
+}

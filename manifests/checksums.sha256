@@ -1,4 +1,4 @@
-# Snapshot INPRES 2026-10-14, Slab2 02.23.18 y datasets geográficos locales
+# INPRES: identidad vigente en src/data/catalog-snapshot.json; Slab2 y cartografia fijados
 d1a53fa2743f08b49288756b0116892ed4b8d1f4e10d3017cd27362e8549327e  inpres/sismos.geojson
 46c5bced98c9e01aec61cb8abef241deee10ce6ba29daa8be043f35d739d09d9  gebco/GEBCO_18_Sep_2026_2b57c69752b6.zip
 ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad35138a7f6  natural-earth/ne_10m_admin_0_countries.zip
@@ -69,3 +69,4 @@ ec95691335a64079e60556e6b45b5803e9050338f1f9f3ffb8f714f663224643  public/data/ge
 c551bfe8501ae83d2f8f955ec1e9351223c918ef9487e8f00350a61e76299ce6  src/data/historical-archive.json
 e1a3f4781ee940ac6c721c46e91eae51297e7f43d4ac9414c5f9fdea716016af  src/data/catalog-quality.json
 c648e699e2f1f5f8c821f23ae629affa83180ae0dbccb6f11427836fcfb1e1df  src/data/flat-slab-guide.json
+432c7ee84ab60e625a43f83beb059589f7f866fecf0427bc4897da0511c5a774  src/data/catalog-update-policy.json

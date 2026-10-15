@@ -7,4 +7,6 @@ public/data/generated/historical/media-manifest.json text eol=lf
 src/data/historical-archive.json text eol=lf
 src/data/catalog-quality.json text eol=lf
 src/data/flat-slab-guide.json text eol=lf
+src/data/catalog-refresh.json text eol=lf
+src/data/catalog-update-policy.json text eol=lf
 manifests/checksums.sha256 text eol=lf

@@ -2,6 +2,12 @@
 
 Estado: inventario inicial del 15 de septiembre de 2026; catálogo instrumental y archivo histórico revisados el 15 de octubre de 2026.
 
+La identidad instrumental vigente está en `src/data/catalog-snapshot.json` y
+`manifests/checksums.sha256`; el reporte de cada actualización semanal queda en
+`src/data/catalog-refresh.json` desde la primera alta automática. Las cifras de
+las tablas siguientes describen la auditoría del 15/10, no una actualización en
+tiempo real. Calendario y validaciones: [Actualización semanal](../docs/ACTUALIZACION_SEMANAL.md).
+
 Los paths raw son externos al repositorio. Se expresan respecto del directorio de trabajo que actualmente contiene `argentina-earthquakes`, `inpres-sismos` y `data`. Una herramienta futura deberá aceptar un directorio configurable y no depender de esa disposición.
 
 ## Resumen

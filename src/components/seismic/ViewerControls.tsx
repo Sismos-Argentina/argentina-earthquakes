@@ -4,6 +4,7 @@ import type { CatalogFilterBounds, CatalogFilters } from "@/lib/filters/catalog"
 import type { EventColorMode } from "@/lib/geo/event-colors";
 import snapshot from "@/data/catalog-snapshot.json";
 import ColorLegend from "./ColorLegend";
+import CatalogUpdateNote from "./CatalogUpdateNote";
 
 export type ControlPanel = "filters" | "layers" | "information" | "navigation" | "camera";
 type Mode = "turntable" | "orbital" | "pan" | "zoom";
@@ -55,7 +56,7 @@ function FiltersPanel({ filters, bounds, wide, onApply }: { filters: CatalogFilt
       {wide || tab === "date" ? <section className="filterGroup panelStep" id="filter-date" aria-label="Fecha" role={wide ? "group" : "tabpanel"}>
         <h3>Fecha</h3><div className="quickPeriods">{[["Todo", null], ["30 días", 29], ["Un año", 364]].map(([label, days]) => <button type="button" key={label} onClick={() => period(days === null ? null : Number(days))}>{label}</button>)}</div>
         <div className="filterValues"><label>Desde<input type="date" required min={bounds.dateFrom} max={draft.dateTo} value={draft.dateFrom} onChange={e => change({ dateFrom: e.target.value })} /></label><label>Hasta<input type="date" required min={draft.dateFrom} max={bounds.dateTo} value={draft.dateTo} onChange={e => change({ dateTo: e.target.value })} /></label></div>
-        <small>Catálogo guardado hasta {date(bounds.dateTo)}; no es información en vivo.</small>
+        <CatalogUpdateNote date={bounds.dateTo}/>
       </section> : null}
       {wide || tab === "magnitude" ? <section className="filterGroup panelStep" id="filter-magnitude" aria-label="Magnitud" role={wide ? "group" : "tabpanel"}>
         <h3>Magnitud reportada</h3><div className="filterValues"><label>Mínima<input type="number" required step="0.1" min={bounds.magnitudeMin} max={draft.magnitudeMax} value={draft.magnitudeMin} onChange={e => change({ magnitudeMin: Number(e.target.value) })} /></label><label>Máxima<input type="number" required step="0.1" min={draft.magnitudeMin} max={bounds.magnitudeMax} value={draft.magnitudeMax} onChange={e => change({ magnitudeMax: Number(e.target.value) })} /></label></div>

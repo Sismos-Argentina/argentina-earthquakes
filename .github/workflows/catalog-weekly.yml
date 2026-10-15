@@ -1,0 +1,65 @@
+name: Actualización semanal del catálogo
+on:
+  schedule:
+    # Viernes 08:43 Argentina; primera ejecución prevista 16/10/2026.
+    - cron: '43 11 * * 5'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: catalog-weekly
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: github.repository == 'Sismos-Argentina/argentina-earthquakes' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      pull-requests: write
+      statuses: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SISMOS_ALLOW_PINNED_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm run prepare:data
+      - name: Obtener y validar export inmutable del proveedor
+        id: refresh
+        run: |
+          npm run catalog:refresh -- --write
+          node --input-type=module -e 'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(".local-data/catalog-refresh-report.json")); fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${r.changed}\n`);'
+      - name: Tests, lint y build antes de publicar
+        if: steps.refresh.outputs.changed == 'true'
+        run: |
+          npm test
+          npm run lint
+          npm run build
+      - name: Crear PR e integrar sólo los archivos generados validados
+        if: steps.refresh.outputs.changed == 'true'
+        env:
+          CATALOG_VALIDATED: 'true'
+        run: node tools/publish-catalog-refresh.mjs
+      - name: Confirmar identidad y hash del catálogo publicado por Netlify
+        if: steps.refresh.outputs.changed == 'true'
+        timeout-minutes: 12
+        run: npm run catalog:verify -- --wait
+      - name: Conservar reporte incluso si requiere revisión
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: catalog-refresh-${{ github.run_id }}
+          path: |
+            .local-data/catalog-refresh-report.json
+            .local-data/catalog-refresh-pr.json
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: warn
