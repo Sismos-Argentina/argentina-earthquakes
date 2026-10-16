@@ -1,11 +1,11 @@
 {
-  "date": "2026-10-14",
-  "events": 80850,
+  "date": "2026-10-16",
+  "events": 80877,
   "startDate": "2011-07-16",
   "source": "INPRES · export normalizado por inpres-sismos",
-  "sourceCommit": "a87088128f5e87566979e4c9bc186dcdff85b47a",
-  "sourceSha256": "d1a53fa2743f08b49288756b0116892ed4b8d1f4e10d3017cd27362e8549327e",
-  "webSha256": "eb856bc832c11ff3d16d644cd96be717d5791aa7c0e2db291578349596a8ccbf",
-  "url": "/data/generated/inpres-2026-10-14.geojson",
+  "sourceCommit": "2850372d7bc5b292c8ba750eb5ec2f38fa439560",
+  "sourceSha256": "761fd98074a0915ed275fb486ea383946b3cb0679966ea45c5a6012e3fb3463b",
+  "webSha256": "0e6adb24f1254fe5a4beb06c29de1436337a6aaaabe84810f706dd887503f53f",
+  "url": "/data/generated/inpres-2026-10-16-0e6adb24f125.geojson",
   "invalidLocations": 31
 }
