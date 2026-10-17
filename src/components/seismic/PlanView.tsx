@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import geographiclib from "geographiclib-geodesic";
 import type { InpresFeature } from "@/lib/data/inpres";
 import type { CartographyArtifact } from "@/lib/data/cartography";
@@ -9,6 +9,8 @@ import { regionBounds, type RegionBounds } from "@/lib/geo/region";
 import places from "@/data/place-labels.json";
 import EventHover from "./EventHover";
 import { eventColorCss, type EventColorMode } from "@/lib/geo/event-colors";
+
+import { constrainPlanView } from "@/lib/geo/navigation-limits";
 
 type View = { x: number; z: number; span: number };
 export default function PlanView({ events, cartography, selection, region, onRegion, onProfile, onPick, onClose, onCancel, colorMode = "depth" }: {
@@ -33,6 +35,7 @@ export default function PlanView({ events, cartography, selection, region, onReg
   const [coordinates,setCoordinates] = useState(selection==="region"?[-73,-29,-61,-33]:[-73,-31,-61,-31]);
   const hoverTime = useRef(0);
   const initialized = useRef(false);
+  const updateView = useCallback((next: React.SetStateAction<View>) => setView(previous => constrainPlanView(typeof next === "function" ? next(previous) : next, Math.max(1,size.width)/Math.max(1,size.height))), [size.width,size.height]);
   const closeCoordinates=()=>{setCoordinatesOpen(false);coordinateTrigger.current?.focus();};
   useEffect(()=>{if(coordinatesOpen)coordinateBox.current?.focus();},[coordinatesOpen]);
   // La proyección y la paleta no dependen de la cámara: reutilizarlas al mover el mapa.
@@ -54,7 +57,7 @@ export default function PlanView({ events, cartography, selection, region, onReg
   const scale = Math.max(1,size.width) / view.span;
   const fit = (bounds:RegionBounds) => {
     const [x0,,z0]=geographicToScene(bounds[0],bounds[3],0),[x1,,z1]=geographicToScene(bounds[2],bounds[1],0);
-    setView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
+    updateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
   };
   useEffect(()=>{
     const el=canvas.current;if(!el)return;
@@ -63,13 +66,13 @@ export default function PlanView({ events, cartography, selection, region, onReg
   },[]);
   useEffect(()=>{if(!initialized.current&&size.width>100){initialized.current=true;
     const [x0,,z0]=geographicToScene(-78,-20,0),[x1,,z1]=geographicToScene(-53,-57,0);
-    setView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
-  }},[size]);
+    updateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
+  }},[size,updateView]);
   useEffect(()=>{
     const el=canvas.current;if(!el)return;
-    const wheel=(event:WheelEvent)=>{event.preventDefault();setView(v=>({...v,span:Math.max(35,Math.min(16000,v.span*Math.exp(event.deltaY*.001)))}));};
+    const wheel=(event:WheelEvent)=>{event.preventDefault();updateView(v=>({...v,span:v.span*Math.exp(Math.max(-2,Math.min(2,event.deltaY*.002)))}));};
     el.addEventListener("wheel",wheel,{passive:false});return()=>el.removeEventListener("wheel",wheel);
-  },[]);
+  },[updateView]);
   useEffect(()=>{
     const frame=requestAnimationFrame(()=>{
     const el=canvas.current;if(!el)return;const dpr=Math.min(window.devicePixelRatio||1,2);
@@ -146,9 +149,9 @@ export default function PlanView({ events, cartography, selection, region, onReg
     if(g?.kind==="pinch"){
       const points=[...pointers.current.values()];if(points.length<2)return;
       const distance=Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y),span=Math.max(35,Math.min(16000,g.view.span*(g.distance||1)/Math.max(1,distance))),factor=size.width/span;
-      setView({span,x:g.view.x-((points[0].x+points[1].x)/2-g.x)/factor,z:g.view.z-((points[0].y+points[1].y)/2-g.y)/factor});return;
+      updateView({span,x:g.view.x-((points[0].x+points[1].x)/2-g.x)/factor,z:g.view.z-((points[0].y+points[1].y)/2-g.y)/factor});return;
     }
-    if(g){setView({...g.view,x:g.view.x-(e.clientX-g.x)/scale,z:g.view.z-(e.clientY-g.y)/scale});return;}
+    if(g){updateView({...g.view,x:g.view.x-(e.clientX-g.x)/scale,z:g.view.z-(e.clientY-g.y)/scale});return;}
     if(e.pointerType!=="touch"&&!selection&&performance.now()-hoverTime.current>90){hoverTime.current=performance.now();const event=closest(e);setHover(event?{event,x:e.clientX,y:e.clientY}:null);}
   };
   const finish=(e:React.PointerEvent<HTMLCanvasElement>,cancel=false)=>{
@@ -180,7 +183,7 @@ export default function PlanView({ events, cartography, selection, region, onReg
   return <section className={`planView ${drawing&&selection?"planView--drawing":""}`} aria-label="Mapa 2D para ubicar sismos y elegir una zona o un corte">
     <div className="planToolbar">
       <button onClick={()=>fit([-78,-57,-53,-20])}>Argentina</button>
-      <button aria-label="Acercar mapa 2D" onClick={()=>setView(v=>({...v,span:Math.max(35,v.span*.7)}))}>＋</button><button aria-label="Alejar mapa 2D" onClick={()=>setView(v=>({...v,span:Math.min(16000,v.span/.7)}))}>−</button>
+      <button aria-label="Acercar mapa 2D" onClick={()=>updateView(v=>({...v,span:Math.max(35,v.span*.7)}))}>＋</button><button aria-label="Alejar mapa 2D" onClick={()=>updateView(v=>({...v,span:Math.min(16000,v.span/.7)}))}>−</button>
       {selection?<button aria-pressed={drawing} onClick={()=>{setDrawing(!drawing);gesture.current=null;pointers.current.clear();setMessage("");}}>{drawing?"Mover mapa":"Dibujar "+(selection==="region"?"zona":"corte")}</button>:<button onClick={()=>fit([-100,-90,8,0])}>Territorio</button>}
       <button onClick={onClose}>Volver a 3D</button>
     </div>

@@ -50,6 +50,7 @@ import EventInspector from "./EventInspector";
 import EventHover from "./EventHover";
 import RegionalLocator from "./RegionalLocator";
 import PlanView from "./PlanView";
+import { constrainCamera, navigationEnvelope, TERRITORY_BOUNDS } from "@/lib/geo/navigation-limits";
 import { createAnalysisAxes, depthTickStep, disposeAnalysisGroup } from "@/lib/geo/analysis-axes";
 import { cropGebco, cropSlab, insideRegion, type RegionBounds } from "@/lib/geo/region";
 import presets from "@/data/flat-slab-guide.json";
@@ -136,7 +137,7 @@ type TerrainLayer = {
   surface: THREE.Mesh;
 };
 
-const TERRITORIAL_BBOX: [number, number, number, number] = [-100, -90, 8, 0];
+const TERRITORIAL_BBOX = TERRITORY_BOUNDS;
 const INITIAL_RELIEF_EXAGGERATION: ReliefExaggeration = 5;
 
 function heapBytes(): number | undefined {
@@ -432,17 +433,29 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     controls.dampingFactor = .15;
     controls.screenSpacePanning = true;
     controls.zoomToCursor = true;
+    controls.zoomSpeed = 1.8;
     controls.minDistance = 30;
     controls.maxDistance = 70000;
     const orbital = new TrackballControls(camera, renderer.domElement);
     orbital.addEventListener("change",invalidate);
     orbital.addEventListener("start",()=>{cameraTransition=null;interacting=true;invalidate();});
     orbital.addEventListener("end",()=>{interacting=false;invalidate();});
+    orbital.zoomSpeed = 1.8;
     orbital.enabled = false; orbital.staticMoving = true; orbital.panSpeed = .6; orbital.rotateSpeed = 1.2;
     orbital.minDistance = 30; orbital.maxDistance = 70000; orbital.keys = ["", "", ""];
     orbital.target = controls.target;
     const cameraPose=():CameraPose=>({position:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone()});
     const applyCameraPose=(pose:CameraPose)=>{camera.position.copy(pose.position);controls.target.copy(pose.target);camera.up.copy(pose.up);camera.lookAt(controls.target);};
+    const limitNavigation=()=>{
+      const limits=navigationEnvelope(region??TERRITORY_BOUNDS,camera.aspect,region?regionDepthKm:800,Boolean(region));
+      controls.minDistance=orbital.minDistance=limits.minDistance;
+      controls.maxDistance=orbital.maxDistance=limits.maxDistance;
+      if(beforeProfile||planActive||cameraTransition)return;
+      const bounded=constrainCamera(camera.position.toArray(),controls.target.toArray(),limits);
+      if(camera.position.distanceToSquared(new THREE.Vector3(...bounded.position))>1e-12||controls.target.distanceToSquared(new THREE.Vector3(...bounded.target))>1e-12){
+        camera.position.fromArray(bounded.position);controls.target.fromArray(bounded.target);camera.lookAt(controls.target);renderDirty=true;
+      }
+    };
     const animateCameraFrom=(from:CameraPose)=>{
       cameraTransition=null;
       if(!motionReduced){const to=cameraPose();applyCameraPose(from);cameraTransition={from,to,start:performance.now()};}
@@ -895,11 +908,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     function animate() {
       animationFrame=0;
       if(disposed||document.hidden)return;
+      limitNavigation();
       if(cameraTransition){
         const {from,to,start}=cameraTransition,t=Math.min(1,(performance.now()-start)/320),ease=t*t*(3-2*t);
         camera.position.lerpVectors(from.position,to.position,ease);controls.target.lerpVectors(from.target,to.target,ease);camera.up.lerpVectors(from.up,to.up,ease).normalize();camera.lookAt(controls.target);renderDirty=true;
         if(t===1){cameraTransition=null;controls.update();}
       }else if(orbital.enabled)orbital.update();else if(controls.enabled)controls.update();
+      limitNavigation();
       if(renderDirty){
         renderDirty=false;
         if(catalogPoints){
@@ -1140,7 +1155,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       const offset=touchState.camera.clone().sub(touchState.target),distance=offset.length();
       if(points.length>1 || currentNavigationMode==="zoom"){
         const factor=points.length>1?touchState.distance/Math.max(1,Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y)):Math.exp(dy*.006);
-        camera.position.copy(touchState.target).add(offset.multiplyScalar(Math.min(70000,Math.max(30,distance*factor))/distance));
+        const limits=navigationEnvelope(region??TERRITORY_BOUNDS,camera.aspect,region?regionDepthKm:800,Boolean(region));
+        camera.position.copy(touchState.target).add(offset.multiplyScalar(Math.min(limits.maxDistance,Math.max(limits.minDistance,distance*factor))/distance));
       }else{
         const perPixel=2*distance*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))/renderer.domElement.clientHeight;
         const delta=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(-dx*perPixel)
