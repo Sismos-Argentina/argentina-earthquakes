@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import geographiclib from "geographiclib-geodesic";
 import type { InpresFeature } from "@/lib/data/inpres";
 import type { CartographyArtifact } from "@/lib/data/cartography";
@@ -9,33 +9,43 @@ import { regionBounds, type RegionBounds } from "@/lib/geo/region";
 import places from "@/data/place-labels.json";
 import EventHover from "./EventHover";
 import { eventColorCss, type EventColorMode } from "@/lib/geo/event-colors";
-
 import { constrainPlanView } from "@/lib/geo/navigation-limits";
 
 type View = { x: number; z: number; span: number };
-export default function PlanView({ events, cartography, selection, region, onRegion, onProfile, onPick, onClose, onCancel, colorMode = "depth" }: {
+export type PlanViewSession = { view: View; preview: [[number,number],[number,number]] | null; previewReady: boolean; drawing: boolean; coordinatesOpen: boolean; coordinates: number[]; message: string };
+export default function PlanView({ events, cartography, selection, region, onRegion, onProfile, onPick, onCancel, colorMode = "depth", initialState, onStateChange, demonstration }: {
   events: InpresFeature[]; cartography: CartographyArtifact; selection: "region" | "profile" | null;
   region: RegionBounds | null; colorMode?:EventColorMode;
   onRegion: (bounds: RegionBounds) => void; onProfile: (a: [number,number], b: [number,number]) => void;
   onPick: (event: InpresFeature) => void; onClose: () => void; onCancel: () => void;
+  initialState?: PlanViewSession; onStateChange?: (state: PlanViewSession) => void;
+  demonstration?: { bounds: RegionBounds; context: RegionBounds; progress: number; select: boolean };
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const coordinateBox = useRef<HTMLDivElement>(null);
   const coordinateTrigger = useRef<HTMLButtonElement>(null);
   const [size,setSize] = useState({width:0,height:0});
-  const [view,setView] = useState<View>({x:0,z:0,span:7000});
-  const [preview,setPreview]=useState<[[number,number],[number,number]]|null>(null);
-  const [previewReady,setPreviewReady]=useState(false);
-  const [drawing,setDrawing]=useState(Boolean(selection));
-  const [coordinatesOpen,setCoordinatesOpen]=useState(false);
+  const [view,setView] = useState<View>(initialState?.view ?? {x:0,z:0,span:7000});
+  const [preview,setPreview]=useState<[[number,number],[number,number]]|null>(initialState?.preview ?? null);
+  const [previewReady,setPreviewReady]=useState(initialState?.previewReady ?? false);
+  const [drawing,setDrawing]=useState(initialState?.drawing ?? Boolean(selection));
+  const [coordinatesOpen,setCoordinatesOpen]=useState(initialState?.coordinatesOpen ?? false);
   const pointers=useRef(new Map<number,{x:number;y:number}>());
   const gesture=useRef<{kind:"pan"|"draw"|"pinch";id:number;x:number;y:number;view:View;a:[number,number];distance?:number}|null>(null);
   const [hover,setHover] = useState<{event:InpresFeature;x:number;y:number}|null>(null);
-  const [message,setMessage] = useState("");
-  const [coordinates,setCoordinates] = useState(selection==="region"?[-73,-29,-61,-33]:[-73,-31,-61,-31]);
+  const [message,setMessage] = useState(initialState?.message ?? "");
+  const [coordinates,setCoordinates] = useState(initialState?.coordinates ?? (selection==="region"?[-73,-29,-61,-33]:[-73,-31,-61,-31]));
   const hoverTime = useRef(0);
-  const initialized = useRef(false);
+  const initialized = useRef(Boolean(initialState));
   const updateView = useCallback((next: React.SetStateAction<View>) => setView(previous => constrainPlanView(typeof next === "function" ? next(previous) : next, Math.max(1,size.width)/Math.max(1,size.height))), [size.width,size.height]);
+  const session = useMemo(() => ({view,preview,previewReady,drawing,coordinatesOpen,coordinates,message}),[view,preview,previewReady,drawing,coordinatesOpen,coordinates,message]);
+  useLayoutEffect(() => { onStateChange?.(session); }, [session,onStateChange]);
+  const displayedPreview = useMemo<[[number,number],[number,number]] | null>(() => {
+    if (!demonstration?.select) return preview;
+    const b=demonstration.bounds,p=demonstration.progress;
+    return [[b[0],b[3]],[b[0]+(b[2]-b[0])*p,b[3]+(b[1]-b[3])*p]];
+  },[demonstration,preview]);
+  const displayedReady = demonstration?.select ? demonstration.progress >= 1 : previewReady;
   const closeCoordinates=()=>{setCoordinatesOpen(false);coordinateTrigger.current?.focus();};
   useEffect(()=>{if(coordinatesOpen)coordinateBox.current?.focus();},[coordinatesOpen]);
   // La proyección y la paleta no dependen de la cámara: reutilizarlas al mover el mapa.
@@ -68,6 +78,13 @@ export default function PlanView({ events, cartography, selection, region, onReg
     const [x0,,z0]=geographicToScene(-78,-20,0),[x1,,z1]=geographicToScene(-53,-57,0);
     updateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
   }},[size,updateView]);
+  const demoContext=demonstration?.context;
+  useEffect(()=>{
+    if(!demoContext || !size.width || !size.height)return;
+    const [x0,,z0]=geographicToScene(demoContext[0],demoContext[3],0),[x1,,z1]=geographicToScene(demoContext[2],demoContext[1],0);
+    const frame=requestAnimationFrame(()=>updateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08}));
+    return()=>cancelAnimationFrame(frame);
+  },[demoContext,size.width,size.height,updateView]);
   useEffect(()=>{
     const el=canvas.current;if(!el)return;
     const wheel=(event:WheelEvent)=>{event.preventDefault();updateView(v=>({...v,span:v.span*Math.exp(Math.max(-2,Math.min(2,event.deltaY*.002)))}));};
@@ -78,13 +95,14 @@ export default function PlanView({ events, cartography, selection, region, onReg
     const el=canvas.current;if(!el)return;const dpr=Math.min(window.devicePixelRatio||1,2);
     const width=Math.round(size.width*dpr),height=Math.round(size.height*dpr);
     if(el.width!==width)el.width=width;if(el.height!==height)el.height=height;
+    const ink="#ffffff";
     const ctx=el.getContext("2d")!;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle="#081820";ctx.fillRect(0,0,size.width,size.height);
     const xy=(longitude:number,latitude:number)=>{const[x,,z]=geographicToScene(longitude,latitude,0);return[(x-view.x)*scale+size.width/2,(z-view.z)*scale+size.height/2];};
     for(const layer of mapLines){ctx.strokeStyle=layer.color;ctx.lineWidth=1;
       for(const line of layer.lines){ctx.beginPath();line.forEach(([px,pz],i)=>{const x=(px-view.x)*scale+size.width/2,y=(pz-view.z)*scale+size.height/2;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();}
     }
     const center=sceneToGeographic(view.x,view.z),step=view.span>6000?10:view.span>2000?5:view.span>500?1:.25;
-    ctx.strokeStyle="rgba(207,226,238,.16)";ctx.fillStyle="#dce8ee";ctx.font="12px Arial";
+    ctx.strokeStyle="rgba(207,226,238,.16)";ctx.fillStyle=ink;ctx.font="12px Arial";
     for(let lon=-100;lon<=8;lon+=step){const[x]=xy(lon,center[1]);if(x<0||x>size.width)continue;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,size.height);ctx.stroke();ctx.fillText(`${lon.toFixed(step<1?2:0)}°`,x+3,size.height-18);}
     for(let lat=-90;lat<=0;lat+=step){const[,y]=xy(center[0],lat);if(y<0||y>size.height)continue;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(size.width,y);ctx.stroke();ctx.fillText(`${lat.toFixed(step<1?2:0)}°`,6,y-4);}
     // Reutilizar el dibujo de TODOS los eventos al panear o dibujar una selección.
@@ -110,22 +128,23 @@ export default function PlanView({ events, cartography, selection, region, onReg
       const[x,y]=xy(place.longitude,place.latitude);if(x<40||x>size.width-100||y<55||y>size.height-80)continue;
       const width=ctx.measureText(place.name).width+10,box=[x+5,y-18,width,17];
       if(boxes.some(b=>box[0]<b[0]+b[2]&&box[0]+box[2]>b[0]&&box[1]<b[1]+b[3]&&box[1]+box[3]>b[1]))continue;
-      boxes.push(box);ctx.fillStyle="#d5e0dc";ctx.fillRect(x-1,y-1,2,2);ctx.fillStyle="rgba(4,12,18,.86)";ctx.fillRect(...box as [number,number,number,number]);ctx.fillStyle="#ffffff";ctx.fillText(place.name,x+10,y-5);
+      boxes.push(box);ctx.fillStyle="#d5e0dc";ctx.fillRect(x-1,y-1,2,2);ctx.fillStyle="rgba(4,12,18,.86)";ctx.fillRect(...box as [number,number,number,number]);ctx.fillStyle=ink;ctx.fillText(place.name,x+10,y-5);
     }
-    for(const[name,lon,lat]of[["Islas Malvinas",-59,-51.7],["Tierra del Fuego",-67.6,-54.5],["Antártida Argentina",-49.5,-82]]as const){const[x,y]=xy(lon,lat);ctx.fillStyle="#e8d8b9";ctx.fillText(name,x,y);}
-    if(region){const[x,y]=xy(region[0],region[3]),[xe,ys]=xy(region[2],region[1]);ctx.strokeStyle="#ffffff";ctx.lineWidth=2;ctx.strokeRect(x,y,xe-x,ys-y);ctx.fillStyle="#ffffff";ctx.fillText("Zona 3D",x+6,y+18);}
-    if(preview){
-      const [x,y]=xy(...preview[0]),[xe,ye]=xy(...preview[1]);ctx.strokeStyle="#ffffff";ctx.lineWidth=2;ctx.setLineDash([7,4]);
+    for(const[name,lon,lat]of[["Islas Malvinas",-59,-51.7],["Tierra del Fuego",-67.6,-54.5],["Antártida Argentina",-49.5,-82]]as const){const[x,y]=xy(lon,lat);ctx.fillStyle=ink;ctx.fillText(name,x,y);}
+    if(region){const[x,y]=xy(region[0],region[3]),[xe,ys]=xy(region[2],region[1]);ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.strokeRect(x,y,xe-x,ys-y);ctx.fillStyle=ink;ctx.fillText("Zona 3D",x+6,y+18);}
+    if(displayedPreview){
+      const [x,y]=xy(...displayedPreview[0]),[xe,ye]=xy(...displayedPreview[1]);ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.setLineDash([7,4]);
       if(selection==="region"){ctx.fillStyle="rgba(255,255,255,.12)";ctx.fillRect(Math.min(x,xe),Math.min(y,ye),Math.abs(xe-x),Math.abs(ye-y));ctx.strokeRect(Math.min(x,xe),Math.min(y,ye),Math.abs(xe-x),Math.abs(ye-y));}
-      else{ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(xe,ye);ctx.stroke();ctx.fillStyle="#ffffff";ctx.fillText("A",x+8,y-8);ctx.fillText("B",xe+8,ye-8);}
-      ctx.setLineDash([]);for(const[px,py]of[[x,y],[xe,ye]]){ctx.fillStyle="#ffffff";ctx.fillRect(px-4,py-4,8,8);}
+      else{ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(xe,ye);ctx.stroke();ctx.fillStyle=ink;ctx.fillText("A",x+8,y-8);ctx.fillText("B",xe+8,ye-8);}
+      ctx.setLineDash([]);for(const[px,py]of[[x,y],[xe,ye]]){ctx.fillStyle=ink;ctx.fillRect(px-4,py-4,8,8);}
+      if(demonstration?.select){ctx.beginPath();ctx.arc(xe,ye,13,0,Math.PI*2);ctx.fillStyle="rgba(197,236,246,.28)";ctx.fill();ctx.strokeStyle=ink;ctx.stroke();}
     }
     const a=sceneToGeographic(view.x,view.z),b=sceneToGeographic(view.x+100/scale,view.z);
     const km=geographiclib.Geodesic.WGS84.Inverse(a[1],a[0],b[1],b[0]).s12!/1000;
-    ctx.strokeStyle="#ffffff";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(22,size.height-58);ctx.lineTo(122,size.height-58);ctx.stroke();ctx.fillStyle="#ffffff";ctx.fillText(`≈${km.toFixed(km<10?1:0)} km · latitud central`,22,size.height-67);
+    ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(22,size.height-58);ctx.lineTo(122,size.height-58);ctx.stroke();ctx.fillStyle=ink;ctx.fillText(`≈${km.toFixed(km<10?1:0)} km · latitud central`,22,size.height-67);
     });
     return()=>cancelAnimationFrame(frame);
-  },[events,points,mapLines,size,view,scale,preview,region,selection]);
+  },[events,points,mapLines,size,view,scale,displayedPreview,region,selection,demonstration]);
   const pointAt=(e:React.PointerEvent<HTMLCanvasElement>)=>{const r=e.currentTarget.getBoundingClientRect();return sceneToGeographic(view.x+(e.clientX-r.left-size.width/2)/scale,view.z+(e.clientY-r.top-size.height/2)/scale);};
   const closest=(e:React.PointerEvent<HTMLCanvasElement>)=>{
     const r=e.currentTarget.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;let best:InpresFeature|null=null,distance=64;
@@ -176,22 +195,22 @@ export default function PlanView({ events, cartography, selection, region, onReg
     if(pointers.current.size&&(!selection||!drawing)){const[id,point]=[...pointers.current.entries()][0];gesture.current={kind:"pan",id,x:point.x,y:point.y,view,a:pointAt(e)};}
   };
   const confirm=()=>{
+    if(demonstration?.select){onRegion(demonstration.bounds);return;}
     if(!preview)return;
     try{if(selection==="region")onRegion(regionBounds(preview[0],preview[1]));else onProfile(preview[0],preview[1]);}
     catch(error){setMessage(error instanceof Error?error.message:"Revisá la selección.");}
   };
-  return <section className={`planView ${drawing&&selection?"planView--drawing":""}`} aria-label="Mapa 2D para ubicar sismos y elegir una zona o un corte">
+  return <section className={`planView ${drawing&&selection?"planView--drawing":""}`} aria-label="Mapa 2D para ubicar sismos y elegir una zona o un corte" data-plan-viewport={JSON.stringify(view)}>
     <div className="planToolbar">
-      <button onClick={()=>fit([-78,-57,-53,-20])}>Argentina</button>
-      <button aria-label="Acercar mapa 2D" onClick={()=>updateView(v=>({...v,span:Math.max(35,v.span*.7)}))}>＋</button><button aria-label="Alejar mapa 2D" onClick={()=>updateView(v=>({...v,span:Math.min(16000,v.span/.7)}))}>−</button>
-      {selection?<button aria-pressed={drawing} onClick={()=>{setDrawing(!drawing);gesture.current=null;pointers.current.clear();setMessage("");}}>{drawing?"Mover mapa":"Dibujar "+(selection==="region"?"zona":"corte")}</button>:<button onClick={()=>fit([-100,-90,8,0])}>Territorio</button>}
-      <button onClick={onClose}>Volver a 3D</button>
+      <button title="Encuadrar la Argentina continental" onClick={()=>fit([-78,-57,-53,-20])}>Argentina</button>
+      <button aria-label="Acercar mapa 2D" onClick={()=>updateView(v=>({...v,span:v.span*.7}))}>＋</button><button aria-label="Alejar mapa 2D" onClick={()=>updateView(v=>({...v,span:v.span/.7}))}>−</button>
+      {selection?<div className="planGestureModes" role="group" aria-label="Qué hace el arrastre"><button aria-pressed={!drawing} onClick={()=>{setDrawing(false);gesture.current=null;pointers.current.clear();setMessage("");}}>Mover mapa</button><button data-tour-target="draw-mode" aria-pressed={drawing} onClick={()=>{setDrawing(true);gesture.current=null;pointers.current.clear();setMessage("");}}>Dibujar {selection==="region"?"zona":"corte"}</button></div>:<button onClick={()=>fit([-100,-90,8,0])}>Todo el territorio</button>}
     </div>
-    <canvas ref={canvas} role="img" aria-label={selection==="region"?"Arrastrá en cualquier dirección para dibujar un rectángulo":"Mapa de sismos, límites IGN y ciudades Natural Earth"}
+    <canvas data-tour-target="draw-region" ref={canvas} role="img" aria-label={selection==="region"?"Arrastrá en cualquier dirección para dibujar un rectángulo":"Mapa de sismos, límites IGN y ciudades Natural Earth"}
       onPointerDown={start} onPointerMove={move} onPointerUp={e=>finish(e)} onPointerCancel={e=>finish(e,true)} onPointerLeave={()=>setHover(null)}/>
     <div className="planNotice">
       {selection?<><p role="status"><strong>{selection==="region"?"Zona rectangular para ver en 3D":"Corte A–B del subsuelo"}</strong><span>{message||(drawing?"Arrastrá con un dedo o el mouse. Soltá y confirmá.":"Mové o acercá el mapa; después elegí Dibujar.")}</span></p>
-        <div className="planActions"><button onClick={onCancel}>Cancelar</button><button ref={coordinateTrigger} onClick={()=>setCoordinatesOpen(!coordinatesOpen)}>Coordenadas</button><button className="primaryAction" disabled={!previewReady} onClick={confirm}>{selection==="region"?"Abrir zona en 3D":"Ver corte A–B"}</button></div></>:
+        <div className="planActions"><button onClick={onCancel}>Cancelar</button><button ref={coordinateTrigger} onClick={()=>setCoordinatesOpen(!coordinatesOpen)}>Coordenadas</button><button className="primaryAction" data-tour-target="confirm-region" disabled={!displayedReady} onClick={confirm}>{selection==="region"?"Abrir zona en 3D":"Ver corte A–B"}</button></div></>:
         <p><strong>Mapa 2D · {events.length.toLocaleString("es-AR")} sismos</strong><span>Ubicación en superficie · tocá un punto para leer su profundidad.</span><small>Límites IGN · ciudades Natural Earth · escala local WGS84.</small></p>}
     </div>
     {selection&&coordinatesOpen?<div ref={coordinateBox} tabIndex={-1} className="coordinateDialog" role="dialog" aria-modal="true" aria-label="Elegir mediante coordenadas" onKeyDown={e=>{
@@ -201,7 +220,7 @@ export default function PlanView({ events, cartography, selection, region, onReg
         if(e.shiftKey&&(document.activeElement===first||document.activeElement===e.currentTarget)){e.preventDefault();last?.focus();}
         else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
       }
-    }}><div className="panelHeader"><h2>Coordenadas</h2><button aria-label="Cerrar coordenadas" onClick={closeCoordinates}>×</button></div><form onSubmit={e=>{e.preventDefault();try{const a:[number,number]=[coordinates[0],coordinates[1]],b:[number,number]=[coordinates[2],coordinates[3]];if(selection==="region"){
+    }}><div className="panelHeader"><div><span className="studioEyebrow">Selección precisa · grados</span><h2>Coordenadas</h2></div><button aria-label="Cerrar coordenadas" onClick={closeCoordinates}>×</button></div><form onSubmit={e=>{e.preventDefault();try{const a:[number,number]=[coordinates[0],coordinates[1]],b:[number,number]=[coordinates[2],coordinates[3]];if(selection==="region"){
       const bounds=regionBounds(a,b),ordered:[number,number,number,number]=[bounds[0],bounds[3],bounds[2],bounds[1]];
       if(ordered.some((v,i)=>v!==coordinates[i])){setCoordinates(ordered);setPreview([[ordered[0],ordered[1]],[ordered[2],ordered[3]]]);setPreviewReady(true);fit(bounds);setMessage("El recuadro se ordenó y ajustó al área cartográfica. Revisalo antes de abrirlo.");closeCoordinates();}
       else onRegion(bounds);

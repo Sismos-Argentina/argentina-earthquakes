@@ -8,4 +8,5 @@ coordenadas de eventos ni modelos. La rueda permite acercarse más rápido.
 Los controles orbitales, de giro libre y táctiles comparten los mismos límites.
 Las transiciones y la vista auxiliar de los cortes conservan su encuadre propio.
 Las pruebas cubren pan y zoom extremos, entradas inválidas y distintas relaciones
-de aspecto. No agrega tutorial, temas, variantes de interfaz ni fuentes de datos.
+de aspecto. Este módulo es independiente de la guía y del diseño de controles;
+no modifica fuentes de datos.
