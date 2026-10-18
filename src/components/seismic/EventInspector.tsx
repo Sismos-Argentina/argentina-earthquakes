@@ -24,6 +24,7 @@ export default function EventInspector({
       </div>
       {properties ? (
         <>
+          <div className="eventSummary"><span className="eventMagnitude">M {properties.magnitud.toFixed(1)}</span><div><strong>{properties.ubicacion_original || "Hipocentro INPRES"}</strong><small>{properties.fecha} · {properties.hora}</small></div></div>
           {annotation ? <div className="qualityWarning"><strong>{annotation.label}</strong><p>{annotation.reason}</p><small>Revisión: {qualityReviewDate}. Campos originales conservados.</small><ul>{annotation.sources.map((source) => <li key={source.url}><a href={source.url} target="_blank" rel="noreferrer">{source.label}</a></li>)}</ul></div> : null}
           <dl>
             <dt>Fecha</dt><dd>{properties.fecha}</dd>

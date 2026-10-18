@@ -8,7 +8,7 @@ export default function HistoricalArchive() {
  const selected=archive.events.filter(e=>(all||archive.featured.includes(e.id))&&normalize(`${e.place} ${e.date} ${e.description}`).includes(normalize(query)));
  return <>
    <nav className="archiveTools" aria-label="Explorar el archivo"><button aria-pressed={!all} onClick={()=>setAll(false)}>10 casos con galería</button><button aria-pressed={all} onClick={()=>setAll(true)}>Archivo completo · 80</button><label>Buscar lugar, año o relato<input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Por ejemplo: San Juan, 1944"/></label></nav>
-   <p aria-live="polite">{selected.length} casos · orden cronológico. La selección destaca los que tienen galería; no clasifica su gravedad.</p>
+   <p aria-live="polite">{selected.length} {selected.length===1?"caso":"casos"} · orden cronológico. La selección destaca los que tienen galería; no clasifica su gravedad.</p>
    <div className="archiveCards">{selected.map(event=><article className="archiveCard" key={event.id}>
      <time dateTime={event.date}>{new Date(`${event.date}T12:00:00Z`).toLocaleDateString("es-AR",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"})}</time>
      <h2>{event.place}</h2><p>{event.description}</p>

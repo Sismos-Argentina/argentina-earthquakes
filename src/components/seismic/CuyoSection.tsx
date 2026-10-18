@@ -1,8 +1,9 @@
 "use client";
 import { eventColorCss, type EventColorMode } from "@/lib/geo/event-colors";
 import ColorLegend from "./ColorLegend";
+import {fitProfilePlot} from "@/lib/profile/plot-layout";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import type { InpresFeature } from "@/lib/data/inpres";
 import {
@@ -23,14 +24,9 @@ const LEFT = 56;
 const TOP = 21;
 const ABOVE_SEA_KM = 9;
 const PALETTES = {
-  light: { background: "#fafbfc", grid: "#dbe2e8", sea: "#889ca4", text: "#253344", boundary: "#71808a", shallow: "#b84d08", intermediate: "#077789", deep: "#68389a", slab: "#3d4254", uncertainty: "rgba(61,66,84,.10)", gebco: "#376f40", selected: "#17212e" },
   dark: { background: "#080f14", grid: "#344851", sea: "#c8e7eb", text: "#f0f6fa", boundary: "#c4d2dc", shallow: "#f5a957", intermediate: "#52c7de", deep: "#b894ed", slab: "#ffe7a3", uncertainty: "rgba(244,217,127,.12)", gebco: "#90c48f", selected: "#ffffff" },
 };
 
-export function profilePixelsPerKm(availableWidth: number, lengthKm: number): number {
-  // Ambos ejes comparten exactamente este factor; si falta espacio hay scroll.
-  return Math.max(0.43, Math.min(1.2, (availableWidth - LEFT - 18) / lengthKm));
-}
 
 function formatLatitude(latitude: number) {
   return `${Math.abs(latitude).toFixed(latitude % 1 === 0 ? 0 : 2)}°S`;
@@ -63,9 +59,11 @@ function drawSegmented(
   ctx.stroke();
 }
 
+export type SectionOptions = { showSlab: boolean; fullDepth: boolean; minimumMagnitude: number | null; theme: "dark" };
 export default function CuyoSection({
   colorMode="depth", onColorMode, profile, events, samples, selected, status, onLatitudeChange, onPick, onClose, guidedIndex = null, onGuideChange,
   inheritedFilters = false, includeProvisional = false, catalogFilters, onResetFilters, onClearSelection, onChooseProfile,
+  initialOptions, onOptionsChange, onStartTutorial, demonstration = false,
 }: {
   colorMode?:EventColorMode;
   onColorMode?:(mode:EventColorMode)=>void;
@@ -85,16 +83,23 @@ export default function CuyoSection({
   onResetFilters: () => void;
   onClearSelection: () => void;
   onChooseProfile: () => void;
+  initialOptions?: SectionOptions; onOptionsChange?: (options: SectionOptions) => void; onStartTutorial?: () => void;
+  demonstration?: boolean;
 }) {
   const frame = useRef<HTMLDivElement>(null);
+  const mainColumn = useRef<HTMLDivElement>(null);
+  const mapSlot = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const [availableWidth, setAvailableWidth] = useState(1100);
-  const [showSlab, setShowSlab] = useState(true);
-  const [fullDepth, setFullDepth] = useState(true);
-  const [minimumMagnitude, setMinimumMagnitude] = useState<number | null>(null);
-  const [theme, setTheme] = useState<keyof typeof PALETTES>("dark");
+  const [showSlab, setShowSlab] = useState(initialOptions?.showSlab ?? true);
+  const [fullDepth, setFullDepth] = useState(initialOptions?.fullDepth ?? true);
+  const [minimumMagnitude, setMinimumMagnitude] = useState<number | null>(initialOptions?.minimumMagnitude ?? null);
+  const theme="dark" as const;
+  const options = useMemo(() => ({showSlab,fullDepth,minimumMagnitude,theme}),[showSlab,fullDepth,minimumMagnitude,theme]);
+  useLayoutEffect(() => { onOptionsChange?.(options); },[options,onOptionsChange]);
   const [hovered, setHovered] = useState<{ event: InpresFeature; x: number; y: number } | null>(null);
-  const [viewportHeight,setViewportHeight] = useState(900);
+  const [plotHeight,setPlotHeight] = useState(300);
+  const [viewport,setViewport] = useState({width:1100,height:900});
   const palette = PALETTES[theme];
   const period = catalogFilters ? `${catalogFilters.dateFrom.split("-").reverse().join("/")}–${catalogFilters.dateTo.split("-").reverse().join("/")}` : guide.web.period;
   const sampleDescription = `${period} · corredor ±${profile.halfWidthKm} km · ${catalogFilters ? `M del mapa ${catalogFilters.magnitudeMin}–${catalogFilters.magnitudeMax}; profundidad catalogada ${catalogFilters.depthMin}–${catalogFilters.depthMax} km` : "todas las magnitudes habilitadas"}${minimumMagnitude === null ? "" : `; corte M ≥ ${minimumMagnitude}`} · ${includeProvisional ? "registro en revisión incluido" : "exclusión provisional de calidad"}`;
@@ -106,19 +111,34 @@ export default function CuyoSection({
   // La comparación usa el mismo rango y los mismos píxeles por km en ambas paradas.
   const maxDepth = guidedIndex !== null ? guide.comparison.depthKm : fullDepth ? Math.max(summary.fullDepthKm, modelDepth) : profile.initialDepthKm;
   const drawnCount = visibleEvents.filter(({ feature }) => feature.properties.profundidad <= maxDepth).length;
-  const scale = Math.min(profilePixelsPerKm(availableWidth, guidedIndex !== null ? CUYO_LENGTH_KM : profile.lengthKm),
-    Math.max(.3,(viewportHeight*.45-TOP-38)/(ABOVE_SEA_KM+maxDepth)));
-  const width = Math.ceil(LEFT + profile.lengthKm * scale + 18);
-  const height = Math.ceil(TOP + (ABOVE_SEA_KM + maxDepth) * scale + 38);
+  const comparisonLength = guidedIndex !== null ? CUYO_LENGTH_KM : profile.lengthKm;
+  const {scale,width,height}=fitProfilePlot(availableWidth,!demonstration&&viewport.width<900?Math.max(180,Math.min(440,viewport.height*.46)):plotHeight,comparisonLength,maxDepth);
   const dpr = typeof window === "undefined" ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+
+  useLayoutEffect(()=>{
+    const slot=mapSlot.current,root=slot?.closest<HTMLElement>(".viewer");
+    if(!slot||!root||demonstration)return;
+    const measure=()=>{
+      const box=slot.getBoundingClientRect(),parent=root.getBoundingClientRect();
+      root.style.setProperty("--section-map-left",`${box.left-parent.left+12}px`);
+      root.style.setProperty("--section-map-top",`${box.top-parent.top+12}px`);
+      root.style.setProperty("--section-map-width",`${Math.max(1,box.width-24)}px`);
+      root.style.setProperty("--section-map-height",`${Math.max(1,box.height-84)}px`);
+    };
+    measure();const observer=new ResizeObserver(measure);observer.observe(slot);observer.observe(root);
+    window.addEventListener("resize",measure);
+    return()=>{observer.disconnect();window.removeEventListener("resize",measure);for(const name of ["left","top","width","height"])root.style.removeProperty(`--section-map-${name}`);};
+  },[demonstration]);
 
   useEffect(() => {
     if (!frame.current) return;
     const observer = new ResizeObserver(() => {
-      if (frame.current) setAvailableWidth(frame.current.clientWidth);
-      setViewportHeight(window.innerHeight);
+      if (mainColumn.current) setAvailableWidth(mainColumn.current.clientWidth - 2);
+      if (frame.current) setPlotHeight(frame.current.clientHeight);
+      setViewport({width:window.innerWidth,height:window.innerHeight});
     });
     observer.observe(frame.current);
+    if(mainColumn.current)observer.observe(mainColumn.current);
     return () => observer.disconnect();
   }, []);
 
@@ -141,13 +161,14 @@ export default function CuyoSection({
       context.fillRect(LEFT, y(from), profile.lengthKm * scale, (Math.min(to, maxDepth) - from) * scale);
     }
 
-    for (let depth = 0; depth <= maxDepth; depth += 50) {
+    const depthStep=Math.max(50,Math.ceil(24/scale/50)*50);
+    for (let depth = 0; depth <= maxDepth; depth += depthStep) {
       context.strokeStyle = depth === 0 ? palette.sea : palette.grid;
       context.beginPath(); context.moveTo(LEFT, y(depth)); context.lineTo(x(profile.lengthKm), y(depth)); context.stroke();
       context.fillStyle = palette.text; context.textAlign = "right";
       context.fillText(`${depth}`, LEFT - 8, y(depth) + 4);
     }
-    for (let distance = 0; distance <= profile.lengthKm; distance += 200) {
+    for (let distance = 0; distance <= profile.lengthKm; distance += Math.max(100,Math.ceil(55/scale/100)*100)) {
       context.strokeStyle = palette.grid;
       context.beginPath(); context.moveTo(x(distance), y(0)); context.lineTo(x(distance), y(maxDepth)); context.stroke();
       context.fillStyle = palette.text; context.textAlign = "center";
@@ -213,7 +234,7 @@ export default function CuyoSection({
       context.beginPath(); context.arc(px, py, 2, 0, Math.PI * 2); context.fill();
     }
     context.restore();
-  }, [visibleEvents, samples, selected, showSlab, fullDepth, maxDepth, width, height, scale, dpr, profile.lengthKm, profile.custom, palette, colorMode]);
+  }, [visibleEvents, samples, selected, showSlab, fullDepth, maxDepth, width, height, scale, dpr, profile.lengthKm, profile.custom, palette, colorMode, demonstration, theme]);
 
   const exportPng = () => {
     if (!canvas.current || status) return;
@@ -278,17 +299,20 @@ export default function CuyoSection({
   const selectedInRange = selected && visibleEvents.some(({ feature }) => feature.properties.id === selected.properties.id && feature.properties.profundidad <= maxDepth) ? selected : null;
 
   return (
-    <section className="sectionMode" aria-label={profile.custom ? "Explorar el subsuelo entre los extremos elegidos A y B" : `Explorar el subsuelo en un perfil andino a ${formatLatitude(profile.latitude)}`}>
+    <section className={`sectionMode${demonstration?" sectionMode--demonstration":""}`} aria-label={profile.custom ? "Explorar el subsuelo entre los extremos elegidos A y B" : `Explorar el subsuelo en un perfil andino a ${formatLatitude(profile.latitude)}`}>
       <header className="sectionModeHeader">
-        <button className="sectionBack" onClick={onClose}>← Volver al mapa</button>
+        <button className="sectionBrand" aria-label="Bajo nuestros pies · volver al mapa" onClick={onClose}><span>Sismos de Argentina</span><strong>Bajo nuestros pies</strong></button>
+        {onStartTutorial ? <button className="sectionBack" onClick={onStartTutorial}>Ver cómo se usa</button> : null}
         <div>
           <p className="eyebrow">Explorar el subsuelo</p>
           <h2>Corte del subsuelo · {profile.custom ? "A–B" : formatLatitude(profile.latitude)}</h2>
         </div>
+        {demonstration&&onGuideChange?<nav className="tourCompare" data-tour-target="compare-sections" aria-label="Cambiar corte comparable"><button disabled={Boolean(status)} aria-pressed={guidedIndex===0} onClick={()=>onGuideChange(0)}>San Juan · 31°S</button><button disabled={Boolean(status)} aria-pressed={guidedIndex===1} onClick={()=>onGuideChange(1)}>Mendoza · 35°S</button></nav>:null}
         <span className="sectionModeTag">INPRES + GEBCO + USGS Slab2</span>
       </header>
+      {demonstration?<p className="tourSectionLocation">{guide.stops[guidedIndex??0]?.title} · Chile → Andes → Argentina · franja de 100 km · profundidad 1×</p>:null}
 
-      <div className="sectionWorkspace"><div className="sectionMain">
+      <div className="sectionWorkspace"><aside className="sectionSidebar" aria-label="Ubicación y controles del corte">
       <div className="sectionContext">
         <div className="sectionContextCopy">
           {guidedIndex !== null && onGuideChange ? <div className="guideOverview">
@@ -296,8 +320,8 @@ export default function CuyoSection({
             <p>{guide.question}</p>
             <details className="guideAnswer"><summary>La sismicidad puede continuar aunque disminuya el volcanismo · por qué</summary><p>{guide.answer} <a href={guide.sources[0].url} target="_blank" rel="noreferrer">Gao et al. (2021)</a></p></details>
             <nav aria-label="Cambiar corte comparable">
-              <button disabled={Boolean(status)} aria-pressed={guidedIndex === 0} onClick={() => onGuideChange(0)}>Ver 31°S</button>
-              <button disabled={Boolean(status)} aria-pressed={guidedIndex === 1} onClick={() => onGuideChange(1)}>Ver 35°S</button>
+              <button disabled={Boolean(status)} aria-pressed={guidedIndex === 0} onClick={() => onGuideChange(0)}>San Juan · 31°S</button>
+              <button disabled={Boolean(status)} aria-pressed={guidedIndex === 1} onClick={() => onGuideChange(1)}>Mendoza · 35°S</button>
               <button onClick={onChooseProfile}>Otro corte A–B</button>
             </nav>
           </div> : null}
@@ -327,18 +351,13 @@ export default function CuyoSection({
           </div>
           {profile.custom || ![-31,-35].includes(profile.latitude) ? <p className="profileValidation">Corte exploratorio: permite comparar los datos y el modelo; no determina a qué placa pertenece cada sismo.</p> : null}
         </div>
-        <div className="sectionMapSlot" aria-label="Contexto espacial: Chile, Argentina, perfil A–B y corredor de 100 km">
+        <div ref={mapSlot} className="sectionMapSlot" aria-label="Contexto espacial: Chile, Argentina, perfil A–B y corredor de 100 km">
           <div className="sectionMiniDiagram">A · Chile ━━━ Andes ━━━ {regionLabel(profile.latitude)} ━━━ B<br />Franja seleccionada: 50 km a cada lado de A–B</div>
           <span>Norte ↑ · {profile.custom ? "A–B: extremos elegidos en el mapa" : guidedIndex === null ? "Arrastrá el mini mapa para mover la franja" : "El corte y su muestra cambian con cada parada"}</span>
           <small>{profile.custom ? "La franja incluye 50 km a cada lado; se proyecta sobre la línea central." : guidedIndex === null ? "También podés usar el control de latitud." : "31°S ↔ 35°S · misma escala 1× y rango 0–700 km."}</small>
         </div>
       </div>
 
-      <div className={`sectionPrimary sectionPrimary--${theme}${status ? " sectionPrimary--updating" : ""}`}>
-        <div className="sectionPrimaryHeading">
-          <strong>De la superficie al subsuelo</strong>
-          <span>Profundidad positiva hacia abajo · comparación vertical nominal</span>
-        </div>
         <div className="sectionFilterBar">
           <label htmlFor="section-magnitude">Magnitud mínima
             <select id="section-magnitude" value={minimumMagnitude ?? "all"} onChange={(event) => setMinimumMagnitude(event.currentTarget.value === "all" ? null : Number(event.currentTarget.value))}>
@@ -346,15 +365,20 @@ export default function CuyoSection({
               {[3.1, 3.5, 4, 5].map((value) => <option key={value} value={value}>≥ {value}</option>)}
             </select>
           </label>
-          <label>Color<select aria-label="Color" value={colorMode} onChange={e=>onColorMode?.(e.target.value as EventColorMode)}><option value="depth">Profundidad</option><option value="magnitude">Magnitud</option></select></label>
-          <label htmlFor="section-theme">Fondo del gráfico<select aria-label="Fondo del gráfico" id="section-theme" value={theme} onChange={(event) => setTheme(event.currentTarget.value as keyof typeof PALETTES)}><option value="light">Claro</option><option value="dark">Oscuro</option></select></label>
+
           <button disabled={Boolean(status)} onClick={exportPng}>Descargar corte PNG</button>
           <button onClick={() => { setMinimumMagnitude(null); setFullDepth(true); setShowSlab(true); onResetFilters(); frame.current?.scrollTo({ left: 0, top: 0 }); }}>Restablecer corte y filtros</button>
           <p role="status">{status ? "Recalculando conteos…" : `${drawnCount.toLocaleString("es-AR")} visibles · ${(events.length - visibleEvents.length).toLocaleString("es-AR")} filtrados por magnitud · ${(visibleEvents.length - drawnCount).toLocaleString("es-AR")} fuera del rango vertical`}</p>
           <small>{inheritedFilters ? "También se aplican los filtros del mapa. " : "Período completo del catálogo. "}{includeProvisional ? "Registro en revisión incluido." : "Se aplica la exclusión provisional de calidad; no hay límite de cantidad."}</small>
         </div>
+<div className={`sectionInspector${selectedInRange || hovered ? " sectionInspector--active" : ""}`}><EventInspector event={selectedInRange ?? hovered?.event ?? null} preview={!selectedInRange && Boolean(hovered)} compact onClose={selectedInRange ? onClearSelection : undefined} /></div></aside><div ref={mainColumn} className="sectionMain" style={{"--section-card-width":`${Math.max(640,width+2)}px`,"--section-canvas-height":`${height}px`} as React.CSSProperties}>
+      <div className={`sectionPrimary sectionPrimary--${theme}${status ? " sectionPrimary--updating" : ""}`}>
+        <div className="sectionPrimaryHeading">
+          <strong>De la superficie al subsuelo</strong>
+          <span>Profundidad positiva hacia abajo · comparación vertical nominal</span>
+        </div>
         <div className="sectionLegend sectionPlotLegend" aria-label="Leyenda del corte">
-          <ColorLegend mode={colorMode}/>
+          <ColorLegend mode={colorMode} onMode={onColorMode}/>
           <span><i className="sectionLegendGebco" style={{ background: palette.gebco }} />Relieve · modelo GEBCO</span>
           <span><i className="sectionLegendSlab" style={{ background: `repeating-linear-gradient(90deg, ${palette.slab} 0 6px, transparent 6px 9px)` }} />Placa de Nazca · modelo Slab2 {showSlab ? "" : "(oculto)"}</span>
           <small>La banda muestra la incertidumbre del modelo.</small>
@@ -369,11 +393,11 @@ export default function CuyoSection({
           <span>Superficial · &lt;70 km <b>{status ? "…" : summary.superficial.toLocaleString("es-AR")}</b></span>
           <span>Intermedia · 70–&lt;300 km <b>{status ? "…" : summary.intermedio.toLocaleString("es-AR")}</b></span>
           <span>Profunda · ≥300 km <b>{status ? "…" : summary.profundo.toLocaleString("es-AR")}</b></span>
-          <small>Bandas descriptivas; no son límites de corteza y manto. En móvil, desplazá horizontalmente el gráfico para recorrer A–B.</small>
+          <small>Bandas descriptivas; no son límites de corteza y manto. Ambos ejes conservan la misma escala al ajustar el gráfico a la pantalla.</small>
         </div>
       </div>
 
-      {guidedIndex !== null && onGuideChange ? <GuidedDiscovery index={guidedIndex} events={visibleEvents} status={status} sampleDescription={sampleDescription} onChange={onGuideChange} /> : null}
+      {guidedIndex !== null && onGuideChange ? <GuidedDiscovery index={guidedIndex} events={visibleEvents} status={status} sampleDescription={sampleDescription} /> : null}
 
       <div className="sectionBottom">
         <div className="sectionReference">
@@ -394,7 +418,7 @@ export default function CuyoSection({
           </div>
         </div>
       </div>
-      </div><div className={`sectionInspector${selectedInRange || hovered ? " sectionInspector--active" : ""}`}><EventInspector event={selectedInRange ?? hovered?.event ?? null} preview={!selectedInRange && Boolean(hovered)} compact onClose={selectedInRange ? onClearSelection : undefined} /></div></div>
+      </div></div>
       {hovered ? <EventHover {...hovered} /> : null}
     </section>
   );

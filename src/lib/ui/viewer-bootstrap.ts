@@ -1,0 +1,2 @@
+// One public layout, applied before hydration on every static route.
+export const VIEWER_BOOTSTRAP = `var r=document.documentElement;r.dataset.layout='cartographic';r.dataset.theme='dark';try{localStorage.removeItem('sismos.appearance');}catch{}try{var u=new URL(location.href);if(u.searchParams.has('diseno')||u.searchParams.has('tema')){u.searchParams.delete('diseno');u.searchParams.delete('tema');history.replaceState(history.state,'',u.pathname+u.search+u.hash);}}catch{}`;

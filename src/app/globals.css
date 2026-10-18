@@ -645,16 +645,8 @@ button:disabled { cursor: default; opacity: 0.45; }
 .navigationPanel .segmentedControl button, .cameraPresets button { min-height: 44px; }
 .cameraPresets { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0; }
 .cameraPresets button { padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 4px; background: #102127; color: var(--text); cursor: pointer; }
-.sectionPrimary--light { color-scheme: light; --text: #253344; --muted: #52636c; --border: #b8c6ce; color: var(--text); background: #fafbfc; }
-.sectionPrimary--light .sectionPrimaryHeading, .sectionPrimary--light .sectionFilterBar { border-color: var(--border); }
-.sectionPrimary--light .sectionFilterBar select, .sectionPrimary--light .sectionFilterBar button { color: var(--text); background: #fff; border-color: #8c9ea8; }
-.sectionPrimary--light .sectionFilterBar p { color: var(--text); }
-.sectionPrimary--light .depthBandSummary span { color: var(--text); }
-.sectionPrimary--light .depthBandSummary b { color: var(--text); }
-.sectionPrimary--light .depthBandSummary { border-color: var(--border); }
 .sectionPlotLegend { padding: 0.5rem 0.85rem; }
 .sectionMapSlot { min-height: 190px; align-self: start; }
-.sectionPrimary--light .sectionEmpty { color: #253344; background: #fafbfc; }
 .guideAnswer { padding-left: 0.7rem; border-left: 2px solid #d6b573; color: #d6e5e0; }
 .guideAnswer a { color: #ffe7a3; }
 @media (max-width: 700px) { .viewerQuestion { font-size: 0.76rem; margin: 0.4rem 0; } }
@@ -724,7 +716,6 @@ button:disabled { cursor: default; opacity: 0.45; }
 .sectionContext { grid-template-columns: minmax(0, 1fr) 300px; }
 .viewer--section .scene, .viewer--section .profileMapDragLayer { right: calc(1.5rem + 306px); width: 300px; }
 .sectionPrimary--dark { background: #080f14; }
-.sectionPrimary--light .sectionLegend { color: #253344; }
 .archivePage { max-width: 65rem; margin: auto; padding: 2rem 1.25rem 4rem; }
 .archivePage a { color: #d7e9ee; }
 .archivePage > p { max-width: 48rem; color: #cad8db; line-height: 1.6; }
@@ -1101,3 +1092,37 @@ button:disabled { opacity: .45; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
  .filterTray, .viewerPopover, .viewerBar .viewerExploration, .exploreSecondary, .viewer > .scene, .viewer > .planView { transition: none; }
 }
+/* Contextual guide: retain the map's full viewport. */
+.viewer--tour.viewer--has-selection:not(.viewer--section) > .scene {right:0}
+.viewer--tour.viewer--has-selection .regionBanner {right:12px}
+.viewer--tour.viewer--section {height:100dvh;min-height:0;overflow:hidden}
+.viewer--tour > .sectionMode {position:absolute;inset:0;min-height:0;overflow:hidden;gap:6px;padding:14px}
+.viewer--tour.viewer--section > .scene {display:none}
+.sectionMode--demonstration .sectionModeHeader {min-height:44px;padding-bottom:5px}
+.sectionMode--demonstration .sectionModeHeader .sectionBack,.sectionMode--demonstration .sectionContext,.sectionMode--demonstration .sectionFilterBar,.sectionMode--demonstration .sectionSampleNote,.sectionMode--demonstration .guidedDiscovery,.sectionMode--demonstration .sectionBottom,.sectionMode--demonstration .sectionInspector,.sectionMode--demonstration .depthBandSummary {display:none}
+.sectionMode--demonstration .sectionWorkspace {flex:1;min-height:0;display:flex}
+.sectionMode--demonstration .sectionMain {flex:1;min-height:0;display:flex;flex-direction:column}
+.sectionMode--demonstration .sectionPrimary {flex:1;min-height:0}
+.sectionMode--demonstration .sectionPlot {min-height:0;overflow:hidden}
+.tourSectionLocation {margin:0;color:#bfd4df;font-size:12px;line-height:1.4}
+.tourCompare {display:flex;gap:4px;margin-left:auto}
+.tourCompare button {padding:10px 14px;border:1px solid #56727f;border-radius:8px;background:#102630;color:#e4eff4;min-height:42px;cursor:pointer}
+.tourCompare [aria-pressed='true'] {background:#d4e8ec;color:#102630}
+[data-tour-focus] {outline:2px solid #d2edf5!important;outline-offset:4px;box-shadow:0 0 0 7px #b9deed25;transition:outline-color 250ms ease,box-shadow 250ms ease}
+.tourBubble {position:fixed;z-index:80;width:min(308px,calc(100vw - 20px));padding:13px 15px 12px;border:1px solid #d6e3e7;border-radius:16px;background:#f4f8f9;color:#152e3b;box-shadow:0 12px 40px #00131c38,0 2px 6px #00131c18;transition:left 420ms cubic-bezier(.22,.8,.2,1),top 420ms cubic-bezier(.22,.8,.2,1);font-family:Arial,sans-serif}
+.tourBubble::before {content:'';position:absolute;width:12px;height:12px;background:#f4f8f9;transform:rotate(45deg);border:1px solid #d6e3e7}
+.tourBubble[data-side='top']::before {top:-7px;left:calc(var(--tip) - 6px);border-right:0;border-bottom:0}
+.tourBubble[data-side='bottom']::before {bottom:-7px;left:calc(var(--tip) - 6px);border-left:0;border-top:0}
+.tourBubble[data-side='left']::before {left:-7px;top:calc(var(--tip) - 6px);border-right:0;border-top:0}
+.tourBubble[data-side='right']::before {right:-7px;top:calc(var(--tip) - 6px);border-left:0;border-bottom:0}
+.tourBubble[data-side='none']::before {display:none}
+.bubbleTop {display:flex;align-items:center;gap:10px;color:#607986;font-size:10px;font-weight:600}
+.bubbleTop > button {margin-left:auto;border:0;background:transparent;color:#57717f;font-size:22px;padding:0;width:28px;height:28px;cursor:pointer}
+.tourDots {display:flex;gap:4px}.tourDots i {width:5px;height:5px;border-radius:50%;background:#cfdbdf}.tourDots i[data-active='true'] {background:#376879}
+.bubbleCopy {animation:bubbleCopyIn 300ms ease both}.bubbleCopy h2 {margin:6px 0;font-size:17px;line-height:1.15;letter-spacing:-.3px;font-weight:650}.bubbleCopy p {margin:0 0 12px;font-size:12px;line-height:1.45;color:#4c6472}
+.tourBubble progress {display:block;height:2px;width:100%;appearance:none;border:0;background:#e0e9ec}.tourBubble progress::-webkit-progress-bar {background:#e0e9ec}.tourBubble progress::-webkit-progress-value {background:#577c8b;transition:width 150ms linear}
+.tourBubble nav {display:flex;align-items:center;gap:4px;margin-top:9px}.tourBubble nav button {border:0;border-radius:7px;min-height:38px;min-width:32px;padding:6px 9px;font-size:11px;white-space:nowrap;background:#e7eef1;color:#294d5d;cursor:pointer}.tourBubble nav .bubblePrimary {background:#254f60;color:#fff}.tourBubble nav .bubbleExit {margin-left:auto;background:transparent;color:#6b808b}.tourBubble button:disabled {opacity:.3;cursor:default}.bubbleStatus {margin:5px 0;font-size:11px}
+.tourBubble[data-motion='false'],.tourBubble[data-motion='false'] .bubbleCopy,.tourBubble[data-motion='false'] progress::-webkit-progress-value {animation:none;transition:none}
+.tourSample {position:absolute;z-index:4;bottom:calc(var(--viewer-footer) + 12px);left:16px;margin:0;padding:4px 7px;border-radius:4px;background:#07141bcc;color:#bdcfd7;font-size:10px;pointer-events:none}.viewer--section > .tourSample {display:none}
+@keyframes bubbleCopyIn {from {opacity:0;transform:translateY(7px)}to {opacity:1;transform:translateY(0)}}
+@media(max-width:799px){.tourBubble {width:min(290px,calc(100vw - 20px));padding:10px 12px}.bubbleCopy h2 {font-size:16px}.tourBubble nav button {min-height:40px;padding:5px 7px}.sectionMode--demonstration .sectionModeHeader h2 {font-size:16px}.sectionMode--demonstration .sectionModeHeader .eyebrow,.sectionMode--demonstration .sectionModeTag,.sectionMode--demonstration .sectionPrimaryHeading {display:none}.sectionMode--demonstration .sectionModeHeader {flex-wrap:wrap;gap:7px}.tourCompare {margin-left:0}.tourCompare button {font-size:11px;padding:7px 10px}.tourSectionLocation {font-size:10px}.viewer--tour .tourSample {max-width:calc(100vw - 160px)}}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TrackballControls } from "three/addons/controls/TrackballControls.js";
@@ -42,14 +42,19 @@ import {
   type CatalogFilterBounds,
   type CatalogFilters,
 } from "@/lib/filters/catalog";
-import CuyoSection from "./CuyoSection";
+import CuyoSection, { type SectionOptions } from "./CuyoSection";
 import { sameCatalogFilters } from "@/lib/filters/catalog";
 import ViewerControls, { type ControlPanel } from "./ViewerControls";
 import { eventColor, type EventColorMode } from "@/lib/geo/event-colors";
 import EventInspector from "./EventInspector";
 import EventHover from "./EventHover";
 import RegionalLocator from "./RegionalLocator";
-import PlanView from "./PlanView";
+import PlanView, { type PlanViewSession } from "./PlanView";
+import { VIEWER_UI_RESTORED } from "@/lib/ui/viewer-ui";
+import type { FilterEditorState } from "@/lib/filters/editor";
+import ViewerTour from "@/components/story/ViewerTour";
+import { advanceTour, nextTourChapter, previousTourChapter, rectangleProgress, tourCueAt, TOUR_CONTEXT, TOUR_DURATION, TOUR_REGION, type TourPlayback } from "@/lib/story/viewer-tour";
+import { constrainCamera, navigationEnvelope, TERRITORY_BOUNDS, type Point3 } from "@/lib/geo/navigation-limits";
 import { createAnalysisAxes, depthTickStep, disposeAnalysisGroup } from "@/lib/geo/analysis-axes";
 import { cropGebco, cropSlab, insideRegion, type RegionBounds } from "@/lib/geo/region";
 import presets from "@/data/flat-slab-guide.json";
@@ -105,7 +110,23 @@ type Metrics = {
   heapCurrent?: number;
 };
 
+type SavedCamera = { position: Point3; target: Point3; up: Point3 };
+type SceneSession = {
+  camera: SavedCamera; navigation: NavigationMode; filters: CatalogFilters;
+  color: EventColorMode; terrainOpacity: number; relief: ReliefExaggeration; slabVisible: boolean; slabOpacity: number;
+  selectedId: string | null; region: RegionBounds | null; profile: ProfileDefinition; profileOpen: boolean;
+  plan: boolean; choosing: "region" | "profile" | null; guided: boolean;
+  beforeRegion: SavedCamera | null; beforeProfile: (SavedCamera & { relief: ReliefExaggeration }) | null;
+};
+type SavedViewUI = { toolsPinned: boolean; page: [number,number]; plot: [number,number] | null; panelScroll: [number,number] | null; details: boolean[] };
+type TourSession = { scene: SceneSession; panel: ControlPanel | null; guidedIndex: number | null; plan?: PlanViewSession; section?: SectionOptions; areaStatus: string; filterEditor: FilterEditorState | null; ui: SavedViewUI };
 type ViewActions = {
+  capture: () => SceneSession;
+  restore: (session: SceneSession) => void;
+  prepareTour: () => CatalogFilters;
+  pauseMotion: () => void;
+  inspectRegion: () => void;
+  setSlabVisible: (value: boolean) => void;
   setColorMode: (value: EventColorMode) => void;
   setTerrainOpacity: (value: number) => void;
   setRelief: (value: ReliefExaggeration) => void;
@@ -126,6 +147,7 @@ type ViewActions = {
   cancelArea: () => void;
   closeRegion: () => void;
   openRegion: (bounds: RegionBounds) => void;
+  alignNorth: () => void;
   setCustomProfile: (a: [number,number], b: [number,number]) => void;
   showPlan: (value: boolean) => void;
 };
@@ -136,7 +158,7 @@ type TerrainLayer = {
   surface: THREE.Mesh;
 };
 
-const TERRITORIAL_BBOX: [number, number, number, number] = [-100, -90, 8, 0];
+const TERRITORIAL_BBOX = TERRITORY_BOUNDS;
 const INITIAL_RELIEF_EXAGGERATION: ReliefExaggeration = 5;
 
 function heapBytes(): number | undefined {
@@ -309,7 +331,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     "Cargando GEBCO y cartografía…",
   );
   const [slabStatus, setSlabStatus] = useState("Cargando modelo Slab2…");
-  const [slabVisible, setSlabVisible] = useState(false);
+  const [slabVisible, setSlabVisibleReact] = useState(false);
   const [slabOpacity, setSlabOpacity] = useState(0.4);
   const [, setInversePanActive] = useState(false);
   const [navigationMode, setNavigationModeReact] = useState<NavigationMode>("turntable");
@@ -328,6 +350,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
   const [slabSummary, setSlabSummary] = useState<Slab2Artifact["summary"] | null>(null);
   const [count, setCount] = useState(0);
   const [visibleCount, setVisibleCount] = useState(0);
+  const [filterEditor, setFilterEditor] = useState<FilterEditorState | null>(null);
   const [filterBounds, setFilterBounds] = useState<CatalogFilterBounds | null>(null);
   const [filters, setFilters] = useState<CatalogFilters | null>(null);
   const [selected, setSelected] = useState<InpresFeature | null>(null);
@@ -341,6 +364,27 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
   const [profileDefinition, setProfileDefinition] = useState<ProfileDefinition>(CUYO_PROFILE);
   const [openPanel, setOpenPanel] = useState<ControlPanel | null>(null);
   const appliedGuide = useRef<number | null>(null);
+  const tourSession = useRef<TourSession | null>(null);
+  const tourFocus = useRef<HTMLElement | null>(null);
+  const pendingViewRestore = useRef<SavedViewUI | null>(null);
+  const planSaved = useRef<PlanViewSession | undefined>(undefined);
+  const sectionSaved = useRef<SectionOptions | undefined>(undefined);
+  const [planSeed, setPlanSeed] = useState<PlanViewSession | undefined>(undefined);
+  const [sectionSeed, setSectionSeed] = useState<SectionOptions | undefined>(undefined);
+  const [sessionRevision, setSessionRevision] = useState(0);
+  const [tour, setTour] = useState<TourPlayback | null>(null);
+  const [tourRevision, setTourRevision] = useState(0);
+  const [tourApplied, setTourApplied] = useState<string | null>(null);
+  const [tourError, setTourError] = useState("");
+  const [tourInteraction, setTourInteraction] = useState(false);
+  const [tourMotionAllowed, setTourMotionAllowed] = useState(false);
+  const tourReducedMotion=reducedMotion&&!tourMotionAllowed;
+  const tourActive=Boolean(tour);
+  const [tourPeriod, setTourPeriod] = useState("");
+  // Las semillas se consumen al montar: una nueva exploración posterior
+  // no debe volver a aplicar una selección antigua restaurada por la guía.
+  const savePlan = useCallback((value: PlanViewSession) => { planSaved.current=value;setPlanSeed(undefined); }, []);
+  const saveSection = useCallback((value: SectionOptions) => { sectionSaved.current=value;setSectionSeed(undefined); }, []);
 
   useEffect(() => {
     const host = canvasHost.current;
@@ -407,8 +451,11 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     };
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color("#061015");
-    scene.fog = new THREE.FogExp2("#061015", 0.000035);
+    const sceneColor=()=>"#061015";
+    host.dataset.sceneTheme=document.documentElement.dataset.theme??"dark";
+    scene.background = new THREE.Color(sceneColor());
+    scene.fog = new THREE.FogExp2(sceneColor(), 0.000035);
+
 
     const camera = new THREE.PerspectiveCamera(44, 1, 1, 80000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -432,17 +479,29 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     controls.dampingFactor = .15;
     controls.screenSpacePanning = true;
     controls.zoomToCursor = true;
+    controls.zoomSpeed = 1.8;
     controls.minDistance = 30;
     controls.maxDistance = 70000;
     const orbital = new TrackballControls(camera, renderer.domElement);
     orbital.addEventListener("change",invalidate);
     orbital.addEventListener("start",()=>{cameraTransition=null;interacting=true;invalidate();});
     orbital.addEventListener("end",()=>{interacting=false;invalidate();});
+    orbital.zoomSpeed = 1.8;
     orbital.enabled = false; orbital.staticMoving = true; orbital.panSpeed = .6; orbital.rotateSpeed = 1.2;
     orbital.minDistance = 30; orbital.maxDistance = 70000; orbital.keys = ["", "", ""];
     orbital.target = controls.target;
     const cameraPose=():CameraPose=>({position:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone()});
     const applyCameraPose=(pose:CameraPose)=>{camera.position.copy(pose.position);controls.target.copy(pose.target);camera.up.copy(pose.up);camera.lookAt(controls.target);};
+    const limitNavigation=()=>{
+      const limits=navigationEnvelope(region??TERRITORY_BOUNDS,camera.aspect,region?regionDepthKm:800,Boolean(region));
+      controls.minDistance=orbital.minDistance=limits.minDistance;
+      controls.maxDistance=orbital.maxDistance=limits.maxDistance;
+      if(beforeProfile||planActive||cameraTransition)return;
+      const bounded=constrainCamera(camera.position.toArray(),controls.target.toArray(),limits);
+      if(camera.position.distanceToSquared(new THREE.Vector3(...bounded.position))>1e-12||controls.target.distanceToSquared(new THREE.Vector3(...bounded.target))>1e-12){
+        camera.position.fromArray(bounded.position);controls.target.fromArray(bounded.target);camera.lookAt(controls.target);renderDirty=true;
+      }
+    };
     const animateCameraFrom=(from:CameraPose)=>{
       cameraTransition=null;
       if(!motionReduced){const to=cameraPose();applyCameraPose(from);cameraTransition={from,to,start:performance.now()};}
@@ -463,6 +522,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       syncControls();
       renderer.domElement.style.cursor = mode === "pan" ? "move" : mode === "zoom" ? "ns-resize" : "grab";
       setNavigationModeReact(mode);
+      invalidate();
     };
     let footprint = createProfileFootprint(CUYO_PROFILE);
     scene.add(footprint);
@@ -498,7 +558,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       slabEnabled = !slabEnabled;
       slabMesh.visible = slabEnabled && !region;
       if (regionalSlab) regionalSlab.visible = slabEnabled;
-      setSlabVisible(slabEnabled); invalidate();
+      setSlabVisibleReact(slabEnabled); invalidate();
     };
     const selectEvent = (feature: InpresFeature) => {
       const [x, y, z] = geographicToScene(...feature.geometry.coordinates, feature.properties.profundidad);
@@ -603,6 +663,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     };
     const fitRegionCamera=(view:"above"|"side"|"oblique")=>{
       if(!region)return;
+      limitNavigation();
       const [x0,,z0]=geographicToScene(region[0],region[3],0),[x1,,z1]=geographicToScene(region[2],region[1],0);
       const damping=controls.enableDamping;controls.enableDamping=false;controls.update();
       const center=new THREE.Vector3((x0+x1)/2,-regionDepthKm/2,(z0+z1)/2);
@@ -747,6 +808,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     };
     const changeSurfaceOpacity=(value:number)=>{
       surfaceOpacity=value;
+      setTerrainOpacity(value);
       for(const group of [regionalTerrain,...Object.values(terrainLayers).map(v=>v?.group)])group?.traverse(o=>{
         if(o instanceof THREE.Mesh && o.userData.terrainSurface && o.material instanceof THREE.MeshBasicMaterial){o.material.opacity=value;o.material.transparent=value<1;o.material.depthWrite=value===1;o.material.needsUpdate=true;}
       });
@@ -754,6 +816,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     };
     const changeColorMode=(mode:EventColorMode)=>{
       currentColorMode=mode;
+      setColorMode(mode);
       if(catalogColors)for(let i=0;i<features.length;i++){
         const props=features[i].properties;
         const color=new THREE.Color().setRGB(...eventColor(mode==="depth"?props.profundidad:props.magnitud,mode),THREE.SRGBColorSpace);
@@ -767,16 +830,66 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       if(catalogPoints)(catalogPoints.geometry.getAttribute("color") as THREE.BufferAttribute).needsUpdate=true;
       invalidate();
     };
+    const savePose=():SavedCamera=>({position:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray()});
+    const saveReturn=(value:{camera:THREE.Vector3;target:THREE.Vector3;up:THREE.Vector3}|null):SavedCamera|null=>value?{position:value.camera.toArray(),target:value.target.toArray(),up:value.up.toArray()}:null;
+    const loadReturn=(value:SavedCamera)=>({camera:new THREE.Vector3(...value.position),target:new THREE.Vector3(...value.target),up:new THREE.Vector3(...value.up)});
+    const setSlabVisible=(value:boolean)=>{if(slabEnabled!==value)toggleSlab();};
+    const changeSlabOpacity=(opacity:number)=>{
+      if(slabMesh)(slabMesh.material as THREE.MeshBasicMaterial).opacity=opacity;
+      if(regionalSlab)(regionalSlab.material as THREE.MeshBasicMaterial).opacity=opacity;
+      setSlabOpacity(opacity);invalidate();
+    };
+    const capture=():SceneSession=>{
+      if(!currentFilters)throw new Error("Esperá a que termine de cargar el catálogo.");
+      return structuredClone({camera:savePose(),navigation:currentNavigationMode,filters:currentFilters,
+        color:currentColorMode,terrainOpacity:surfaceOpacity,relief:currentRelief,slabVisible:slabEnabled,
+        slabOpacity:slabMesh?(slabMesh.material as THREE.MeshBasicMaterial).opacity:.4,
+        selectedId:selectedFeature?.properties.id??null,region,profile:currentProfile,profileOpen:Boolean(beforeProfile),
+        plan:planActive,choosing:choosingArea,guided:guidedProfile,beforeRegion:saveReturn(beforeRegion),
+        beforeProfile:beforeProfile?{...saveReturn(beforeProfile)!,relief:beforeProfile.relief}:null});
+    };
+    const pauseMotion=()=>{cameraTransition=null;stopChord();interacting=false;invalidate();};
+    const restore=(saved:SceneSession)=>{
+      pauseMotion();closeProfile();closeRegion();showPlan(false);
+      const damping=controls.enableDamping;controls.enableDamping=false;controls.update();
+      applyFilters({...saved.filters});setFilters({...saved.filters});
+      changeColorMode(saved.color);changeSurfaceOpacity(saved.terrainOpacity);setRelief(saved.relief);
+      setSlabVisible(saved.slabVisible);changeSlabOpacity(saved.slabOpacity);
+      currentProfile=structuredClone(saved.profile);setProfileDefinition(currentProfile);moveFootprint(currentProfile);
+      if(saved.region){openRegion([...saved.region]);beforeRegion=saved.beforeRegion?loadReturn(saved.beforeRegion):null;}
+      guidedProfile=saved.guided;
+      if(saved.profileOpen){openProfile();beforeProfile=saved.beforeProfile?{...loadReturn(saved.beforeProfile),relief:saved.beforeProfile.relief}:null;}
+      if(saved.plan)showPlan(true);
+      choosingArea=saved.choosing;setAreaSelection(saved.choosing);
+      setNavigationMode(saved.navigation);
+      // Actualizar el dominio antes de aplicar la pose: la vista 2D mantiene
+      // una cámara 3D de retorno que no debe usar los límites de la demo.
+      limitNavigation();
+      applyCameraPose({position:new THREE.Vector3(...saved.camera.position),target:new THREE.Vector3(...saved.camera.target),up:new THREE.Vector3(...saved.camera.up)});
+      controls.update();controls.enableDamping=damping;syncControls();
+      const original=features.find(feature=>feature.properties.id===saved.selectedId);
+      if(original)selectEvent(original);else clearSelection();
+      invalidate();
+    };
+    const prepareTour=()=>{
+      closeProfile();closeRegion();showPlan(false);choosingArea=null;setAreaSelection(null);clearSelection();
+      changeColorMode("depth");changeSurfaceOpacity(1);setRelief(1);setSlabVisible(false);changeSlabOpacity(.4);
+      const bounds=catalogFilterBounds(features);let sample={...bounds};
+      for(const days of [30,365]){
+        const date=new Date(`${bounds.dateTo}T12:00:00Z`);date.setUTCDate(date.getUTCDate()-days);
+        const recent={...bounds,dateFrom:[bounds.dateFrom,date.toISOString().slice(0,10)].sort().at(-1)!};
+        if(features.some(feature=>matchesCatalogFilters(feature,recent)&&insideRegion(...feature.geometry.coordinates,TOUR_REGION))){sample=recent;break;}
+      }
+      applyFilters(sample);setFilters(sample);setNavigationMode("turntable");return sample;
+    };
     views.current = {
+      capture,restore,prepareTour,pauseMotion,setSlabVisible,
+      inspectRegion:()=>{const feature=visibleFeatures.find(f=>f.properties.profundidad>=70)??visibleFeatures[0];if(feature)selectEvent(feature);},
       setColorMode:changeColorMode,
       setTerrainOpacity:changeSurfaceOpacity,
       setRelief,
       toggleSlab,
-      setSlabOpacity: (opacity) => {
-        if (slabMesh) (slabMesh.material as THREE.MeshBasicMaterial).opacity = opacity;
-        if (regionalSlab) (regionalSlab.material as THREE.MeshBasicMaterial).opacity = opacity;
-        setSlabOpacity(opacity); invalidate();
-      },
+      setSlabOpacity: changeSlabOpacity,
       openProfile: () => { guidedProfile = false; openProfile(); },
       closeProfile,
       chooseArea,
@@ -800,6 +913,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
         animateCameraFrom(from);
       },
       setNavigationMode,
+      alignNorth: () => {
+        const from=cameraPose();stopChord();
+        const offset=camera.position.clone().sub(controls.target);
+        const horizontal=Math.max(.001,Math.hypot(offset.x,offset.z));
+        camera.position.copy(controls.target).add(new THREE.Vector3(0,offset.y,horizontal));
+        camera.up.set(0,1,0);controls.update();animateCameraFrom(from);
+      },
       setCameraView: (view) => {
         const from=cameraPose();
         closeProfile(); clearSelection(); stopChord();
@@ -895,11 +1015,13 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     function animate() {
       animationFrame=0;
       if(disposed||document.hidden)return;
+      limitNavigation();
       if(cameraTransition){
         const {from,to,start}=cameraTransition,t=Math.min(1,(performance.now()-start)/320),ease=t*t*(3-2*t);
         camera.position.lerpVectors(from.position,to.position,ease);controls.target.lerpVectors(from.target,to.target,ease);camera.up.lerpVectors(from.up,to.up,ease).normalize();camera.lookAt(controls.target);renderDirty=true;
         if(t===1){cameraTransition=null;controls.update();}
       }else if(orbital.enabled)orbital.update();else if(controls.enabled)controls.update();
+      limitNavigation();
       if(renderDirty){
         renderDirty=false;
         if(catalogPoints){
@@ -920,6 +1042,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
         const now=performance.now();
         if(diagnostic){
           host!.dataset.cameraPose=JSON.stringify({position:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray()});
+          if(currentFilters)host!.dataset.exploration=JSON.stringify(capture());
           if(now-lastFpsSample>=1000){
             setMetrics(previous=>({...previous,fps:frameCount*1000/(now-lastFpsSample),drawCalls:renderer.info.render.calls,geometryCount:renderer.info.memory.geometries,heapCurrent:heapBytes()}));
             frameCount=0;lastFpsSample=now;
@@ -1140,7 +1263,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       const offset=touchState.camera.clone().sub(touchState.target),distance=offset.length();
       if(points.length>1 || currentNavigationMode==="zoom"){
         const factor=points.length>1?touchState.distance/Math.max(1,Math.hypot(points[1].x-points[0].x,points[1].y-points[0].y)):Math.exp(dy*.006);
-        camera.position.copy(touchState.target).add(offset.multiplyScalar(Math.min(70000,Math.max(30,distance*factor))/distance));
+        const limits=navigationEnvelope(region??TERRITORY_BOUNDS,camera.aspect,region?regionDepthKm:800,Boolean(region));
+        camera.position.copy(touchState.target).add(offset.multiplyScalar(Math.min(limits.maxDistance,Math.max(limits.minDistance,distance*factor))/distance));
       }else{
         const perPixel=2*distance*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))/renderer.domElement.clientHeight;
         const delta=new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld,0).multiplyScalar(-dx*perPixel)
@@ -1484,7 +1608,105 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     if (filters) views.current?.setFilters(filters);
   }, [filters]);
 
-  useEffect(() => { views.current?.setReducedMotion(reducedMotion); }, [reducedMotion]);
+  useEffect(() => { views.current?.setReducedMotion(tourActive?tourReducedMotion:reducedMotion); }, [reducedMotion,tourActive,tourReducedMotion]);
+
+  const saveFilterEditor = useCallback((state: FilterEditorState) => { if(!tourSession.current)setFilterEditor(state); }, []);
+
+  const startTutorial = useCallback(() => {
+    if(!views.current || tourSession.current)return;
+    const root=canvasHost.current?.closest("main"),plot=root?.querySelector(".sectionPlot"),panelBody=root?.querySelector(".studioPanelBody,.viewerPanelContent");
+    const scene=views.current.capture();
+    tourSession.current=structuredClone({scene,panel:openPanel,guidedIndex,filterEditor,
+      plan:scene.plan?planSaved.current:undefined,section:scene.profileOpen?sectionSaved.current:undefined,areaStatus,
+      ui:{toolsPinned:document.documentElement.dataset.toolsPinned==="true",page:[window.scrollX,window.scrollY],plot:plot?[plot.scrollLeft,plot.scrollTop]:null,panelScroll:panelBody?[panelBody.scrollLeft,panelBody.scrollTop]:null,
+        details:[...root?.querySelectorAll<HTMLDetailsElement>(".sectionMode details,.inspector details,.studioPanel details,.viewerPanel details")??[]].map(item=>item.open)}});
+    tourFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;
+    appliedGuide.current=null;onGuideChange?.(null);setOpenPanel(null);
+    setPlanSeed(undefined);setSectionSeed(undefined);setTourError("");setTourApplied(null);setTourInteraction(false);setTourMotionAllowed(false);
+    setTourRevision(value=>value+1);setTour({elapsed:0,playing:!reducedMotion});
+  },[openPanel,guidedIndex,areaStatus,onGuideChange,reducedMotion,filterEditor]);
+
+  const exitTutorial = useCallback((chooseOwnZone=false) => {
+    const saved=tourSession.current;if(!saved)return;
+    tourSession.current=null;setTour(null);setTourApplied(null);setTourError("");setTourMotionAllowed(false);
+    appliedGuide.current=saved.guidedIndex;onGuideChange?.(saved.guidedIndex);
+    planSaved.current=saved.plan;sectionSaved.current=saved.section;
+    pendingViewRestore.current=chooseOwnZone?null:saved.ui;
+    setPlanSeed(saved.plan);setSectionSeed(saved.section);setSessionRevision(value=>value+1);
+    document.documentElement.dataset.toolsPinned=String(saved.ui.toolsPinned);
+    window.dispatchEvent(new Event(VIEWER_UI_RESTORED));
+    setFilterEditor(saved.filterEditor);
+    views.current?.restore(saved.scene);setAreaStatus(saved.areaStatus);setOpenPanel(saved.panel);
+    requestAnimationFrame(()=>{
+      if(chooseOwnZone){setPlanSeed(undefined);setSessionRevision(value=>value+1);appliedGuide.current=null;onGuideChange?.(null);views.current?.chooseArea("region");setOpenPanel(null);return;}
+      const previous=tourFocus.current;
+      if(previous?.isConnected && previous.getClientRects().length)previous.focus({preventScroll:true});
+      else [...canvasHost.current?.closest("main")?.querySelectorAll<HTMLElement>(".coordinateDialog input,.sectionBack,[data-tour-target='launch']")??[]].find(item=>item.getClientRects().length)?.focus({preventScroll:true});
+    });
+  },[onGuideChange]);
+  useEffect(()=>{
+    const saved=pendingViewRestore.current;
+    if(!saved||tourActive||(profileOpen&&profileStatus))return;
+    const frame=requestAnimationFrame(()=>{
+      const root=canvasHost.current?.closest("main"),plot=root?.querySelector(".sectionPlot"),panelBody=root?.querySelector(".studioPanelBody,.viewerPanelContent");
+      root?.querySelectorAll<HTMLDetailsElement>(".sectionMode details,.inspector details,.studioPanel details,.viewerPanel details").forEach((item,index)=>{item.open=saved.details[index]??item.open;});
+      if(plot&&saved.plot){plot.scrollLeft=saved.plot[0];plot.scrollTop=saved.plot[1];}
+      if(panelBody&&saved.panelScroll){panelBody.scrollLeft=saved.panelScroll[0];panelBody.scrollTop=saved.panelScroll[1];}
+      window.scrollTo({left:saved.page[0],top:saved.page[1],behavior:"instant"});
+      pendingViewRestore.current=null;
+    });
+    return()=>cancelAnimationFrame(frame);
+  },[tourActive,profileOpen,profileStatus,profileEvents,profileSamples]);
+  const pauseTutorial = useCallback(() => { setTour(current=>current&&current.playing?{...current,playing:false}:current);views.current?.pauseMotion(); },[]);
+  const tourCue=tour?tourCueAt(tour.elapsed):null;
+  useEffect(()=>{
+    if(!tourCue||!tourSession.current||!views.current||!filterBounds)return;
+    const api=views.current;setTourError("");
+    try{
+      switch(tourCue.id){
+        case "territory": {
+          const sample=api.prepareTour();
+          setTourPeriod(`Ejemplo real · ${sample.dateFrom.split("-").reverse().join("/")}–${sample.dateTo.split("-").reverse().join("/")}`);
+          api.setCameraView("above");setOpenPanel("navigation");break;
+        }
+        case "map": setOpenPanel(null);setPlanSeed(undefined);setSessionRevision(value=>value+1);api.chooseArea("region");break;
+        case "rectangle": api.chooseArea("region");break;
+        case "region": setOpenPanel(null);api.openRegion([...TOUR_REGION]);break;
+        case "event": api.setCameraView("side");api.inspectRegion();break;
+        case "slab": api.clearSelection();api.setSlabVisible(true);api.setSlabOpacity(.55);setOpenPanel("layers");break;
+        case "section31":
+          setOpenPanel(null);setSectionSeed({showSlab:true,fullDepth:true,minimumMagnitude:null,theme:"dark"});
+          setTourPeriod("Cortes comparables · período completo del catálogo · escala 1×");
+          api.startGuidedProfile(-31,{...filterBounds});break;
+        case "section35": api.startGuidedProfile(-35,{...filterBounds});break;
+      }
+      setTourApplied(tourCue.id);
+    }catch(error){setTourError(error instanceof Error?error.message:"No se pudo preparar esta vista.");pauseTutorial();}
+  },[tourCue,tourRevision,filterBounds,tourReducedMotion,pauseTutorial]);
+  const tourWaiting=Boolean(tour && (tourApplied!==tourCue?.id || (tourCue?.chapter===4 && (Boolean(profileStatus)||!profileOpen||!profileEvents||!profileSamples))));
+  useEffect(()=>{
+    if(!tourActive)return;
+    let previous=performance.now();
+    const tick=setInterval(()=>{
+      const now=performance.now(),delta=now-previous;previous=now;
+      if(document.hidden)return;
+      setTour(current=>current?advanceTour(current,delta,!tourWaiting&&!tourError):null);
+    },100);
+    return()=>clearInterval(tick);
+  },[tourActive,tourWaiting,tourError]);
+  useEffect(()=>{
+    if(!tourActive)return;
+    const key=(event:KeyboardEvent)=>{
+      if(event.key==="Escape"){event.preventDefault();event.stopImmediatePropagation();exitTutorial();}
+    };
+    const visibility=()=>{if(document.hidden)pauseTutorial();};
+    const blur=()=>pauseTutorial();
+    const preference=window.matchMedia("(prefers-reduced-motion: reduce)");
+    const motion=(event:MediaQueryListEvent)=>{if(event.matches){setTourMotionAllowed(false);pauseTutorial();}};
+    preference.addEventListener("change",motion);
+    window.addEventListener("keydown",key,true);document.addEventListener("visibilitychange",visibility);window.addEventListener("blur",blur);
+    return()=>{preference.removeEventListener("change",motion);window.removeEventListener("keydown",key,true);document.removeEventListener("visibilitychange",visibility);window.removeEventListener("blur",blur);};
+  },[tourActive,exitTutorial,pauseTutorial]);
 
   useEffect(() => {
     if (guidedIndex === null) {
@@ -1525,27 +1747,32 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       activeRegion ? "viewer--region" : "",
       selected ? "viewer--has-selection" : "",
       openPanel ? `viewer--panel-${openPanel}` : "",
-    ].filter(Boolean).join(" ")}>
+      tour ? "viewer--tour" : "",
+    ].filter(Boolean).join(" ")} data-tour-cue={tourCue?.id} data-tour-playing={tour?.playing}
+      onPointerDownCapture={event=>{if(tour && event.target instanceof Element && !event.target.closest("[data-tour-card]")){setTourInteraction(true);pauseTutorial();}}}
+      onWheelCapture={()=>{if(tour){setTourInteraction(true);pauseTutorial();}}}>
       <div
         ref={canvasHost}
         className="scene"
         aria-label="Escena tridimensional de sismos INPRES, relieve GEBCO, cartografía y modelo geofísico Slab2"
       />
 
-      <ViewerControls count={count} visible={visibleCount} status={catalogFailed?"Catálogo no disponible":status} filters={filters} bounds={filterBounds}
-        onFilters={setFilters} panel={openPanel} onPanel={setOpenPanel} actions={{showPlan:v=>views.current?.showPlan(v),chooseArea:v=>views.current?.chooseArea(v),resetCamera:()=>views.current?.resetCamera(),setRelief:v=>views.current?.setRelief(v),toggleSlab:()=>views.current?.toggleSlab(),setSlabOpacity:v=>views.current?.setSlabOpacity(v),setNavigationMode:v=>views.current?.setNavigationMode(v),setCameraView:v=>views.current?.setCameraView(v)}}
+      <ViewerControls count={count} visible={map2d?mapEvents.length:visibleCount} status={catalogFailed?"Catálogo no disponible":status} filters={filters} bounds={filterBounds}
+        onFilters={setFilters} filterEditor={filterEditor} onFilterEditor={saveFilterEditor} panel={openPanel} onPanel={setOpenPanel} actions={{showPlan:v=>views.current?.showPlan(v),chooseArea:v=>views.current?.chooseArea(v),resetCamera:()=>views.current?.resetCamera(),setRelief:v=>views.current?.setRelief(v),toggleSlab:()=>views.current?.toggleSlab(),setSlabOpacity:v=>views.current?.setSlabOpacity(v),setNavigationMode:v=>views.current?.setNavigationMode(v),setCameraView:v=>views.current?.setCameraView(v)}}
         map2d={map2d} ready={Boolean(count&&mapCartography)} navigationMode={navigationMode} relief={reliefExaggeration}
         surfaceReady={surfaceStatus.includes("cargados")} slabAvailable={Boolean(slabSummary)} analysisReady={Boolean(count&&mapCartography&&slabSummary&&surfaceStatus.includes("cargados"))}
         slabVisible={slabVisible} slabOpacity={slabOpacity} colorMode={colorMode}
         onColorMode={mode=>{setColorMode(mode);views.current?.setColorMode(mode);}}
         terrainOpacity={terrainOpacity} onTerrainOpacity={value=>{setTerrainOpacity(value);views.current?.setTerrainOpacity(value);}}
-        onGuide={onStartGuide} onLeaveGuide={()=>onGuideChange?.(null)}/>
-      {!profileOpen&&!map2d?<div className="compass"><span ref={compassNeedle} className="compassNeedle">↑</span><b>N</b></div>:null}
+        onGuide={onStartGuide} onLeaveGuide={()=>onGuideChange?.(null)} tutorialCue={tourCue?.id} onTutorial={tour?undefined:startTutorial}/>
+      {!profileOpen&&!map2d?<button className="compass" aria-label="Orientar hacia el norte" title="Orientar hacia el norte" onClick={()=>views.current?.alignNorth()}><span ref={compassNeedle} className="compassNeedle" aria-hidden="true">↑</span><b aria-hidden="true">N</b></button>:null}
       {activeRegion&&!map2d&&!profileOpen?<aside className="regionBanner" aria-label="Ubicación de la zona 3D">
         <div><strong>Zona 3D · {visibleCount.toLocaleString("es-AR")} sismos</strong><small>Profundidad 1× · 0–{regionDepth} km</small><button onClick={()=>views.current?.closeRegion()}>Volver al mapa completo</button></div>
         {mapCartography?<RegionalLocator bounds={activeRegion} cartography={mapCartography} onOpen={()=>views.current?.showPlan(true)}/>:null}
       </aside>:null}
-      {map2d&&mapCartography?<PlanView key={areaSelection??"browse"} events={mapEvents} cartography={mapCartography} selection={areaSelection} region={activeRegion} colorMode={colorMode}
+      {map2d&&mapCartography?<PlanView key={`${areaSelection??"browse"}:${sessionRevision}`} events={mapEvents} cartography={mapCartography} selection={areaSelection} region={activeRegion} colorMode={colorMode}
+        initialState={planSeed} onStateChange={savePlan}
+        demonstration={tour&&!tourInteraction&&tourCue?.chapter===1?{bounds:TOUR_REGION,context:TOUR_CONTEXT,progress:tourReducedMotion?1:rectangleProgress(tour.elapsed),select:tourReducedMotion||tourCue.id==="rectangle"}:undefined}
         onRegion={bounds=>views.current?.openRegion(bounds)} onProfile={(a,b)=>views.current?.setCustomProfile(a,b)}
         onPick={event=>views.current?.selectEvent(event)} onCancel={()=>views.current?.cancelArea()} onClose={()=>{views.current?.cancelArea();views.current?.showPlan(false);}}/>:null}
       {areaStatus?<p role="status">{areaStatus}</p>:null}
@@ -1557,6 +1784,10 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
 
       {profileOpen ? profileEvents && profileSamples ? (
         <CuyoSection
+          key={sessionRevision}
+          demonstration={Boolean(tour)}
+          initialOptions={sectionSeed} onOptionsChange={saveSection}
+          onStartTutorial={!tour&&!profileStatus?startTutorial:undefined}
           colorMode={colorMode}
           onColorMode={mode=>{setColorMode(mode);views.current?.setColorMode(mode);}}
           profile={profileDefinition}
@@ -1564,8 +1795,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
           samples={profileSamples}
           selected={selected}
           status={profileStatus}
-          guidedIndex={guidedIndex}
-          onGuideChange={onGuideChange}
+          guidedIndex={tourCue?.chapter===4?(tourCue.id==="section35"?1:0):guidedIndex}
+          onGuideChange={tour?index=>setTour(current=>current?{...current,elapsed:index===0?38000:44000,playing:false}:current):onGuideChange}
           inheritedFilters={filtersActive}
           includeProvisional={Boolean(filters?.includeProvisional)}
           catalogFilters={filters}
@@ -1578,7 +1809,15 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
         />
       ) : <div className="sectionLoading" role="status"><button onClick={() => { onGuideChange?.(null); views.current?.closeProfile(); }}>← Volver al mapa</button><p>{profileStatus || "Preparando sección…"}</p></div> : null}
 
-      {!profileOpen && selected ? <EventInspector event={selected} onClose={() => views.current?.clearSelection()} /> : null}
+      {!profileOpen && selected && !tour ? <EventInspector event={selected} onClose={() => views.current?.clearSelection()} /> : null}
+      {tour ? <><p className="tourSample" aria-label="Muestra de la demostración">{tourPeriod}</p><ViewerTour playback={tour} waiting={tourWaiting} reducedMotion={tourReducedMotion} error={tourError}
+        detail={selected&&!profileOpen?`M ${selected.properties.magnitud.toFixed(1)} · ${selected.properties.profundidad.toFixed(0)} km de profundidad. Tocá un punto para leerlo.`:undefined}
+        onAnimate={reducedMotion&&!tourMotionAllowed?()=>{setTourMotionAllowed(true);setTour({...tour,playing:true});}:undefined}
+        onPause={()=>{if(tour.playing)pauseTutorial();else{setTourInteraction(false);setTour({...tour,playing:true});}}}
+        onReplay={()=>{setTourInteraction(false);setTourApplied(null);setTourError("");setTourRevision(value=>value+1);setTour({elapsed:0,playing:!tourReducedMotion});}}
+        onExit={()=>exitTutorial()} onTry={()=>exitTutorial(true)}
+        onNext={()=>setTour(current=>{if(!current)return null;const elapsed=nextTourChapter(current.elapsed);return {...current,elapsed,playing:elapsed<TOUR_DURATION&&current.playing};})}
+        onPrevious={()=>setTour(current=>current?{...current,elapsed:tourCueAt(current.elapsed).id==="section35"?38000:previousTourChapter(current.elapsed)}:null)}/></>:null}
     </main>
   );
 }

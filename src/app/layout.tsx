@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import "./viewer.css";
+import { VIEWER_BOOTSTRAP } from "@/lib/ui/viewer-bootstrap";
 
 export const metadata: Metadata = {
   title: "Bajo nuestros pies",
@@ -14,7 +16,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" data-layout="cartographic" data-theme="dark" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{__html:VIEWER_BOOTSTRAP}}/></head>
       <body>{children}</body>
     </html>
   );
