@@ -79,3 +79,45 @@ Antes de implementar la vista nacional agregada se decidirán mediante una prueb
 - umbral de transición entre escala nacional y regional.
 
 No se asume todavía un algoritmo, librería o formato de almacenamiento.
+
+## Evaluación pendiente: alternativas para el mapa 2D (18/10/2026)
+
+Anotado para una iteración posterior; no se implementa ni se cambia la vista
+actual en esta entrega. La pregunta es si podemos leer mejor las concentraciones
+de eventos al alejarnos, manteniendo la ubicación y el acceso a cada registro.
+
+Comparar sobre el mismo snapshot, período, filtros y encuadre:
+
+- **Puntos actuales:** referencia inicial; evaluar primero ajustes simples de
+  tamaño y opacidad según escala.
+- **Clusters visuales:** agrupar puntos cercanos en pantalla y mostrar su cantidad.
+  Al acercar o tocar un grupo, ampliar su área y recuperar los eventos individuales.
+  No son agrupamientos tectónicos ni una medición de actividad o riesgo.
+- **Celdas regulares o hexagonales:** contar eventos por unidad espacial definida;
+  si se expresa densidad, indicar área y unidad. Un mapa de calor sólo se evaluaría
+  después de definir resolución, normalización y leyenda, sin sugerir continuidad
+  donde no existen observaciones.
+
+La primera prueba debe ser pequeña, opcional y reversible, limitada al mapa 2D.
+No sustituye los hipocentros individuales en 3D ni modifica la selección regional
+o el corredor científico A–B. Reutilizar catálogo, filtros, cámara e inspector;
+no elegir librerías o infraestructura adicional antes de medir su necesidad.
+
+### Condiciones para decidir si sirve
+
+1. Medir legibilidad, tiempo de redibujado, interacción y memoria con pocos y
+   muchos eventos, en escritorio y teléfono físico. Contrastar con los puntos
+   actuales antes de afirmar una mejora de rendimiento.
+2. Identificar cada agregado como derivado y explicar su cantidad, método,
+   escala o radio, período, filtros y versión del catálogo. No usar un único color
+   de profundidad o magnitud que oculte valores mezclados; distinguir su leyenda
+   de la de eventos individuales.
+3. Preservar los IDs originales, sin pérdidas ni duplicados entre agregados.
+   Verificar conteos con filtros, cambios de zoom, bordes de pantalla, coordenadas
+   coincidentes y áreas sin eventos. Los conteos no equivalen a tasas comparables
+   entre regiones con distinta cobertura del catálogo.
+4. Permitir volver a puntos individuales sin perder encuadre, selección ni filtros;
+   probar toque, teclado, selección de zona 3D y corte A–B sin conflictos.
+
+Adoptar una alternativa sólo si mejora la lectura o un cuello de botella medido
+sin añadir confusión. Si no aporta suficiente valor, conservar la vista actual.
