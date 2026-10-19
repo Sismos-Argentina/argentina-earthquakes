@@ -10,15 +10,21 @@ import places from "@/data/place-labels.json";
 import EventHover from "./EventHover";
 import { eventColorCss, type EventColorMode } from "@/lib/geo/event-colors";
 import { constrainPlanView } from "@/lib/geo/navigation-limits";
+import { pointLayerPlacement, resizePlanView, zoomPlanView } from "@/lib/geo/plan-viewport";
+import usePlanPointLayer from "./usePlanPointLayer";
+import {geoBox,type GeoBox} from "@/lib/selection/events";
 
 type View = { x: number; z: number; span: number };
-export type PlanViewSession = { view: View; preview: [[number,number],[number,number]] | null; previewReady: boolean; drawing: boolean; coordinatesOpen: boolean; coordinates: number[]; message: string };
-export default function PlanView({ events, cartography, selection, region, onRegion, onProfile, onPick, onCancel, colorMode = "depth", initialState, onStateChange, demonstration }: {
+export type PlanViewSession = { view: View; viewport?: { width: number; height: number }; preview: [[number,number],[number,number]] | null; previewReady: boolean; drawing: boolean; coordinatesOpen: boolean; coordinates: number[]; message: string };
+export default function PlanView({ events, cartography, selection, selected, region, onRegion, onProfile, onPick, onCancel, onClose, onResetFilters, onClearRegion, colorMode = "depth", initialState, onStateChange, demonstration, reducedMotion = false,selectEvents,onSelectEvents,collectionBox,onCollectionBox,markedIds }: {
   events: InpresFeature[]; cartography: CartographyArtifact; selection: "region" | "profile" | null;
   region: RegionBounds | null; colorMode?:EventColorMode;
+  selected: InpresFeature | null; onResetFilters: () => void; onClearRegion: () => void;
   onRegion: (bounds: RegionBounds) => void; onProfile: (a: [number,number], b: [number,number]) => void;
   onPick: (event: InpresFeature) => void; onClose: () => void; onCancel: () => void;
   initialState?: PlanViewSession; onStateChange?: (state: PlanViewSession) => void;
+  reducedMotion?: boolean;
+  selectEvents:boolean;onSelectEvents:(value:boolean)=>void;collectionBox:GeoBox|null;onCollectionBox:(box:GeoBox)=>void;markedIds:string[];
   demonstration?: { bounds: RegionBounds; context: RegionBounds; progress: number; select: boolean };
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -31,14 +37,28 @@ export default function PlanView({ events, cartography, selection, region, onReg
   const [drawing,setDrawing]=useState(initialState?.drawing ?? Boolean(selection));
   const [coordinatesOpen,setCoordinatesOpen]=useState(initialState?.coordinatesOpen ?? false);
   const pointers=useRef(new Map<number,{x:number;y:number}>());
-  const gesture=useRef<{kind:"pan"|"draw"|"pinch";id:number;x:number;y:number;view:View;a:[number,number];distance?:number}|null>(null);
+  const gesture=useRef<{kind:"pan"|"draw"|"pinch"|"select";id:number;x:number;y:number;view:View;a:[number,number];distance?:number}|null>(null);
+  const [eventPreview,setEventPreview]=useState<[[number,number],[number,number]]|null>(null);
   const [hover,setHover] = useState<{event:InpresFeature;x:number;y:number}|null>(null);
   const [message,setMessage] = useState(initialState?.message ?? "");
   const [coordinates,setCoordinates] = useState(initialState?.coordinates ?? (selection==="region"?[-73,-29,-61,-33]:[-73,-31,-61,-31]));
   const hoverTime = useRef(0);
   const initialized = useRef(Boolean(initialState));
+  const previousSize = useRef(initialState?.viewport);
+  const viewMotion = useRef(0);
   const updateView = useCallback((next: React.SetStateAction<View>) => setView(previous => constrainPlanView(typeof next === "function" ? next(previous) : next, Math.max(1,size.width)/Math.max(1,size.height))), [size.width,size.height]);
-  const session = useMemo(() => ({view,preview,previewReady,drawing,coordinatesOpen,coordinates,message}),[view,preview,previewReady,drawing,coordinatesOpen,coordinates,message]);
+  const stopViewMotion = () => { cancelAnimationFrame(viewMotion.current); viewMotion.current=0; };
+  const animateView = (next:View) => {
+    stopViewMotion();setHover(null);
+    const target=constrainPlanView(next,Math.max(1,size.width)/Math.max(1,size.height));
+    if(reducedMotion){updateView(target);return;}
+    const from=view,start=performance.now();
+    const step=(now:number)=>{const t=Math.min(1,(now-start)/180),ease=t*t*(3-2*t);updateView({x:from.x+(target.x-from.x)*ease,z:from.z+(target.z-from.z)*ease,span:from.span+(target.span-from.span)*ease});if(t<1)viewMotion.current=requestAnimationFrame(step);else viewMotion.current=0;};
+    viewMotion.current=requestAnimationFrame(step);
+  };
+  useEffect(()=>()=>cancelAnimationFrame(viewMotion.current),[]);
+  useEffect(()=>{if(reducedMotion){cancelAnimationFrame(viewMotion.current);viewMotion.current=0;}},[reducedMotion]);
+  const session = useMemo(() => ({view,viewport:size,preview,previewReady,drawing,coordinatesOpen,coordinates,message}),[view,size,preview,previewReady,drawing,coordinatesOpen,coordinates,message]);
   useLayoutEffect(() => { onStateChange?.(session); }, [session,onStateChange]);
   const displayedPreview = useMemo<[[number,number],[number,number]] | null>(() => {
     if (!demonstration?.select) return preview;
@@ -59,7 +79,9 @@ export default function PlanView({ events, cartography, selection, region, onReg
       return {event,x,z,color};
     });
   },[events,colorMode]);
-  const pointLayer=useRef<{canvas:HTMLCanvasElement;points:typeof points;view:View;width:number;height:number;dpr:number}|null>(null);
+  const pointLayer = usePlanPointLayer(points,view,size);
+  const selectedPoint = useMemo(() => selected ? points.find(point=>point.event.properties.id===selected.properties.id) : undefined,[selected,points]);
+  const markedPoints=useMemo(()=>{if(markedIds.length>500)return [];const ids=new Set(markedIds);return points.filter(point=>ids.has(point.event.properties.id));},[points,markedIds]);
   const mapLines=useMemo(()=>[
     {color:"#738e99",features:cartography.layers.naturalEarthCountries},
     {color:"#b8cdda",features:cartography.layers.ignProvinces},
@@ -67,13 +89,18 @@ export default function PlanView({ events, cartography, selection, region, onReg
   const scale = Math.max(1,size.width) / view.span;
   const fit = (bounds:RegionBounds) => {
     const [x0,,z0]=geographicToScene(bounds[0],bounds[3],0),[x1,,z1]=geographicToScene(bounds[2],bounds[1],0);
-    updateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
+    animateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
   };
   useEffect(()=>{
     const el=canvas.current;if(!el)return;
     const observer=new ResizeObserver(()=>setSize({width:el.clientWidth,height:el.clientHeight}));
     observer.observe(el);return()=>observer.disconnect();
   },[]);
+  useLayoutEffect(()=>{
+    if(!size.width||!size.height)return;
+    const before=previousSize.current;previousSize.current=size;
+    if(initialized.current&&before&&(before.width!==size.width||before.height!==size.height)){cancelAnimationFrame(viewMotion.current);viewMotion.current=0;updateView(value=>resizePlanView(value,before,size));}
+  },[size,updateView]);
   useEffect(()=>{if(!initialized.current&&size.width>100){initialized.current=true;
     const [x0,,z0]=geographicToScene(-78,-20,0),[x1,,z1]=geographicToScene(-53,-57,0);
     updateView({x:(x0+x1)/2,z:(z0+z1)/2,span:Math.max(x1-x0,(z1-z0)*size.width/size.height)*1.08});
@@ -87,9 +114,16 @@ export default function PlanView({ events, cartography, selection, region, onReg
   },[demoContext,size.width,size.height,updateView]);
   useEffect(()=>{
     const el=canvas.current;if(!el)return;
-    const wheel=(event:WheelEvent)=>{event.preventDefault();updateView(v=>({...v,span:v.span*Math.exp(Math.max(-2,Math.min(2,event.deltaY*.002)))}));};
-    el.addEventListener("wheel",wheel,{passive:false});return()=>el.removeEventListener("wheel",wheel);
-  },[updateView]);
+    let frame=0,delta=0,point={x:0,y:0};
+    const wheel=(event:WheelEvent)=>{
+      event.preventDefault();cancelAnimationFrame(viewMotion.current);viewMotion.current=0;setHover(null);
+      if(selectEvents)return;
+      const rect=el.getBoundingClientRect();point={x:event.clientX-rect.left,y:event.clientY-rect.top};
+      delta+=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?size.height:1);
+      if(!frame)frame=requestAnimationFrame(()=>{frame=0;const factor=Math.exp(Math.max(-2,Math.min(2,delta*.002)));delta=0;updateView(v=>{const span=constrainPlanView({...v,span:v.span*factor},size.width/size.height).span;return zoomPlanView(v,size,span/v.span,point);});});
+    };
+    el.addEventListener("wheel",wheel,{passive:false});return()=>{cancelAnimationFrame(frame);el.removeEventListener("wheel",wheel);};
+  },[updateView,size,selectEvents]);
   useEffect(()=>{
     const frame=requestAnimationFrame(()=>{
     const el=canvas.current;if(!el)return;const dpr=Math.min(window.devicePixelRatio||1,2);
@@ -105,32 +139,20 @@ export default function PlanView({ events, cartography, selection, region, onReg
     ctx.strokeStyle="rgba(207,226,238,.16)";ctx.fillStyle=ink;ctx.font="12px Arial";
     for(let lon=-100;lon<=8;lon+=step){const[x]=xy(lon,center[1]);if(x<0||x>size.width)continue;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,size.height);ctx.stroke();ctx.fillText(`${lon.toFixed(step<1?2:0)}°`,x+3,size.height-18);}
     for(let lat=-90;lat<=0;lat+=step){const[,y]=xy(center[0],lat);if(y<0||y>size.height)continue;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(size.width,y);ctx.stroke();ctx.fillText(`${lat.toFixed(step<1?2:0)}°`,6,y-4);}
-    // Reutilizar el dibujo de TODOS los eventos al panear o dibujar una selección.
-    // El margen se vuelve a dibujar antes de salir de él; el zoom siempre recompone a su escala.
-    const margin=Math.min(256,Math.max(96,size.width/4)),layerWidth=size.width+margin*2,layerHeight=size.height+margin*2;
-    let layer=pointLayer.current;
-    if(!layer||layer.points!==points||layer.width!==size.width||layer.height!==size.height||layer.dpr!==dpr||layer.view.span!==view.span||Math.abs(layer.view.x-view.x)*scale>margin||Math.abs(layer.view.z-view.z)*scale>margin){
-      const buffer=layer?.canvas??document.createElement("canvas");
-      if(buffer.width!==Math.round(layerWidth*dpr))buffer.width=Math.round(layerWidth*dpr);
-      if(buffer.height!==Math.round(layerHeight*dpr))buffer.height=Math.round(layerHeight*dpr);
-      const paint=buffer.getContext("2d")!;paint.setTransform(dpr,0,0,dpr,0,0);paint.clearRect(0,0,layerWidth,layerHeight);paint.globalAlpha=events.length<=500?.9:.48;
-      const pointSize=events.length<=500?6:events.length<=5000?3.5:1.6;
-      for(const point of points){const x=(point.x-view.x)*scale+layerWidth/2,y=(point.z-view.z)*scale+layerHeight/2;if(x<0||x>layerWidth||y<0||y>layerHeight)continue;
-        paint.fillStyle=point.color;
-        if(pointSize>=3){paint.beginPath();paint.arc(x,y,pointSize/2,0,Math.PI*2);paint.fill();}else paint.fillRect(x-.8,y-.8,1.6,1.6);
-      }
-      layer={canvas:buffer,points,view,width:size.width,height:size.height,dpr};pointLayer.current=layer;
+    // Never show a layer from different filters or a different palette.
+    if(pointLayer?.points===points){
+      const box=pointLayerPlacement(pointLayer,view,size);
+      ctx.drawImage(pointLayer.canvas,box.x,box.y,box.width,box.height);
     }
-    ctx.drawImage(layer.canvas,(layer.view.x-view.x)*scale-margin,(layer.view.z-view.z)*scale-margin,layerWidth,layerHeight);
     ctx.font="600 12px Arial";
-    const boxes:number[][]=[];
+    const boxes:number[][]=[[12,size.height-91,220,60],[0,0,size.width,50]];
     for(const place of places.places){if(view.span>5500?place.rank>3:view.span>2500?place.rank>5:view.span>1000?place.rank>7:false)continue;
       const[x,y]=xy(place.longitude,place.latitude);if(x<40||x>size.width-100||y<55||y>size.height-80)continue;
       const width=ctx.measureText(place.name).width+10,box=[x+5,y-18,width,17];
       if(boxes.some(b=>box[0]<b[0]+b[2]&&box[0]+box[2]>b[0]&&box[1]<b[1]+b[3]&&box[1]+box[3]>b[1]))continue;
       boxes.push(box);ctx.fillStyle="#d5e0dc";ctx.fillRect(x-1,y-1,2,2);ctx.fillStyle="rgba(4,12,18,.86)";ctx.fillRect(...box as [number,number,number,number]);ctx.fillStyle=ink;ctx.fillText(place.name,x+10,y-5);
     }
-    for(const[name,lon,lat]of[["Islas Malvinas",-59,-51.7],["Tierra del Fuego",-67.6,-54.5],["Antártida Argentina",-49.5,-82]]as const){const[x,y]=xy(lon,lat);ctx.fillStyle=ink;ctx.fillText(name,x,y);}
+    for(const[name,lon,lat]of[["Islas Malvinas",-59,-51.7],["Tierra del Fuego",-67.6,-54.5],["Antártida Argentina",-49.5,-82]]as const){const[x,y]=xy(lon,lat),width=ctx.measureText(name).width;if(x<4||x+width>size.width||y<55||y>size.height-100)continue;ctx.fillStyle=ink;ctx.fillText(name,x,y);}
     if(region){const[x,y]=xy(region[0],region[3]),[xe,ys]=xy(region[2],region[1]);ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.strokeRect(x,y,xe-x,ys-y);ctx.fillStyle=ink;ctx.fillText("Zona 3D",x+6,y+18);}
     if(displayedPreview){
       const [x,y]=xy(...displayedPreview[0]),[xe,ye]=xy(...displayedPreview[1]);ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.setLineDash([7,4]);
@@ -139,20 +161,38 @@ export default function PlanView({ events, cartography, selection, region, onReg
       ctx.setLineDash([]);for(const[px,py]of[[x,y],[xe,ye]]){ctx.fillStyle=ink;ctx.fillRect(px-4,py-4,8,8);}
       if(demonstration?.select){ctx.beginPath();ctx.arc(xe,ye,13,0,Math.PI*2);ctx.fillStyle="rgba(197,236,246,.28)";ctx.fill();ctx.strokeStyle=ink;ctx.stroke();}
     }
+    const eventRange=eventPreview?geoBox(...eventPreview):collectionBox;
+    if(eventRange){const [x,y]=xy(eventRange[0],eventRange[3]),[xe,ye]=xy(eventRange[2],eventRange[1]);ctx.fillStyle="rgba(138,206,224,.12)";ctx.strokeStyle="#bfeaf3";ctx.lineWidth=2;ctx.setLineDash([6,3]);ctx.fillRect(x,y,xe-x,ye-y);ctx.strokeRect(x,y,xe-x,ye-y);ctx.setLineDash([]);}
+    for(const point of markedPoints){const x=(point.x-view.x)*scale+size.width/2,y=(point.z-view.z)*scale+size.height/2;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.lineWidth=1.5;ctx.strokeStyle="#fff";ctx.stroke();}
+    if(selectedPoint){
+      const x=(selectedPoint.x-view.x)*scale+size.width/2,y=(selectedPoint.z-view.z)*scale+size.height/2;
+      ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.strokeStyle="#07151c";ctx.lineWidth=5;ctx.stroke();ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.stroke();
+    }
     const a=sceneToGeographic(view.x,view.z),b=sceneToGeographic(view.x+100/scale,view.z);
     const km=geographiclib.Geodesic.WGS84.Inverse(a[1],a[0],b[1],b[0]).s12!/1000;
     ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(22,size.height-58);ctx.lineTo(122,size.height-58);ctx.stroke();ctx.fillStyle=ink;ctx.fillText(`≈${km.toFixed(km<10?1:0)} km · latitud central`,22,size.height-67);
     });
     return()=>cancelAnimationFrame(frame);
-  },[events,points,mapLines,size,view,scale,displayedPreview,region,selection,demonstration]);
+  },[points,pointLayer,selectedPoint,mapLines,size,view,scale,displayedPreview,region,selection,demonstration,eventPreview,collectionBox,markedPoints]);
   const pointAt=(e:React.PointerEvent<HTMLCanvasElement>)=>{const r=e.currentTarget.getBoundingClientRect();return sceneToGeographic(view.x+(e.clientX-r.left-size.width/2)/scale,view.z+(e.clientY-r.top-size.height/2)/scale);};
   const closest=(e:React.PointerEvent<HTMLCanvasElement>)=>{
+    if(pointLayer?.points!==points)return null;
     const r=e.currentTarget.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;let best:InpresFeature|null=null,distance=64;
-    for(const point of points){const dx=(point.x-view.x)*scale+size.width/2-px,dy=(point.z-view.z)*scale+size.height/2-py,d=dx*dx+dy*dy;if(d<distance){distance=d;best=point.event;}}
+    const layerScale=pointLayer.width/pointLayer.view.span;
+    for(const point of points){
+      const dx=(point.x-view.x)*scale+size.width/2-px,dy=(point.z-view.z)*scale+size.height/2-py,d=dx*dx+dy*dy;if(d>=distance)continue;
+      const lx=(point.x-pointLayer.view.x)*layerScale+pointLayer.width/2+pointLayer.margin,ly=(point.z-pointLayer.view.z)*layerScale+pointLayer.height/2+pointLayer.margin;
+      if(lx<0||lx>pointLayer.width+pointLayer.margin*2||ly<0||ly>pointLayer.height+pointLayer.margin*2)continue;
+      distance=d;best=point.event;}
     return best;
   };
   const start=(e:React.PointerEvent<HTMLCanvasElement>)=>{
+    stopViewMotion();
     pointers.current.set(e.pointerId,{x:e.clientX,y:e.clientY});e.currentTarget.setPointerCapture(e.pointerId);setHover(null);
+    if(selectEvents&&!selection){
+      if(pointers.current.size>1){gesture.current=null;setEventPreview(null);return;}
+      const a=pointAt(e);gesture.current={kind:"select",id:e.pointerId,x:e.clientX,y:e.clientY,view,a};setEventPreview([a,a]);return;
+    }
     if(drawing&&selection){
       if(pointers.current.size>1){gesture.current=null;setPreview(null);setPreviewReady(false);setMessage("Para dibujar usá un dedo. Para acercar con dos dedos, elegí Mover mapa.");return;}
       const a=pointAt(e);gesture.current={kind:"draw",id:e.pointerId,x:e.clientX,y:e.clientY,view,a};setPreview([a,a]);setPreviewReady(false);setMessage("");return;
@@ -164,19 +204,24 @@ export default function PlanView({ events, cartography, selection, region, onReg
   const move=(e:React.PointerEvent<HTMLCanvasElement>)=>{
     if(pointers.current.has(e.pointerId))pointers.current.set(e.pointerId,{x:e.clientX,y:e.clientY});
     const g=gesture.current;
+    if(g?.kind==="select"){if(g.id===e.pointerId)setEventPreview([g.a,pointAt(e)]);return;}
     if(g?.kind==="draw"){if(g.id===e.pointerId)setPreview([g.a,pointAt(e)]);return;}
     if(g?.kind==="pinch"){
       const points=[...pointers.current.values()];if(points.length<2)return;
-      const distance=Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y),span=Math.max(35,Math.min(16000,g.view.span*(g.distance||1)/Math.max(1,distance))),factor=size.width/span;
-      updateView({span,x:g.view.x-((points[0].x+points[1].x)/2-g.x)/factor,z:g.view.z-((points[0].y+points[1].y)/2-g.y)/factor});return;
+      const distance=Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y),span=constrainPlanView({...g.view,span:g.view.span*(g.distance||1)/Math.max(1,distance)},size.width/size.height).span;
+      const rect=e.currentTarget.getBoundingClientRect(),from={x:g.x-rect.left,y:g.y-rect.top},next=zoomPlanView(g.view,size,span/g.view.span,from),factor=size.width/span;
+      updateView({...next,x:next.x-((points[0].x+points[1].x)/2-g.x)/factor,z:next.z-((points[0].y+points[1].y)/2-g.y)/factor});return;
     }
     if(g){updateView({...g.view,x:g.view.x-(e.clientX-g.x)/scale,z:g.view.z-(e.clientY-g.y)/scale});return;}
-    if(e.pointerType!=="touch"&&!selection&&performance.now()-hoverTime.current>90){hoverTime.current=performance.now();const event=closest(e);setHover(event?{event,x:e.clientX,y:e.clientY}:null);}
+    if(e.pointerType!=="touch"&&!selection&&!selectEvents&&performance.now()-hoverTime.current>90){hoverTime.current=performance.now();const event=closest(e);setHover(event?{event,x:e.clientX,y:e.clientY}:null);}
   };
   const finish=(e:React.PointerEvent<HTMLCanvasElement>,cancel=false)=>{
     const g=gesture.current;pointers.current.delete(e.pointerId);
     if(e.currentTarget.hasPointerCapture(e.pointerId))e.currentTarget.releasePointerCapture(e.pointerId);
-    if(g?.kind==="draw"&&g.id===e.pointerId){
+    if(g?.kind==="select"&&g.id===e.pointerId){
+      setEventPreview(null);
+      if(!cancel&&Math.abs(e.clientX-g.x)>=8&&Math.abs(e.clientY-g.y)>=8){onSelectEvents(false);onCollectionBox(geoBox(g.a,pointAt(e)));}
+    }else if(g?.kind==="draw"&&g.id===e.pointerId){
       if(cancel||Math.hypot(e.clientX-g.x,e.clientY-g.y)<12){setPreview(null);setPreviewReady(false);setMessage(cancel?"Dibujo cancelado.":"Arrastrá para dibujar una zona más grande.");}
       else{
         const b=pointAt(e);
@@ -200,18 +245,24 @@ export default function PlanView({ events, cartography, selection, region, onReg
     try{if(selection==="region")onRegion(regionBounds(preview[0],preview[1]));else onProfile(preview[0],preview[1]);}
     catch(error){setMessage(error instanceof Error?error.message:"Revisá la selección.");}
   };
-  return <section className={`planView ${drawing&&selection?"planView--drawing":""}`} aria-label="Mapa 2D para ubicar sismos y elegir una zona o un corte" data-plan-viewport={JSON.stringify(view)}>
+  const placement=pointLayer?pointLayerPlacement(pointLayer,view,size):null;
+  const layerReady=Boolean(pointLayer?.points===points&&pointLayer.width===size.width&&pointLayer.height===size.height&&pointLayer.view.span===view.span&&placement&&placement.x<=0&&placement.y<=0&&placement.x+placement.width>=size.width&&placement.y+placement.height>=size.height);
+  return <section className={`planView ${drawing&&selection||selectEvents?"planView--drawing":""}`} aria-label="Mapa 2D para ubicar sismos y elegir una zona o un corte" aria-busy={!layerReady} data-plan-viewport={JSON.stringify(view)} data-plan-render={layerReady?"ready":"updating"}>
     <div className="planToolbar">
       <button title="Encuadrar la Argentina continental" onClick={()=>fit([-78,-57,-53,-20])}>Argentina</button>
-      <button aria-label="Acercar mapa 2D" onClick={()=>updateView(v=>({...v,span:v.span*.7}))}>＋</button><button aria-label="Alejar mapa 2D" onClick={()=>updateView(v=>({...v,span:v.span/.7}))}>−</button>
+      <button aria-label="Acercar mapa 2D" onClick={()=>animateView(zoomPlanView(view,size,.7))}>＋</button><button aria-label="Alejar mapa 2D" onClick={()=>animateView(zoomPlanView(view,size,1/.7))}>−</button>
       {selection?<div className="planGestureModes" role="group" aria-label="Qué hace el arrastre"><button aria-pressed={!drawing} onClick={()=>{setDrawing(false);gesture.current=null;pointers.current.clear();setMessage("");}}>Mover mapa</button><button data-tour-target="draw-mode" aria-pressed={drawing} onClick={()=>{setDrawing(true);gesture.current=null;pointers.current.clear();setMessage("");}}>Dibujar {selection==="region"?"zona":"corte"}</button></div>:<button onClick={()=>fit([-100,-90,8,0])}>Todo el territorio</button>}
+      {!selection?<button className="planBack3d" onClick={onClose}>Subsuelo 3D</button>:null}
+      {!selection&&!demonstration?<button aria-pressed={selectEvents} onClick={()=>{onSelectEvents(!selectEvents);gesture.current=null;setEventPreview(null);}}>{selectEvents?"Cancelar selección":"Seleccionar sismos"}</button>:null}
+      {!layerReady?<span className="planUpdating">Ajustando vista…</span>:null}
     </div>
     <canvas data-tour-target="draw-region" ref={canvas} role="img" aria-label={selection==="region"?"Arrastrá en cualquier dirección para dibujar un rectángulo":"Mapa de sismos, límites IGN y ciudades Natural Earth"}
       onPointerDown={start} onPointerMove={move} onPointerUp={e=>finish(e)} onPointerCancel={e=>finish(e,true)} onPointerLeave={()=>setHover(null)}/>
+    {selectEvents&&!selection?<p className="mapSelectionInstruction" role="status">Arrastrá un rectángulo con un dedo o el mouse. El mapa queda quieto mientras seleccionás.</p>:null}
     <div className="planNotice">
       {selection?<><p role="status"><strong>{selection==="region"?"Zona rectangular para ver en 3D":"Corte A–B del subsuelo"}</strong><span>{message||(drawing?"Arrastrá con un dedo o el mouse. Soltá y confirmá.":"Mové o acercá el mapa; después elegí Dibujar.")}</span></p>
         <div className="planActions"><button onClick={onCancel}>Cancelar</button><button ref={coordinateTrigger} onClick={()=>setCoordinatesOpen(!coordinatesOpen)}>Coordenadas</button><button className="primaryAction" data-tour-target="confirm-region" disabled={!displayedReady} onClick={confirm}>{selection==="region"?"Abrir zona en 3D":"Ver corte A–B"}</button></div></>:
-        <p><strong>Mapa 2D · {events.length.toLocaleString("es-AR")} sismos</strong><span>Ubicación en superficie · tocá un punto para leer su profundidad.</span><small>Límites IGN · ciudades Natural Earth · escala local WGS84.</small></p>}
+        <><p role="status"><strong>{region?"Zona activa":"Mapa 2D"} · {events.length.toLocaleString("es-AR")} {events.length===1?"sismo":"sismos"}</strong><span>{events.length?"Tocá un punto para leer su profundidad.":"No hay sismos con estos filtros. Probá ampliar el período."}</span><small>Límites IGN · ciudades Natural Earth · escala local WGS84.</small></p>{!events.length?<button onClick={onResetFilters}>Restablecer filtros</button>:null}{region?<button onClick={onClearRegion}>Quitar zona activa</button>:null}</>}
     </div>
     {selection&&coordinatesOpen?<div ref={coordinateBox} tabIndex={-1} className="coordinateDialog" role="dialog" aria-modal="true" aria-label="Elegir mediante coordenadas" onKeyDown={e=>{
       if(e.key==="Escape"){e.preventDefault();e.stopPropagation();closeCoordinates();}

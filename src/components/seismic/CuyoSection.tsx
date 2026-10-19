@@ -1,6 +1,8 @@
 "use client";
 import { eventColorCss, type EventColorMode } from "@/lib/geo/event-colors";
 import ColorLegend from "./ColorLegend";
+import EventList from "./EventList";
+import {emptyEventList,inPlotBox,plotBox,type EventListState,type PlotBox} from "@/lib/selection/events";
 import {fitProfilePlot} from "@/lib/profile/plot-layout";
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -13,6 +15,7 @@ import {
   type ProfileSample,
   type ProjectedEvent,
   summarizeProfile,
+  profileKey,
 } from "@/lib/profile/cuyo";
 import EventInspector from "./EventInspector";
 import EventHover from "./EventHover";
@@ -59,11 +62,12 @@ function drawSegmented(
   ctx.stroke();
 }
 
-export type SectionOptions = { showSlab: boolean; fullDepth: boolean; minimumMagnitude: number | null; theme: "dark" };
+type SectionCollection = {key:string;box:PlotBox|null;list:EventListState;selecting:boolean};
+export type SectionOptions = { showSlab: boolean; fullDepth: boolean; minimumMagnitude: number | null; theme: "dark";collection?:SectionCollection };
 export default function CuyoSection({
   colorMode="depth", onColorMode, profile, events, samples, selected, status, onLatitudeChange, onPick, onClose, guidedIndex = null, onGuideChange,
   inheritedFilters = false, includeProvisional = false, catalogFilters, onResetFilters, onClearSelection, onChooseProfile,
-  initialOptions, onOptionsChange, onStartTutorial, demonstration = false,
+  initialOptions, onOptionsChange, onStartTutorial, demonstration = false, reducedMotion = false,
 }: {
   colorMode?:EventColorMode;
   onColorMode?:(mode:EventColorMode)=>void;
@@ -85,17 +89,28 @@ export default function CuyoSection({
   onChooseProfile: () => void;
   initialOptions?: SectionOptions; onOptionsChange?: (options: SectionOptions) => void; onStartTutorial?: () => void;
   demonstration?: boolean;
+  reducedMotion?: boolean;
 }) {
   const frame = useRef<HTMLDivElement>(null);
   const mainColumn = useRef<HTMLDivElement>(null);
   const mapSlot = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const listAnchor=useRef<HTMLDivElement>(null);
+  const rangeClick=useRef(false);
+  const drag=useRef<{id:number;start:[number,number];x:number;y:number}|null>(null);
+  const [dragRange,setDragRange]=useState<PlotBox|null>(null);
+  const revealFrame = useRef(0);
+  useEffect(()=>()=>cancelAnimationFrame(revealFrame.current),[]);
   const [availableWidth, setAvailableWidth] = useState(1100);
   const [showSlab, setShowSlab] = useState(initialOptions?.showSlab ?? true);
   const [fullDepth, setFullDepth] = useState(initialOptions?.fullDepth ?? true);
   const [minimumMagnitude, setMinimumMagnitude] = useState<number | null>(initialOptions?.minimumMagnitude ?? null);
+  const key=profileKey(profile);
+  const blankCollection=useMemo<SectionCollection>(()=>({key,box:null,list:emptyEventList(),selecting:false}),[key]);
+  const [storedCollection,setCollection]=useState<SectionCollection>(initialOptions?.collection??blankCollection);
+  const collection=storedCollection.key===key?storedCollection:blankCollection;
   const theme="dark" as const;
-  const options = useMemo(() => ({showSlab,fullDepth,minimumMagnitude,theme}),[showSlab,fullDepth,minimumMagnitude,theme]);
+  const options = useMemo(() => ({showSlab,fullDepth,minimumMagnitude,theme,collection}),[showSlab,fullDepth,minimumMagnitude,theme,collection]);
   useLayoutEffect(() => { onOptionsChange?.(options); },[options,onOptionsChange]);
   const [hovered, setHovered] = useState<{ event: InpresFeature; x: number; y: number } | null>(null);
   const [plotHeight,setPlotHeight] = useState(300);
@@ -110,9 +125,11 @@ export default function CuyoSection({
     sample.slab ? Math.ceil((sample.slab.depthKm + sample.slab.uncertaintyKm) / 50) * 50 : 0), 0);
   // La comparación usa el mismo rango y los mismos píxeles por km en ambas paradas.
   const maxDepth = guidedIndex !== null ? guide.comparison.depthKm : fullDepth ? Math.max(summary.fullDepthKm, modelDepth) : profile.initialDepthKm;
+  const collectionRows=useMemo(()=>visibleEvents.filter(row=>row.feature.properties.profundidad<=maxDepth&&(!collection.box||inPlotBox(row,collection.box))),[visibleEvents,maxDepth,collection.box]);
+  const markedIds=useMemo(()=>new Set(collection.list.checked.length<=500?collection.list.checked:[]),[collection.list.checked]);
   const drawnCount = visibleEvents.filter(({ feature }) => feature.properties.profundidad <= maxDepth).length;
   const comparisonLength = guidedIndex !== null ? CUYO_LENGTH_KM : profile.lengthKm;
-  const {scale,width,height}=fitProfilePlot(availableWidth,!demonstration&&viewport.width<900?Math.max(180,Math.min(440,viewport.height*.46)):plotHeight,comparisonLength,maxDepth);
+  const {scale,width,height}=fitProfilePlot(availableWidth,!demonstration?(viewport.width>=1000?1100:Math.max(200,viewport.height*.46)):plotHeight,comparisonLength,maxDepth);
   const dpr = typeof window === "undefined" ? 1 : Math.min(window.devicePixelRatio || 1, 2);
 
   useLayoutEffect(()=>{
@@ -120,27 +137,41 @@ export default function CuyoSection({
     if(!slot||!root||demonstration)return;
     const measure=()=>{
       const box=slot.getBoundingClientRect(),parent=root.getBoundingClientRect();
-      root.style.setProperty("--section-map-left",`${box.left-parent.left+12}px`);
-      root.style.setProperty("--section-map-top",`${box.top-parent.top+12}px`);
+      root.style.setProperty("--section-map-left",`${box.left-parent.left+root.scrollLeft+12}px`);
+      root.style.setProperty("--section-map-top",`${box.top-parent.top+root.scrollTop+12}px`);
       root.style.setProperty("--section-map-width",`${Math.max(1,box.width-24)}px`);
       root.style.setProperty("--section-map-height",`${Math.max(1,box.height-84)}px`);
+      // The minimap is a sibling WebGL surface above the section stacking
+      // context. Clip the part that would otherwise paint over its sticky card.
+      const mapTop=box.top+12,mapHeight=Math.max(1,box.height-84);
+      const inspector=root.querySelector<HTMLElement>(".sectionInspector")?.getBoundingClientRect();
+      const covers=inspector&&inspector.left<box.right-12&&inspector.right>box.left+12&&inspector.top<mapTop+mapHeight;
+      const clipTop=Math.min(mapHeight,Math.max(0,parent.top-mapTop,covers?inspector.bottom+8-mapTop:0));
+      const clipBottom=Math.min(mapHeight,Math.max(0,mapTop+mapHeight-parent.bottom));
+      root.style.setProperty("--section-map-clip-top",`${clipTop}px`);
+      root.style.setProperty("--section-map-clip-bottom",`${clipBottom}px`);
     };
+    // The slot can move without resizing when an earlier explanation opens.
     measure();const observer=new ResizeObserver(measure);observer.observe(slot);observer.observe(root);
-    window.addEventListener("resize",measure);
-    return()=>{observer.disconnect();window.removeEventListener("resize",measure);for(const name of ["left","top","width","height"])root.style.removeProperty(`--section-map-${name}`);};
-  },[demonstration]);
+    const context=slot.closest(".sectionContext");if(context)observer.observe(context);
+    for(const selector of [".sectionMain",".sectionSidebar",".sectionInspector"]){const element=root.querySelector(selector);if(element)observer.observe(element);}
+    const layoutFrame=requestAnimationFrame(measure);
+    window.addEventListener("resize",measure);window.addEventListener("scroll",measure,true);
+    return()=>{cancelAnimationFrame(layoutFrame);observer.disconnect();window.removeEventListener("resize",measure);window.removeEventListener("scroll",measure,true);for(const name of ["left","top","width","height","clip-top","clip-bottom"])root.style.removeProperty(`--section-map-${name}`);};
+  },[demonstration,selected?.properties.id,width,height,collection.list.open]);
 
   useEffect(() => {
     if (!frame.current) return;
     const observer = new ResizeObserver(() => {
-      if (mainColumn.current) setAvailableWidth(mainColumn.current.clientWidth - 2);
+      const section=mainColumn.current?.closest<HTMLElement>(".sectionMode");
+      if(section)setAvailableWidth(Math.max(180,section.clientWidth-32-(window.innerWidth>=700&&!demonstration?340:0)));
       if (frame.current) setPlotHeight(frame.current.clientHeight);
       setViewport({width:window.innerWidth,height:window.innerHeight});
     });
     observer.observe(frame.current);
-    if(mainColumn.current)observer.observe(mainColumn.current);
+    if(mainColumn.current?.closest(".sectionMode"))observer.observe(mainColumn.current.closest(".sectionMode")!);
     return () => observer.disconnect();
-  }, []);
+  }, [demonstration]);
 
   useEffect(() => {
     const context = canvas.current?.getContext("2d");
@@ -225,6 +256,7 @@ export default function CuyoSection({
     context.strokeStyle = palette.gebco; context.lineWidth = 1.5;
     drawSegmented(context, samples, (sample) => sample.elevationMeters === null ? null : -sample.elevationMeters / 1000, x, y);
     const selectedPoint = selected ? visibleEvents.find((event) => event.feature.properties.id === selected.properties.id) : null;
+    if(markedIds.size){context.strokeStyle="#fff";context.lineWidth=1.2;for(const row of visibleEvents){if(markedIds.has(row.feature.properties.id)&&row.feature.properties.profundidad<=maxDepth){context.beginPath();context.arc(x(row.alongKm),y(row.feature.properties.profundidad),4,0,Math.PI*2);context.stroke();}}}
     if (selectedPoint && selectedPoint.feature.properties.profundidad <= maxDepth) {
       const px = x(selectedPoint.alongKm), py = y(selectedPoint.feature.properties.profundidad);
       context.strokeStyle = palette.selected;
@@ -234,7 +266,7 @@ export default function CuyoSection({
       context.beginPath(); context.arc(px, py, 2, 0, Math.PI * 2); context.fill();
     }
     context.restore();
-  }, [visibleEvents, samples, selected, showSlab, fullDepth, maxDepth, width, height, scale, dpr, profile.lengthKm, profile.custom, palette, colorMode, demonstration, theme]);
+  }, [visibleEvents, samples, selected, showSlab, fullDepth, maxDepth, width, height, scale, dpr, profile.lengthKm, profile.custom, palette, colorMode, demonstration, theme,markedIds]);
 
   const exportPng = () => {
     if (!canvas.current || status) return;
@@ -282,8 +314,8 @@ export default function CuyoSection({
     const x = (km: number) => LEFT + km * scale;
     const y = (depthKm: number) => TOP + (ABOVE_SEA_KM + depthKm) * scale;
     const rect = mouse.currentTarget.getBoundingClientRect();
-    const px = mouse.clientX - rect.left;
-    const py = mouse.clientY - rect.top;
+    const px = (mouse.clientX - rect.left)*width/rect.width;
+    const py = (mouse.clientY - rect.top)*height/rect.height;
     let nearest: ProjectedEvent | null = null;
     let distanceSq = 64;
     if (status) return null;
@@ -297,12 +329,43 @@ export default function CuyoSection({
     return nearest?.feature ?? null;
   };
   const selectedInRange = selected && visibleEvents.some(({ feature }) => feature.properties.id === selected.properties.id && feature.properties.profundidad <= maxDepth) ? selected : null;
+  const pickEvent = (event: InpresFeature | null) => {
+    setHovered(null);if(!event)return;onPick(event);
+    if(!matchMedia("(max-width:699px)").matches)return;
+    cancelAnimationFrame(revealFrame.current);
+    // A new selection opens a bottom sheet. Keep its point and graph above it;
+    // do this only for a user pick, never while restoring a tutorial session.
+    revealFrame.current=requestAnimationFrame(()=>{
+      const plot=frame.current,viewer=plot?.closest<HTMLElement>(".viewer"),inspector=viewer?.querySelector(".sectionInspector");
+      if(!plot||!viewer||!inspector)return;
+      const box=plot.getBoundingClientRect(),bottom=window.innerHeight-inspector.getBoundingClientRect().height-24;
+      if(box.bottom>bottom||box.top<8)viewer.scrollBy({top:box.top-Math.max(8,(bottom-box.height)/2),behavior:reducedMotion?"instant":"smooth"});
+    });
+  };
+  const revealList=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>listAnchor.current?.scrollIntoView({block:"start",behavior:reducedMotion?"instant":"smooth"})));
+  const rangePoint=(event:React.PointerEvent<HTMLCanvasElement>):[number,number]=>{
+    const box=event.currentTarget.getBoundingClientRect();
+    return [Math.max(0,Math.min(profile.lengthKm,((event.clientX-box.left)*width/box.width-LEFT)/scale)),Math.max(0,Math.min(maxDepth,((event.clientY-box.top)*height/box.height-TOP)/scale-ABOVE_SEA_KM))];
+  };
+  const beginRange=(event:React.PointerEvent<HTMLCanvasElement>)=>{
+    rangeClick.current=false;if(!collection.selecting||status)return;rangeClick.current=true;
+    if(drag.current){drag.current=null;setDragRange(null);return;}
+    event.preventDefault();event.currentTarget.setPointerCapture(event.pointerId);setHovered(null);
+    const start=rangePoint(event);drag.current={id:event.pointerId,start,x:event.clientX,y:event.clientY};setDragRange(plotBox(start,start));
+  };
+  const endRange=(event:React.PointerEvent<HTMLCanvasElement>,cancel=false)=>{
+    const current=drag.current;if(!current||current.id!==event.pointerId)return;
+    drag.current=null;setDragRange(null);if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
+    if(cancel||Math.abs(event.clientX-current.x)<8||Math.abs(event.clientY-current.y)<8)return;
+    setCollection({...collection,box:plotBox(current.start,rangePoint(event)),selecting:false,list:{...emptyEventList(),open:true}});if(viewport.width<700)revealList();
+  };
+  const range=dragRange??collection.box;
 
   return (
     <section className={`sectionMode${demonstration?" sectionMode--demonstration":""}`} aria-label={profile.custom ? "Explorar el subsuelo entre los extremos elegidos A y B" : `Explorar el subsuelo en un perfil andino a ${formatLatitude(profile.latitude)}`}>
       <header className="sectionModeHeader">
         <button className="sectionBrand" aria-label="Bajo nuestros pies · volver al mapa" onClick={onClose}><span>Sismos de Argentina</span><strong>Bajo nuestros pies</strong></button>
-        {onStartTutorial ? <button className="sectionBack" onClick={onStartTutorial}>Ver cómo se usa</button> : null}
+        {onStartTutorial ? <button className="sectionBack" aria-label="Ver cómo se usa" onClick={onStartTutorial}>▶ Guía</button> : null}
         <div>
           <p className="eyebrow">Explorar el subsuelo</p>
           <h2>Corte del subsuelo · {profile.custom ? "A–B" : formatLatitude(profile.latitude)}</h2>
@@ -312,24 +375,73 @@ export default function CuyoSection({
       </header>
       {demonstration?<p className="tourSectionLocation">{guide.stops[guidedIndex??0]?.title} · Chile → Andes → Argentina · franja de 100 km · profundidad 1×</p>:null}
 
-      <div className="sectionWorkspace"><aside className="sectionSidebar" aria-label="Ubicación y controles del corte">
+      <div className="sectionWorkspace" style={{"--section-card-width":`${width+2}px`} as React.CSSProperties}><div ref={mainColumn} className="sectionMain" style={{"--section-card-width":`${width+2}px`,"--section-canvas-height":`${height}px`} as React.CSSProperties}>
+      {!demonstration?<nav className="sectionPlotTools" aria-label="Elegir corte del subsuelo">
+        {guidedIndex!==null&&onGuideChange?<div className="sectionCompareModes" role="group" aria-label="Cambiar corte comparable"><button disabled={Boolean(status)} aria-pressed={guidedIndex===0} onClick={()=>onGuideChange(0)}>San Juan · 31°S</button><button disabled={Boolean(status)} aria-pressed={guidedIndex===1} onClick={()=>onGuideChange(1)}>Mendoza · 35°S</button></div>:null}
+        <details className="sectionMoreActions"><summary aria-label="Más opciones del corte">Más</summary><button onClick={onChooseProfile}>Otro corte A–B ↗</button><a href="#leer-corte">Cómo leer el corte ↓</a></details>
+        <button disabled={Boolean(status)} aria-pressed={collection.selecting} onClick={()=>{onClearSelection();setCollection({...collection,selecting:!collection.selecting,list:{...collection.list,open:false}});}}> {collection.selecting?"Cancelar selección":"Seleccionar sismos"}</button>
+        <button disabled={Boolean(status)} aria-expanded={collection.list.open} onClick={()=>{setCollection({...collection,list:{...collection.list,open:!collection.list.open}});if(!collection.list.open)revealList();}}>Lista · {collectionRows.length.toLocaleString("es-AR")}</button>
+      </nav>:null}
+      <div className={`sectionPrimary sectionPrimary--${theme}${status ? " sectionPrimary--updating" : ""}`}>
+        <div className="sectionPrimaryHeading">
+          <strong>De la superficie al subsuelo</strong>
+          <span>Profundidad positiva hacia abajo · comparación vertical nominal</span>
+        </div>
+        <div className="sectionLegend sectionPlotLegend" aria-label="Leyenda del corte">
+          <ColorLegend mode={colorMode} onMode={onColorMode}/>
+          <button className="sectionModelToggle" role="switch" aria-label="Modelo de Nazca visible" aria-checked={showSlab} onClick={()=>setShowSlab(!showSlab)}><i aria-hidden="true"/><em className="sectionLegendSlab" aria-hidden="true" style={{background:`repeating-linear-gradient(90deg, ${palette.slab} 0 6px, transparent 6px 9px)`}}/>Nazca · Slab2</button>
+          {guidedIndex===null?<button className="sectionRangeToggle" aria-pressed={fullDepth} onClick={()=>setFullDepth(!fullDepth)}>{fullDepth?`Acotar a ${profile.initialDepthKm} km`:`Rango completo · ${summary.outsideInitialDepth} fuera de ${profile.initialDepthKm} km`}</button>:null}
+          <span><i className="sectionLegendGebco" style={{ background: palette.gebco }} />Relieve · modelo GEBCO</span>
+          <small>La banda muestra la incertidumbre del modelo.{guidedIndex!==null?" Ambos cortes: 0–700 km.":""}</small>
+        </div>
+
+        <div className={`sectionPlot${collection.selecting?" sectionPlot--selecting":""}`} ref={frame}>
+          {status ? <div className="sectionPlotStatus" role="status">{status}</div> : null}
+          {!status && !visibleEvents.length ? <p className="sectionEmpty" role="status">No hay hipocentros en esta franja con los filtros actuales. Mové el perfil o restablecé los filtros.</p> : null}
+          <div className="profilePlotSurface" style={{width,height}}><canvas ref={canvas} width={Math.round(width * dpr)} height={Math.round(height * dpr)} style={{ width, height }} onPointerDown={beginRange} onPointerMove={event=>{if(drag.current?.id===event.pointerId)setDragRange(plotBox(drag.current.start,rangePoint(event)));}} onPointerUp={event=>endRange(event)} onPointerCancel={event=>endRange(event,true)} onClick={mouse => {if(rangeClick.current){rangeClick.current=false;return;}if(!collection.selecting)pickEvent(nearestEvent(mouse));}} onMouseMove={mouse => { if(collection.selecting)return;const event = nearestEvent(mouse); setHovered(event ? { event, x: mouse.clientX, y: mouse.clientY } : null); }} onMouseLeave={() => setHovered(null)} role="img" aria-label={`Perfil de ${drawnCount} eventos visibles, superficie GEBCO y curva Slab2; distancia horizontal y profundidad en kilómetros a escala 1 a 1; rango 0 a ${maxDepth} km`} />
+          {range&&!demonstration?<div className="plotSelectionLayer" style={{width,height}} aria-hidden="true"><i style={{left:LEFT+range[0]*scale,top:TOP+(ABOVE_SEA_KM+range[1])*scale,width:(range[2]-range[0])*scale,height:(range[3]-range[1])*scale}}/></div>:null}</div>
+        </div>
+        <div className="sectionAxis"><span role={collection.selecting?"status":undefined}>{collection.selecting?"Arrastrá para seleccionar sismos · cualquier dirección":"Profundidad catalogada / modelada (km) ↓"}</span><span>Distancia desde A (km) → · escala efectiva 1×</span></div>
+        <div className="depthBandSummary" aria-label="Conteos por clasificación descriptiva de profundidad">
+          <span>Superficial · &lt;70 km <b>{status ? "…" : summary.superficial.toLocaleString("es-AR")}</b></span>
+          <span>Intermedia · 70–&lt;300 km <b>{status ? "…" : summary.intermedio.toLocaleString("es-AR")}</b></span>
+          <span>Profunda · ≥300 km <b>{status ? "…" : summary.profundo.toLocaleString("es-AR")}</b></span>
+          <small>Bandas descriptivas; no son límites de corteza y manto. Ambos ejes conservan la misma escala al ajustar el gráfico a la pantalla.</small>
+        </div>
+      </div>
+
+
+      <div className="sectionBottom">
+        <div className="sectionReference">
+          <div className="sectionDetails" id="leer-corte">
+            <details>
+              <summary>¿Qué estoy viendo?</summary>
+              <p>Esta vista lateral reúne sismos catalogados hasta 50 km a cada lado de A–B y los proyecta sobre el perfil. La posición inicial Cuyo 31°S permite comparar la sismicidad intermedia con la geometría general representada por Slab2. Al moverla, la comparación es exploratoria y no clasifica cada sismo.</p>
+            </details>
+            <details>
+              <summary>Metodología y fuentes</summary>
+              <p>El perfil se calcula sobre la geodésica WGS84. Los puntos son profundidades reportadas por INPRES; la línea discontinua es DEP del modelo geofísico USGS Slab2 2018 y su banda es UNC, incertidumbre reportada del modelo. CLP/nodata dejan huecos sin rellenar. La línea verde es elevación y batimetría modelada GEBCO 2026. La referencia vertical de INPRES no está confirmada: la comparación vertical es nominal, no una distancia física exacta.</p>
+              <p>Fuentes: <a href="https://doi.org/10.5066/F7PV6JNV" target="_blank" rel="noreferrer">USGS Slab2 2018</a> · <a href="https://www.gebco.net/data-products-gridded-bathymetry-data/gebco2026-grid" target="_blank" rel="noreferrer">GEBCO 2026</a> · <a href="/metodologia/">Metodología y límites de esta obra</a>.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+      {!demonstration?<div ref={listAnchor} className="sectionListAnchor">{collection.list.open?<EventList rows={collectionRows} state={collection.list} onState={list=>setCollection({...collection,list})} onPick={pickEvent} selectedId={selectedInRange?.properties.id} onClose={()=>setCollection({...collection,list:{...collection.list,open:false}})} onDraw={()=>{onClearSelection();setCollection({...collection,selecting:true,list:{...collection.list,open:false}});frame.current?.scrollIntoView({block:"center",behavior:reducedMotion?"instant":"smooth"});}} onClearRange={collection.box?()=>setCollection({...collection,box:null,list:{...collection.list,page:0,checked:[]}}):undefined} context={sampleDescription} rangeLabel={collection.box?`${collection.box[0].toFixed(1)}–${collection.box[2].toFixed(1)} km desde A · ${collection.box[1].toFixed(1)}–${collection.box[3].toFixed(1)} km de profundidad`:`Corredor de ${profile.halfWidthKm*2} km · profundidad 0–${maxDepth} km`}/>:null}</div>:null}
+      {guidedIndex !== null && onGuideChange ? <GuidedDiscovery index={guidedIndex} events={visibleEvents} status={status} sampleDescription={sampleDescription} /> : null}
+      </div><aside className="sectionSidebar" aria-label="Contexto y controles del corte">
+      {selectedInRange&&!demonstration?<div className="sectionInspector sectionInspector--active" role="region" aria-label="Sismo seleccionado en el corte"><EventInspector key={selectedInRange.properties.id} event={selectedInRange} compact onClose={onClearSelection}/></div>:null}
+
       <div className="sectionContext">
         <div className="sectionContextCopy">
           {guidedIndex !== null && onGuideChange ? <div className="guideOverview">
             <h3>{guide.stops[guidedIndex]?.title}</h3>
             <p>{guide.question}</p>
             <details className="guideAnswer"><summary>La sismicidad puede continuar aunque disminuya el volcanismo · por qué</summary><p>{guide.answer} <a href={guide.sources[0].url} target="_blank" rel="noreferrer">Gao et al. (2021)</a></p></details>
-            <nav aria-label="Cambiar corte comparable">
-              <button disabled={Boolean(status)} aria-pressed={guidedIndex === 0} onClick={() => onGuideChange(0)}>San Juan · 31°S</button>
-              <button disabled={Boolean(status)} aria-pressed={guidedIndex === 1} onClick={() => onGuideChange(1)}>Mendoza · 35°S</button>
-              <button onClick={onChooseProfile}>Otro corte A–B</button>
-            </nav>
           </div> : null}
           <div className="sectionRoute"><b>A</b><span>{profile.custom ? "Corte elegido en el mapa · exploratorio" : `→ Andes → ${regionLabel(profile.latitude)} →`}</span><b>B</b></div>
 
           {guidedIndex === null ? <p><strong>{status ? "Calculando sismos…" : `${summary.total.toLocaleString("es-AR")} sismos en la franja`}</strong></p> : null}
           <details className="profileCoordinates"><summary>Franja de {profile.halfWidthKm*2} km · cómo leer el corte</summary><p>Los sismos cercanos a A–B se proyectan sobre la línea; no ocurrieron todos sobre ella.</p><small>A ({profile.a.longitude.toFixed(2)}°, {profile.a.latitude.toFixed(2)}°) → B ({profile.b.longitude.toFixed(2)}°, {profile.b.latitude.toFixed(2)}°) · {profile.lengthKm.toFixed(1)} km sobre WGS84. Los eventos a hasta {profile.halfWidthKm} km de cada lado se proyectan sobre A–B; no ocurrieron todos sobre la línea.</small></details>
-          {guidedIndex===null?<button className="chooseProfile" onClick={onChooseProfile}>Elegir otro corte A–B en el mapa</button>:null}
           <div className="profileLatitudeControl" hidden={guidedIndex !== null || profile.custom}>
             <label htmlFor="profile-latitude">Mover perfil norte–sur</label>
             <input
@@ -358,7 +470,7 @@ export default function CuyoSection({
         </div>
       </div>
 
-        <div className="sectionFilterBar">
+      {!demonstration?<div className="sectionFilterBar">
           <label htmlFor="section-magnitude">Magnitud mínima
             <select id="section-magnitude" value={minimumMagnitude ?? "all"} onChange={(event) => setMinimumMagnitude(event.currentTarget.value === "all" ? null : Number(event.currentTarget.value))}>
               <option value="all">Todas las magnitudes</option>
@@ -370,56 +482,9 @@ export default function CuyoSection({
           <button onClick={() => { setMinimumMagnitude(null); setFullDepth(true); setShowSlab(true); onResetFilters(); frame.current?.scrollTo({ left: 0, top: 0 }); }}>Restablecer corte y filtros</button>
           <p role="status">{status ? "Recalculando conteos…" : `${drawnCount.toLocaleString("es-AR")} visibles · ${(events.length - visibleEvents.length).toLocaleString("es-AR")} filtrados por magnitud · ${(visibleEvents.length - drawnCount).toLocaleString("es-AR")} fuera del rango vertical`}</p>
           <small>{inheritedFilters ? "También se aplican los filtros del mapa. " : "Período completo del catálogo. "}{includeProvisional ? "Registro en revisión incluido." : "Se aplica la exclusión provisional de calidad; no hay límite de cantidad."}</small>
-        </div>
-<div className={`sectionInspector${selectedInRange || hovered ? " sectionInspector--active" : ""}`}><EventInspector event={selectedInRange ?? hovered?.event ?? null} preview={!selectedInRange && Boolean(hovered)} compact onClose={selectedInRange ? onClearSelection : undefined} /></div></aside><div ref={mainColumn} className="sectionMain" style={{"--section-card-width":`${Math.max(640,width+2)}px`,"--section-canvas-height":`${height}px`} as React.CSSProperties}>
-      <div className={`sectionPrimary sectionPrimary--${theme}${status ? " sectionPrimary--updating" : ""}`}>
-        <div className="sectionPrimaryHeading">
-          <strong>De la superficie al subsuelo</strong>
-          <span>Profundidad positiva hacia abajo · comparación vertical nominal</span>
-        </div>
-        <div className="sectionLegend sectionPlotLegend" aria-label="Leyenda del corte">
-          <ColorLegend mode={colorMode} onMode={onColorMode}/>
-          <span><i className="sectionLegendGebco" style={{ background: palette.gebco }} />Relieve · modelo GEBCO</span>
-          <span><i className="sectionLegendSlab" style={{ background: `repeating-linear-gradient(90deg, ${palette.slab} 0 6px, transparent 6px 9px)` }} />Placa de Nazca · modelo Slab2 {showSlab ? "" : "(oculto)"}</span>
-          <small>La banda muestra la incertidumbre del modelo.</small>
-        </div>
-        <div className="sectionPlot" ref={frame}>
-          {status ? <div className="sectionPlotStatus" role="status">{status}</div> : null}
-          {!status && !visibleEvents.length ? <p className="sectionEmpty" role="status">No hay hipocentros en esta franja con los filtros actuales. Mové el perfil o restablecé los filtros.</p> : null}
-          <canvas ref={canvas} width={Math.round(width * dpr)} height={Math.round(height * dpr)} style={{ width, height }} onClick={mouse => { const event = nearestEvent(mouse); if (event) onPick(event); }} onMouseMove={mouse => { const event = nearestEvent(mouse); setHovered(event ? { event, x: mouse.clientX, y: mouse.clientY } : null); }} onMouseLeave={() => setHovered(null)} role="img" aria-label={`Perfil de ${drawnCount} eventos visibles, superficie GEBCO y curva Slab2; distancia horizontal y profundidad en kilómetros a escala 1 a 1; rango 0 a ${maxDepth} km`} />
-        </div>
-        <div className="sectionAxis"><span>Profundidad catalogada / modelada (km) ↓</span><span>Distancia desde A (km) → · escala efectiva 1×</span></div>
-        <div className="depthBandSummary" aria-label="Conteos por clasificación descriptiva de profundidad">
-          <span>Superficial · &lt;70 km <b>{status ? "…" : summary.superficial.toLocaleString("es-AR")}</b></span>
-          <span>Intermedia · 70–&lt;300 km <b>{status ? "…" : summary.intermedio.toLocaleString("es-AR")}</b></span>
-          <span>Profunda · ≥300 km <b>{status ? "…" : summary.profundo.toLocaleString("es-AR")}</b></span>
-          <small>Bandas descriptivas; no son límites de corteza y manto. Ambos ejes conservan la misma escala al ajustar el gráfico a la pantalla.</small>
-        </div>
-      </div>
-
-      {guidedIndex !== null && onGuideChange ? <GuidedDiscovery index={guidedIndex} events={visibleEvents} status={status} sampleDescription={sampleDescription} /> : null}
-
-      <div className="sectionBottom">
-        <div className="sectionReference">
-          <div className="sectionActions">
-            <button aria-pressed={showSlab} onClick={() => setShowSlab(!showSlab)}>{showSlab ? "Ocultar" : "Mostrar"} modelo de Nazca</button>
-            {guidedIndex === null ? <button aria-pressed={fullDepth} onClick={() => setFullDepth(!fullDepth)}>{fullDepth ? `Acotar a 0–${profile.initialDepthKm} km` : `Rango completo · ${summary.outsideInitialDepth} fuera de ${profile.initialDepthKm} km`}</button> : <span>Comparación: 0–700 km en ambos cortes</span>}
-          </div>
-          <div className="sectionDetails">
-            <details>
-              <summary>¿Qué estoy viendo?</summary>
-              <p>Esta vista lateral reúne sismos catalogados hasta 50 km a cada lado de A–B y los proyecta sobre el perfil. La posición inicial Cuyo 31°S permite comparar la sismicidad intermedia con la geometría general representada por Slab2. Al moverla, la comparación es exploratoria y no clasifica cada sismo.</p>
-            </details>
-            <details>
-              <summary>Metodología y fuentes</summary>
-              <p>El perfil se calcula sobre la geodésica WGS84. Los puntos son profundidades reportadas por INPRES; la línea discontinua es DEP del modelo geofísico USGS Slab2 2018 y su banda es UNC, incertidumbre reportada del modelo. CLP/nodata dejan huecos sin rellenar. La línea verde es elevación y batimetría modelada GEBCO 2026. La referencia vertical de INPRES no está confirmada: la comparación vertical es nominal, no una distancia física exacta.</p>
-              <p>Fuentes: <a href="https://doi.org/10.5066/F7PV6JNV" target="_blank" rel="noreferrer">USGS Slab2 2018</a> · <a href="https://www.gebco.net/data-products-gridded-bathymetry-data/gebco2026-grid" target="_blank" rel="noreferrer">GEBCO 2026</a> · <a href="/metodologia/">Metodología y límites de esta obra</a>.</p>
-            </details>
-          </div>
-        </div>
-      </div>
-      </div></div>
-      {hovered ? <EventHover {...hovered} /> : null}
+        </div>:null}
+      </aside></div>
+      {hovered && hovered.event.properties.id !== selectedInRange?.properties.id ? <EventHover {...hovered} /> : null}
     </section>
   );
 }

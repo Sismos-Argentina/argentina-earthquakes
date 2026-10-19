@@ -7,12 +7,16 @@ type Mode = "turntable" | "orbital" | "pan" | "zoom";
 type Actions = {
   showPlan: (v: boolean) => void; chooseArea: (v: "region" | "profile") => void; resetCamera: () => void;
   setRelief: (v: 1 | 5 | 10) => void; toggleSlab: () => void; setSlabOpacity: (v: number) => void;
+  replaySlab: () => void;
   setNavigationMode: (v: Mode) => void; setCameraView: (v: "above" | "side" | "territory") => void;
 };
 export type ViewerControlProps = {
   count: number; visible: number; status: string; filters: CatalogFilters | null; bounds: CatalogFilterBounds | null;
   onFilters: (v: CatalogFilters) => void; panel: ControlPanel | null; onPanel: (v: ControlPanel | null) => void;
   actions: Actions | null; map2d: boolean; ready: boolean; navigationMode: Mode; relief: 1 | 5 | 10;
+  depthView: boolean;
+  listOpen:boolean;onList:()=>void;
+  reducedMotion: boolean; systemReducedMotion: boolean; onReducedMotion: (value: boolean) => void;
   slabVisible: boolean; slabOpacity: number; colorMode: EventColorMode; onColorMode: (v: EventColorMode) => void;
   terrainOpacity: number; onTerrainOpacity: (v: number) => void; onGuide?: () => void; onLeaveGuide: () => void;
   surfaceReady: boolean; slabAvailable: boolean; analysisReady: boolean;
