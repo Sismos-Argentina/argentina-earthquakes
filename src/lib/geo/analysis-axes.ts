@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { geographicToScene } from "./scene-coordinates";
+import { geographicToScene } from "./scene-coordinates.ts";
 import type { RegionBounds } from "./region";
 
 export function disposeAnalysisGroup(group: THREE.Object3D) {
@@ -11,9 +11,14 @@ export function disposeAnalysisGroup(group: THREE.Object3D) {
   });
 }
 
-/** Kilometer ticks chosen from their projected screen spacing. */
-export function depthTickStep(pixelsPerKm: number) {
-  return [1,2,5,10,20,50,100,200,500,1000].find(v=>v>=45/Math.max(.001,pixelsPerKm))??1000;
+const DEPTH_STEPS = [1,2,5,10,20,50,100,200,500,1000];
+
+/** Keep readable kilometer ticks stable around a zoom/rotation threshold. */
+export function depthTickStep(pixelsPerKm: number, previousStep?: number) {
+  const density = Number.isFinite(pixelsPerKm) ? Math.max(.001,pixelsPerKm) : .001;
+  const spacing = (previousStep ?? 0) * density;
+  if (previousStep !== undefined && DEPTH_STEPS.includes(previousStep) && spacing >= 36 && spacing <= 126) return previousStep;
+  return DEPTH_STEPS.find(v=>v>=45/density)??1000;
 }
 
 export function createAnalysisAxes(bounds: RegionBounds, maxDepthKm: number, sparse=false, step=100, depthRange=[0,maxDepthKm], depthLabels=true) {
@@ -32,7 +37,8 @@ export function createAnalysisAxes(bounds: RegionBounds, maxDepthKm: number, spa
     const worldPosition=new THREE.Vector3();
     sprite.onBeforeRender=(renderer,_scene,camera)=>{
       const perspective=camera as THREE.PerspectiveCamera;
-      const worldPerPixel=2*perspective.position.distanceTo(sprite.getWorldPosition(worldPosition))*Math.tan(THREE.MathUtils.degToRad(perspective.fov/2))/Math.max(renderer.domElement.clientHeight,1);
+      const viewDepth=Math.max(.001,-sprite.getWorldPosition(worldPosition).applyMatrix4(camera.matrixWorldInverse).z);
+      const worldPerPixel=2*viewDepth*Math.tan(THREE.MathUtils.degToRad(perspective.fov/2))/Math.max(renderer.domElement.clientHeight,1);
       sprite.scale.set(worldPerPixel*96,worldPerPixel*24,1);sprite.updateMatrixWorld();
     };
     group.add(sprite);

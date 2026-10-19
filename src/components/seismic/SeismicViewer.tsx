@@ -329,9 +329,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
   onStartGuide?: () => void;
   reducedMotion?: boolean;
 }) {
-  // Session-only explicit opt-in; the system accessibility preference is the default.
-  const [motionOverride, setMotionOverride] = useState<boolean | null>(null);
-  const reducedMotion = motionOverride ?? systemReducedMotion;
+  // Viewer transitions start enabled; Cámara can reduce motion for this session.
+  const [reducedMotion, setReducedMotion] = useState(false);
   const canvasHost = useRef<HTMLDivElement>(null);
   const compassNeedle = useRef<HTMLSpanElement>(null);
   const views = useRef<ViewActions | null>(null);
@@ -406,7 +405,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     let animationFrame = 0;
     let renderDirty = true;
     let interacting = false;
-    let motionReduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let motionReduced=false;
     type CameraPose={position:THREE.Vector3;target:THREE.Vector3;up:THREE.Vector3};
     let cameraTransition:{from:CameraPose;to:CameraPose;start:number;path:ReturnType<typeof cameraFlight>}|null=null;
     let flightTrace:{time:number;position:number[];target:number[];up:number[];active:boolean}[]=[];
@@ -1004,19 +1003,20 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
     setInitialCamera();
 
     let axesKey="",regionalAxesKey="",lastDepthView=false;
+    let rulerStep: number | undefined;
     const refreshAxes = () => {
       if(beforeProfile||planActive)return;
       const distance=camera.position.distanceTo(controls.target),tanH=Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect;
       const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);right.y=0;
       if(right.lengthSq()<.01)right.set(1,0,0);right.normalize();
       const anchor=controls.target.clone().addScaledVector(right,-distance*tanH*.5);
-      const snap=Math.max(.1,distance/60);anchor.x=Math.round(anchor.x/snap)*snap;anchor.z=Math.round(anchor.z/snap)*snap;
       const [lon,lat]=sceneToGeographic(anchor.x,anchor.z),[east]=sceneToGeographic(anchor.x+distance*tanH*.1,anchor.z);
       const rulerBounds:RegionBounds=[lon,lat,east,lat+.01];
       const max=region?regionDepthKm:800,center=Math.max(0,-controls.target.y);
       const a=new THREE.Vector3(anchor.x,-center,anchor.z).project(camera),b=new THREE.Vector3(anchor.x,-center-100,anchor.z).project(camera);
       const pxPerKm=Math.hypot((a.x-b.x)*host.clientWidth,(a.y-b.y)*host.clientHeight)/200;
-      const step=depthTickStep(pxPerKm),halfRange=host.clientHeight/Math.max(.1,pxPerKm)*.65;
+      const step=depthTickStep(pxPerKm,rulerStep),halfRange=host.clientHeight/Math.max(.1,pxPerKm)*.65;
+      rulerStep=step;
       const range=[Math.max(0,center-halfRange),Math.min(max,center+halfRange)];
       const key=[step,max,Math.ceil(range[0]/step),Math.floor(range[1]/step),Boolean(region)].join(":");
       if(key!==axesKey){
@@ -1682,8 +1682,8 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
   const startTutorial = useCallback(() => {
     if(!views.current || tourSession.current)return;
     const root=canvasHost.current?.closest("main"),plot=root?.querySelector(".sectionPlot"),panelBody=root?.querySelector(".studioPanelBody,.viewerPanelContent");
-    const inspector=root?.querySelector(".sectionInspector,:scope > .inspector");
-    const list=root?.querySelector(".eventListTable"),rail=root?.querySelector(".mapEventList,.sectionSidebar");
+    const inspector=root?.querySelector(".sectionInspector,:scope > .inspector,.mapEventList > .inspector");
+    const list=root?.querySelector(".eventListTable"),rail=root?.querySelector(".mapEventList > .eventList,.sectionSidebar");
     const scene=views.current.capture();
     tourSession.current=structuredClone({scene,panel:openPanel,guidedIndex,filterEditor,collection:mapCollection,
       plan:scene.plan?planSaved.current:undefined,section:scene.profileOpen?sectionSaved.current:undefined,areaStatus,
@@ -1725,11 +1725,11 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
       // Let expanded details and the measured chart settle before restoring
       // scroll offsets; otherwise the browser clamps them to an interim height.
       layoutFrame=requestAnimationFrame(()=>{
-        const inspector=root?.querySelector(".sectionInspector,:scope > .inspector");
+        const inspector=root?.querySelector(".sectionInspector,:scope > .inspector,.mapEventList > .inspector");
         if(plot&&saved.plot){plot.scrollLeft=saved.plot[0];plot.scrollTop=saved.plot[1];}
         if(panelBody&&saved.panelScroll){panelBody.scrollLeft=saved.panelScroll[0];panelBody.scrollTop=saved.panelScroll[1];}
         if(inspector&&saved.inspector){inspector.scrollLeft=saved.inspector[0];inspector.scrollTop=saved.inspector[1];}
-        const list=root?.querySelector(".eventListTable"),rail=root?.querySelector(".mapEventList,.sectionSidebar");
+        const list=root?.querySelector(".eventListTable"),rail=root?.querySelector(".mapEventList > .eventList,.sectionSidebar");
         if(list&&saved.listScroll){list.scrollLeft=saved.listScroll[0];list.scrollTop=saved.listScroll[1];}
         if(rail&&saved.railScroll){rail.scrollLeft=saved.railScroll[0];rail.scrollTop=saved.railScroll[1];}
         root?.scrollTo({left:saved.viewer[0],top:saved.viewer[1],behavior:"instant"});
@@ -1846,7 +1846,7 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
 
       <ViewerControls count={count} visible={map2d?mapEvents.length:visibleCount} status={catalogFailed?"Catálogo no disponible":status} filters={filters} bounds={filterBounds}
         onFilters={setFilters} filterEditor={filterEditor} onFilterEditor={saveFilterEditor} panel={openPanel} onPanel={setOpenPanel} actions={{showPlan:v=>views.current?.showPlan(v),chooseArea:v=>views.current?.chooseArea(v),resetCamera:()=>views.current?.resetCamera(),setRelief:v=>views.current?.setRelief(v),toggleSlab:()=>views.current?.toggleSlab(),replaySlab:()=>views.current?.replaySlab(),setSlabOpacity:v=>views.current?.setSlabOpacity(v),setNavigationMode:v=>views.current?.setNavigationMode(v),setCameraView:v=>views.current?.setCameraView(v)}}
-        map2d={map2d} depthView={depthView} reducedMotion={reducedMotion} systemReducedMotion={systemReducedMotion} onReducedMotion={setMotionOverride} ready={Boolean(count&&mapCartography)} navigationMode={navigationMode} relief={reliefExaggeration}
+        map2d={map2d} depthView={depthView} reducedMotion={reducedMotion} systemReducedMotion={systemReducedMotion} onReducedMotion={setReducedMotion} ready={Boolean(count&&mapCartography)} navigationMode={navigationMode} relief={reliefExaggeration}
         listOpen={mapCollection.list.open} onList={()=>{setOpenPanel(null);setMapCollection({...mapCollection,list:{...mapCollection.list,open:!mapCollection.list.open}});}}
         surfaceReady={surfaceStatus.includes("cargados")} slabAvailable={Boolean(slabSummary)} analysisReady={Boolean(count&&mapCartography&&slabSummary&&surfaceStatus.includes("cargados"))}
         slabVisible={slabVisible} slabOpacity={slabOpacity} colorMode={colorMode}
@@ -1902,9 +1902,9 @@ export default function SeismicViewer({ guidedIndex = null, onGuideChange, onSta
 
       {!profileOpen && selected && !tour && !mapCollection.list.open ? <EventInspector event={selected} onClose={() => views.current?.clearSelection()} /> : null}
       {!profileOpen&&!tour&&mapCollection.list.open?<aside className="mapEventList" aria-label="Lista de sismos del mapa" data-viewer-control>
-        {selected?<EventInspector event={selected} compact onClose={()=>views.current?.clearSelection()}/>:null}
-        <EventList rows={mapCollectionRows} state={mapCollection.list} onState={list=>setMapCollection({...mapCollection,list})} onPick={event=>{views.current?.selectEvent(event);requestAnimationFrame(()=>requestAnimationFrame(()=>canvasHost.current?.closest("main")?.querySelector(".mapEventList")?.scrollTo({top:0,behavior:reducedMotion?"instant":"smooth"})));}} selectedId={selected?.properties.id} onClose={()=>setMapCollection({...mapCollection,list:{...mapCollection.list,open:false}})} onDraw={drawEventArea} onClearRange={mapCollection.box?()=>setMapCollection({...mapCollection,box:null,list:{...mapCollection.list,checked:[],page:0}}):undefined} rangeLabel={mapRangeLabel} context={filters?`Período ${filters.dateFrom.split("-").reverse().join("/")}–${filters.dateTo.split("-").reverse().join("/")} · magnitud reportada ${filters.magnitudeMin}–${filters.magnitudeMax} · profundidad catalogada ${filters.depthMin}–${filters.depthMax} km`:"Muestra en preparación"}/>
+        <EventList rows={mapCollectionRows} state={mapCollection.list} onState={list=>setMapCollection({...mapCollection,list})} onPick={event=>views.current?.selectEvent(event)} selectedId={selected?.properties.id} onClose={()=>setMapCollection({...mapCollection,list:{...mapCollection.list,open:false}})} onDraw={drawEventArea} onClearRange={mapCollection.box?()=>setMapCollection({...mapCollection,box:null,list:{...mapCollection.list,checked:[],page:0}}):undefined} rangeLabel={mapRangeLabel} context={filters?`Período ${filters.dateFrom.split("-").reverse().join("/")}–${filters.dateTo.split("-").reverse().join("/")} · magnitud reportada ${filters.magnitudeMin}–${filters.magnitudeMax} · profundidad catalogada ${filters.depthMin}–${filters.depthMax} km`:"Muestra en preparación"}/>
         {mapCollection.box?<><button className="collectionOpen3d" disabled={!canOpenCollection3d} onClick={()=>{if(canOpenCollection3d){views.current?.openRegion([...mapCollection.box!]);setMapCollection({...mapCollection,box:null});}}}>Abrir esta zona en 3D</button>{!canOpenCollection3d?<p className="studioNote">El recuadro debe estar dentro del terreno disponible y medir al menos 0,15° por lado para abrirse en 3D. La lista y el CSV siguen disponibles.</p>:null}</>:null}
+        {selected?<EventInspector event={selected} compact onClose={()=>views.current?.clearSelection()}/>:null}
       </aside>:null}
       {tour ? <><p className="tourSample" aria-label="Muestra de la demostración">{tourPeriod}</p><ViewerTour playback={tour} waiting={tourWaiting} reducedMotion={tourReducedMotion} error={tourError}
         detail={selected&&!profileOpen?`M ${selected.properties.magnitud.toFixed(1)} · ${selected.properties.profundidad.toFixed(0)} km de profundidad. Tocá un punto para leerlo.`:undefined}

@@ -8,10 +8,10 @@ import {rowsForExport,searchEvents,type EventRow,type EventListState} from "@/li
 import snapshot from "@/data/catalog-snapshot.json";
 
 const PAGE_SIZE=20;
-export default function EventList({rows,state,onState,onPick,onClose,onDraw,onClearRange,context,rangeLabel,selectedId}: {
+export default function EventList({rows,state,onState,onPick,onClose,onDraw,onClearRange,context,rangeLabel,selectedId,drawLabel="Seleccionar zona"}: {
   rows:EventRow[];state:EventListState;onState:(value:EventListState)=>void;
   onPick:(event:InpresFeature)=>void;onClose:()=>void;onDraw:()=>void;onClearRange?:()=>void;
-  context:string;rangeLabel:string;selectedId?:string;
+  context:string;rangeLabel:string;selectedId?:string;drawLabel?:string;
 }) {
   const searchId=useId(),headingId=useId();
   const filtered=useMemo(()=>searchEvents(rows,state.query),[rows,state.query]);
@@ -42,7 +42,7 @@ export default function EventList({rows,state,onState,onPick,onClose,onDraw,onCl
   };
   return <section className="eventList" aria-labelledby={headingId} data-result-count={filtered.length} data-export-count={exportRows.length} data-marked-count={marked.length}>
     <header className="eventListHeader"><div><span className="studioEyebrow">Catálogo INPRES</span><h3 id={headingId}>Sismos de la selección</h3><p>{rangeLabel}</p></div><button aria-label="Cerrar lista de sismos" onClick={onClose}>×</button></header>
-    <div className="eventListTools"><button onClick={onDraw}>Seleccionar zona</button>{onClearRange?<button onClick={onClearRange}>Quitar recuadro</button>:null}<button className="eventListExport" disabled={busy||!exportRows.length} onClick={exportCsv}>{busy?"Preparando CSV…":`CSV · ${exportRows.length.toLocaleString("es-AR")} ${marked.length?"marcados":"resultados"}`}</button></div>
+    <div className="eventListTools"><button onClick={onDraw}>{drawLabel}</button>{onClearRange?<button onClick={onClearRange}>Quitar recuadro</button>:null}<button className="eventListExport" disabled={busy||!exportRows.length} onClick={exportCsv}>{busy?"Preparando CSV…":`CSV · ${exportRows.length.toLocaleString("es-AR")} ${marked.length?"marcados":"resultados"}`}</button></div>
     <div className="eventListSearch"><label htmlFor={searchId}>Buscar lugar, fecha o ID</label><input id={searchId} type="search" value={state.query} onChange={event=>patch({query:event.target.value,page:0})} placeholder="Ej.: San Juan, 2025"/></div>
     <div className="eventListSelection"><p role="status"><strong>{filtered.length.toLocaleString("es-AR")}</strong> resultados · <strong>{marked.length.toLocaleString("es-AR")}</strong> marcados</p><div><button disabled={!filtered.length} onClick={()=>patch({checked:filtered.map(row=>row.feature.properties.id)})}>Marcar resultados</button><button disabled={!state.checked.length} onClick={()=>patch({checked:[]})}>Quitar marcas</button></div></div>
     <div className="eventListTable"><table><caption className="srOnly">Resultados del catálogo. Las marcas se conservan al cambiar de página.</caption><thead><tr><th><span className="srOnly">Marcar</span></th><th>Evento / lugar</th><th>M</th><th>Prof.</th></tr></thead><tbody>{pageRows.map(({feature})=>{const p=feature.properties;return <tr key={p.id} data-active={p.id===selectedId} data-checked={checked.has(p.id)} onClick={()=>onPick(feature)}><td><input type="checkbox" onClick={event=>event.stopPropagation()} aria-label={`Marcar sismo ${p.id}`} checked={checked.has(p.id)} onChange={()=>toggle(p.id)}/></td><td><button className="eventListRow" aria-label={`Ver sismo ${p.id}`}><strong>{p.ubicacion_original||"Sin descripción de lugar"}</strong><span>{p.fecha} · {p.hora}</span>{eventQuality(p.id)?<small>Con anotación de revisión</small>:null}</button></td><td>{p.magnitud.toFixed(1)}</td><td>{p.profundidad.toFixed(1)}<small>km</small></td></tr>;})}</tbody></table>{!filtered.length?<p className="eventListEmpty" role="status">No hay sismos con esta selección y búsqueda.{state.query?<button onClick={()=>patch({query:"",page:0})}>Limpiar búsqueda</button>:null}</p>:null}</div>
