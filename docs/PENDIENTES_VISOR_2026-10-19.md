@@ -1,5 +1,9 @@
 # Pendientes de interacción del visor — 19/10/2026
 
+Seguimiento posterior al merge de la PR #13:
+[pulido de interacciones del visor](PULIDO_INTERACCIONES_2026-10-19.md).
+El registro siguiente conserva los hallazgos de la entrega anterior.
+
 El usuario autorizó publicar el estado actual de la rama y revisar después los
 siguientes detalles detectados en su revisión local. Este archivo registra
 problemas conocidos; no afirma que estén resueltos por esta entrega.

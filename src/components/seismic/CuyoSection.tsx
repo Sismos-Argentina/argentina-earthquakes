@@ -5,7 +5,7 @@ import EventList from "./EventList";
 import {emptyEventList,inPlotBox,plotBox,type EventListState,type PlotBox} from "@/lib/selection/events";
 import {fitProfilePlot} from "@/lib/profile/plot-layout";
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import type { InpresFeature } from "@/lib/data/inpres";
 import {
@@ -96,6 +96,7 @@ export default function CuyoSection({
   const mapSlot = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const listAnchor=useRef<HTMLDivElement>(null);
+  const tabId=useId();
   const rangeClick=useRef(false);
   const drag=useRef<{id:number;start:[number,number];x:number;y:number}|null>(null);
   const [dragRange,setDragRange]=useState<PlotBox|null>(null);
@@ -108,7 +109,8 @@ export default function CuyoSection({
   const key=profileKey(profile);
   const blankCollection=useMemo<SectionCollection>(()=>({key,box:null,list:emptyEventList(),selecting:false}),[key]);
   const [storedCollection,setCollection]=useState<SectionCollection>(initialOptions?.collection??blankCollection);
-  const collection=storedCollection.key===key?storedCollection:blankCollection;
+  const collection=useMemo(()=>storedCollection.key===key?storedCollection:{...blankCollection,list:{...blankCollection.list,open:storedCollection.list.open}},[storedCollection,key,blankCollection]);
+  const listActive=!demonstration&&collection.list.open;
   const theme="dark" as const;
   const options = useMemo(() => ({showSlab,fullDepth,minimumMagnitude,theme,collection}),[showSlab,fullDepth,minimumMagnitude,theme,collection]);
   useLayoutEffect(() => { onOptionsChange?.(options); },[options,onOptionsChange]);
@@ -137,6 +139,7 @@ export default function CuyoSection({
     if(!slot||!root||demonstration)return;
     const measure=()=>{
       const box=slot.getBoundingClientRect(),parent=root.getBoundingClientRect();
+      if(!box.width||!box.height)return;
       root.style.setProperty("--section-map-left",`${box.left-parent.left+root.scrollLeft+12}px`);
       root.style.setProperty("--section-map-top",`${box.top-parent.top+root.scrollTop+12}px`);
       root.style.setProperty("--section-map-width",`${Math.max(1,box.width-24)}px`);
@@ -161,16 +164,18 @@ export default function CuyoSection({
   },[demonstration,selected?.properties.id,width,height,collection.list.open]);
 
   useEffect(() => {
-    if (!frame.current) return;
-    const observer = new ResizeObserver(() => {
-      const section=mainColumn.current?.closest<HTMLElement>(".sectionMode");
-      if(section)setAvailableWidth(Math.max(180,section.clientWidth-32-(window.innerWidth>=700&&!demonstration?340:0)));
-      if (frame.current) setPlotHeight(frame.current.clientHeight);
+    const main=mainColumn.current,plot=frame.current;
+    if (!main||!plot) return;
+    const measure=() => {
+      setAvailableWidth(Math.max(180,main.clientWidth-2));
+      if (demonstration&&plot.clientHeight>0) setPlotHeight(plot.clientHeight);
       setViewport({width:window.innerWidth,height:window.innerHeight});
-    });
-    observer.observe(frame.current);
-    if(mainColumn.current?.closest(".sectionMode"))observer.observe(mainColumn.current.closest(".sectionMode")!);
-    return () => observer.disconnect();
+    };
+    measure();const observer = new ResizeObserver(measure);
+    observer.observe(main);
+    if(demonstration)observer.observe(plot);
+    window.addEventListener("resize",measure);
+    return () => {observer.disconnect();window.removeEventListener("resize",measure);};
   }, [demonstration]);
 
   useEffect(() => {
@@ -329,9 +334,9 @@ export default function CuyoSection({
     return nearest?.feature ?? null;
   };
   const selectedInRange = selected && visibleEvents.some(({ feature }) => feature.properties.id === selected.properties.id && feature.properties.profundidad <= maxDepth) ? selected : null;
-  const pickEvent = (event: InpresFeature | null) => {
+  const pickEvent = (event: InpresFeature | null, fromPlot = true) => {
     setHovered(null);if(!event)return;onPick(event);
-    if(!matchMedia("(max-width:699px)").matches)return;
+    if(!fromPlot||!matchMedia("(max-width:699px)").matches)return;
     cancelAnimationFrame(revealFrame.current);
     // A new selection opens a bottom sheet. Keep its point and graph above it;
     // do this only for a user pick, never while restoring a tutorial session.
@@ -342,7 +347,19 @@ export default function CuyoSection({
       if(box.bottom>bottom||box.top<8)viewer.scrollBy({top:box.top-Math.max(8,(bottom-box.height)/2),behavior:reducedMotion?"instant":"smooth"});
     });
   };
-  const revealList=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>listAnchor.current?.scrollIntoView({block:"start",behavior:reducedMotion?"instant":"smooth"})));
+  const showView=(list:boolean)=>{
+    setHovered(null);drag.current=null;rangeClick.current=false;setDragRange(null);
+    setCollection({...collection,selecting:false,list:{...collection.list,open:list}});
+  };
+  const selectEvents=(selecting:boolean)=>{
+    if(selecting)onClearSelection();setHovered(null);drag.current=null;rangeClick.current=false;setDragRange(null);
+    setCollection({...collection,selecting,list:{...collection.list,open:false}});
+  };
+  const tabKey=(event:React.KeyboardEvent<HTMLButtonElement>)=>{
+    const target=event.key==="Home"?false:event.key==="End"?true:["ArrowLeft","ArrowRight"].includes(event.key)?!listActive:null;
+    if(target===null)return;event.preventDefault();if(target&&status)return;showView(target);
+    document.getElementById(`${tabId}-${target?"list":"graph"}-tab`)?.focus({preventScroll:true});
+  };
   const rangePoint=(event:React.PointerEvent<HTMLCanvasElement>):[number,number]=>{
     const box=event.currentTarget.getBoundingClientRect();
     return [Math.max(0,Math.min(profile.lengthKm,((event.clientX-box.left)*width/box.width-LEFT)/scale)),Math.max(0,Math.min(maxDepth,((event.clientY-box.top)*height/box.height-TOP)/scale-ABOVE_SEA_KM))];
@@ -357,12 +374,12 @@ export default function CuyoSection({
     const current=drag.current;if(!current||current.id!==event.pointerId)return;
     drag.current=null;setDragRange(null);if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);
     if(cancel||Math.abs(event.clientX-current.x)<8||Math.abs(event.clientY-current.y)<8)return;
-    setCollection({...collection,box:plotBox(current.start,rangePoint(event)),selecting:false,list:{...emptyEventList(),open:true}});if(viewport.width<700)revealList();
+    setCollection({...collection,box:plotBox(current.start,rangePoint(event)),selecting:false,list:{...emptyEventList(),open:true}});
   };
   const range=dragRange??collection.box;
 
   return (
-    <section className={`sectionMode${demonstration?" sectionMode--demonstration":""}`} aria-label={profile.custom ? "Explorar el subsuelo entre los extremos elegidos A y B" : `Explorar el subsuelo en un perfil andino a ${formatLatitude(profile.latitude)}`}>
+    <section className={`sectionMode${demonstration?" sectionMode--demonstration":""}`} data-reduced-motion={reducedMotion} aria-label={profile.custom ? "Explorar el subsuelo entre los extremos elegidos A y B" : `Explorar el subsuelo en un perfil andino a ${formatLatitude(profile.latitude)}`}>
       <header className="sectionModeHeader">
         <button className="sectionBrand" aria-label="Bajo nuestros pies · volver al mapa" onClick={onClose}><span>Sismos de Argentina</span><strong>Bajo nuestros pies</strong></button>
         {onStartTutorial ? <button className="sectionBack" aria-label="Ver cómo se usa" onClick={onStartTutorial}>▶ Guía</button> : null}
@@ -375,13 +392,18 @@ export default function CuyoSection({
       </header>
       {demonstration?<p className="tourSectionLocation">{guide.stops[guidedIndex??0]?.title} · Chile → Andes → Argentina · franja de 100 km · profundidad 1×</p>:null}
 
-      <div className="sectionWorkspace" style={{"--section-card-width":`${width+2}px`} as React.CSSProperties}><div ref={mainColumn} className="sectionMain" style={{"--section-card-width":`${width+2}px`,"--section-canvas-height":`${height}px`} as React.CSSProperties}>
-      {!demonstration?<nav className="sectionPlotTools" aria-label="Elegir corte del subsuelo">
+      {!demonstration?<nav className="sectionPlotTools" aria-label="Vistas y herramientas del corte">
+        <div className="sectionTabs" role="tablist" aria-label="Vista del corte">
+          <button type="button" role="tab" id={`${tabId}-graph-tab`} aria-controls={`${tabId}-graph-panel`} aria-selected={!listActive} tabIndex={listActive?-1:0} onKeyDown={tabKey} onClick={()=>showView(false)}>Gráfico</button>
+          <button type="button" role="tab" disabled={Boolean(status)} id={`${tabId}-list-tab`} aria-controls={`${tabId}-list-panel`} aria-selected={listActive} tabIndex={listActive?0:-1} onKeyDown={tabKey} onClick={()=>showView(true)}>Lista de sismos <span>{status?"…":collectionRows.length.toLocaleString("es-AR")}</span></button>
+        </div>
         {guidedIndex!==null&&onGuideChange?<div className="sectionCompareModes" role="group" aria-label="Cambiar corte comparable"><button disabled={Boolean(status)} aria-pressed={guidedIndex===0} onClick={()=>onGuideChange(0)}>San Juan · 31°S</button><button disabled={Boolean(status)} aria-pressed={guidedIndex===1} onClick={()=>onGuideChange(1)}>Mendoza · 35°S</button></div>:null}
-        <details className="sectionMoreActions"><summary aria-label="Más opciones del corte">Más</summary><button onClick={onChooseProfile}>Otro corte A–B ↗</button><a href="#leer-corte">Cómo leer el corte ↓</a></details>
-        <button disabled={Boolean(status)} aria-pressed={collection.selecting} onClick={()=>{onClearSelection();setCollection({...collection,selecting:!collection.selecting,list:{...collection.list,open:false}});}}> {collection.selecting?"Cancelar selección":"Seleccionar sismos"}</button>
-        <button disabled={Boolean(status)} aria-expanded={collection.list.open} onClick={()=>{setCollection({...collection,list:{...collection.list,open:!collection.list.open}});if(!collection.list.open)revealList();}}>Lista · {collectionRows.length.toLocaleString("es-AR")}</button>
+        {!listActive?<button disabled={Boolean(status)} aria-pressed={collection.selecting} onClick={()=>selectEvents(!collection.selecting)}>{collection.selecting?"Cancelar selección":"Seleccionar sismos"}</button>:null}
+        <details className="sectionMoreActions"><summary aria-label="Más opciones del corte">Más</summary><button onClick={onChooseProfile}>Otro corte A–B ↗</button><a href="#leer-corte" onClick={()=>showView(false)}>Cómo leer el corte ↓</a></details>
       </nav>:null}
+      <div className="sectionWorkspace" data-section-view={listActive?"list":"graph"}><div ref={mainColumn} className="sectionMain" style={{"--section-card-width":`${width+2}px`,"--section-canvas-height":`${height}px`} as React.CSSProperties}>
+
+      <div className="sectionTabPanel sectionGraphPanel" role={demonstration?undefined:"tabpanel"} id={`${tabId}-graph-panel`} aria-labelledby={demonstration?undefined:`${tabId}-graph-tab`} hidden={listActive}>
       <div className={`sectionPrimary sectionPrimary--${theme}${status ? " sectionPrimary--updating" : ""}`}>
         <div className="sectionPrimaryHeading">
           <strong>De la superficie al subsuelo</strong>
@@ -426,10 +448,20 @@ export default function CuyoSection({
           </div>
         </div>
       </div>
-      {!demonstration?<div ref={listAnchor} className="sectionListAnchor">{collection.list.open?<EventList rows={collectionRows} state={collection.list} onState={list=>setCollection({...collection,list})} onPick={pickEvent} selectedId={selectedInRange?.properties.id} onClose={()=>setCollection({...collection,list:{...collection.list,open:false}})} onDraw={()=>{onClearSelection();setCollection({...collection,selecting:true,list:{...collection.list,open:false}});frame.current?.scrollIntoView({block:"center",behavior:reducedMotion?"instant":"smooth"});}} onClearRange={collection.box?()=>setCollection({...collection,box:null,list:{...collection.list,page:0,checked:[]}}):undefined} context={sampleDescription} rangeLabel={collection.box?`${collection.box[0].toFixed(1)}–${collection.box[2].toFixed(1)} km desde A · ${collection.box[1].toFixed(1)}–${collection.box[3].toFixed(1)} km de profundidad`:`Corredor de ${profile.halfWidthKm*2} km · profundidad 0–${maxDepth} km`}/>:null}</div>:null}
       {guidedIndex !== null && onGuideChange ? <GuidedDiscovery index={guidedIndex} events={visibleEvents} status={status} sampleDescription={sampleDescription} /> : null}
+      </div>
+      {!demonstration?<div ref={listAnchor} className="sectionTabPanel sectionListPanel" role="tabpanel" id={`${tabId}-list-panel`} aria-labelledby={`${tabId}-list-tab`} hidden={!listActive}>
+        {status?<p className="sectionListStatus" role="status">{status}</p>:null}
+        <div className="sectionListResults" hidden={Boolean(status)}>
+        <EventList rows={collectionRows} state={collection.list} onState={list=>setCollection({...collection,list})} onPick={event=>pickEvent(event,false)} selectedId={selectedInRange?.properties.id}
+          onClose={()=>showView(false)} onDraw={()=>selectEvents(true)} drawLabel="Seleccionar en gráfico"
+          onClearRange={collection.box?()=>setCollection({...collection,box:null,list:{...collection.list,page:0,checked:[]}}):undefined}
+          context={sampleDescription} rangeLabel={collection.box?`${collection.box[0].toFixed(1)}–${collection.box[2].toFixed(1)} km desde A · ${collection.box[1].toFixed(1)}–${collection.box[3].toFixed(1)} km de profundidad`:`Corredor de ${profile.halfWidthKm*2} km · profundidad 0–${maxDepth} km`}/>
+        </div>
+      </div>:null}
       </div><aside className="sectionSidebar" aria-label="Contexto y controles del corte">
       {selectedInRange&&!demonstration?<div className="sectionInspector sectionInspector--active" role="region" aria-label="Sismo seleccionado en el corte"><EventInspector key={selectedInRange.properties.id} event={selectedInRange} compact onClose={onClearSelection}/></div>:null}
+      {listActive&&!selectedInRange?<div className="sectionListHint"><h3>Ficha del sismo</h3><p>Elegí una fila para consultar sus datos. Las casillas marcan los sismos para descargar.</p></div>:null}
 
       <div className="sectionContext">
         <div className="sectionContextCopy">
@@ -478,7 +510,7 @@ export default function CuyoSection({
             </select>
           </label>
 
-          <button disabled={Boolean(status)} onClick={exportPng}>Descargar corte PNG</button>
+          <button className="sectionExportPng" disabled={Boolean(status)} onClick={exportPng}>Descargar corte PNG</button>
           <button onClick={() => { setMinimumMagnitude(null); setFullDepth(true); setShowSlab(true); onResetFilters(); frame.current?.scrollTo({ left: 0, top: 0 }); }}>Restablecer corte y filtros</button>
           <p role="status">{status ? "Recalculando conteos…" : `${drawnCount.toLocaleString("es-AR")} visibles · ${(events.length - visibleEvents.length).toLocaleString("es-AR")} filtrados por magnitud · ${(visibleEvents.length - drawnCount).toLocaleString("es-AR")} fuera del rango vertical`}</p>
           <small>{inheritedFilters ? "También se aplican los filtros del mapa. " : "Período completo del catálogo. "}{includeProvisional ? "Registro en revisión incluido." : "Se aplica la exclusión provisional de calidad; no hay límite de cantidad."}</small>

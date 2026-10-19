@@ -2876,16 +2876,21 @@ html[data-layout='cartographic'] .planView > .planToolbar {position:relative;ins
 .eventListFooter nav {display:flex;justify-content:space-between;align-items:center;gap:10px}
 .eventListFooter p {font-size:10px;line-height:1.5;color:#adc5d0;margin:10px 0 0}
 .eventListEmpty {padding:16px;margin:0}.eventListEmpty button {display:block;margin-top:10px}
-.mapEventList {position:absolute;z-index:32;top:calc(var(--viewer-bar,54px) + 12px);bottom:calc(var(--viewer-footer,60px) + 12px);right:12px;width:390px;overflow:auto;border-radius:8px;background:var(--ui-panel,#172933);overscroll-behavior:contain;box-shadow:0 8px 30px #0004}
-.mapEventList>.inspector {position:static!important;width:auto!important;max-height:none!important;border:0!important;border-radius:0;padding:16px!important;margin:0!important;box-shadow:none!important}
-.mapEventList .eventList {border:0;border-radius:0}
+.mapEventList {position:absolute;z-index:32;top:calc(var(--viewer-bar,54px) + 12px);bottom:calc(var(--viewer-footer,60px) + 12px);right:12px;width:390px;display:flex;flex-direction:column;overflow:hidden;border-radius:8px;background:var(--ui-panel,#172933);box-shadow:0 8px 30px #0004}
+.mapEventList>.inspector {position:static!important;inset:auto!important;flex:0 0 auto;width:auto!important;max-height:40%!important;overflow:auto;overscroll-behavior:contain;border:0!important;border-top:1px solid var(--ui-border)!important;border-radius:0;padding:12px 16px!important;margin:0!important;box-shadow:none!important}
+.mapEventList>.eventList {flex:1;min-height:0;overflow:auto;overflow-anchor:none;overscroll-behavior:contain;border:0;border-radius:0}
+.mapEventList>.inspector .inspectorHeader {padding-bottom:6px;margin-bottom:8px}
+.mapEventList>.inspector .eventSummary {margin:0 0 8px;gap:10px}
+.mapEventList>.inspector .eventMagnitude {font-size:26px}
+.mapEventList>.inspector .eventDepth {margin-bottom:8px}
+.mapEventList>.inspector .eventDetails {padding-top:8px}
 .collectionOpen3d {margin:12px 14px;padding:10px;border:1px solid #45616e;background:#203843;color:#e0edf3;border-radius:5px;cursor:pointer}
 html[data-layout='cartographic'] .viewer--event-list:not(.viewer--section) > :is(.scene,.planView) {right:414px}
 html[data-layout='cartographic'] .viewer--event-list > .regionBanner {display:none}
 html[data-layout='cartographic'] .viewer--event-list > .compass {right:424px}
 .mapSelectionInstruction {position:absolute;top:65px;left:50%;transform:translateX(-50%);max-width:calc(100% - 24px);width:max-content;padding:10px 14px;border-radius:6px;background:#10232ced;color:#e3f2f6;border:1px solid #45616e;font-size:12px;pointer-events:none}
 /* The scientific plot and its companion rail share a compact, centered frame. */
-html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace {display:grid;grid-template-columns:minmax(0,var(--section-card-width)) 320px;gap:20px;justify-content:center;align-items:start;width:100%;max-width:100%;margin:0 auto}
+html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace {display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start;width:100%;max-width:100%;margin:0 auto}
 html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionMain {grid-column:1;grid-row:1;min-width:0;width:100%;max-width:100%;display:flex;flex-direction:column;gap:14px}
 html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:14px;width:320px;min-width:0;position:sticky;top:16px;max-height:calc(100dvh - 32px);overflow:auto;padding:0 3px 0 0;overscroll-behavior:contain}
 html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:static;inset:auto;width:auto;max-height:none;overflow:visible;margin:0;padding:16px;box-shadow:none;background:var(--ui-panel);border:1px solid var(--ui-border);border-radius:8px}
@@ -2911,12 +2916,17 @@ html[data-layout='cartographic'] .viewer--section:has(.sectionLoading)>.scene {v
 .eventListRow:focus-visible {outline:2px solid #a7dce9;outline-offset:4px}
 @media(prefers-reduced-motion:reduce){.eventList tbody tr {transition:none}}
 @media(max-width:699px){
-  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace {grid-template-columns:minmax(0,var(--section-card-width));gap:16px}
+  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace {grid-template-columns:minmax(0,1fr);gap:16px}
   html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {grid-column:1;grid-row:2;width:100%;position:static;max-height:none;overflow:visible;padding:0;display:grid;grid-template-columns:1fr 1fr;align-items:start}
   html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {grid-column:1 / -1;position:sticky;top:12px;z-index:36}
 }
 @media(max-width:799px){
-  .mapEventList {top:auto;left:8px;right:8px;bottom:calc(var(--viewer-footer,76px) + 8px);width:auto;max-height:57dvh;border:1px solid #45616e}
+  .mapEventList {top:auto;left:8px;right:8px;bottom:calc(var(--viewer-footer,76px) + 8px);width:auto;height:57dvh;max-height:57dvh;border:1px solid #45616e}
+  .mapEventList:has(>.inspector) {height:calc(57dvh + 220px);max-height:calc(100dvh - var(--viewer-bar,54px) - var(--viewer-footer,76px) - 64px)}
+  .mapEventList>.inspector {max-height:min(32%,180px)!important}
+  .mapEventList:has(>.inspector) .eventListHeader {padding:10px}
+  .mapEventList:has(>.inspector) .eventListHeader .studioEyebrow {display:none}
+  .mapEventList:has(>.inspector) .eventListHeader h3 {font-size:14px;margin:0}
   html[data-layout='cartographic'] .viewer--event-list:not(.viewer--section)>:is(.scene,.planView) {right:0}
   html[data-layout='cartographic'] .viewer--event-list>.compass {right:12px}
   .mapSelectionInstruction {top:110px;font-size:11px;width:calc(100% - 24px)}
@@ -2924,6 +2934,12 @@ html[data-layout='cartographic'] .viewer--section:has(.sectionLoading)>.scene {v
   .eventListTools {padding:9px 10px}.eventListHeader {padding:12px}
   .eventListTools>button {font-size:11px;padding:6px 8px}
   .eventListSearch,.eventListSelection {padding-inline:10px}
+}
+@media(max-width:799px),(max-height:600px){
+  .mapEventList>.inspector {position:relative!important}
+  .mapEventList>.inspector .inspectorHeader {position:absolute;top:8px;right:10px;border:0;margin:0;padding:0}
+  .mapEventList>.inspector .inspectorHeader h2 {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .mapEventList>.inspector .eventSummary {padding-right:32px}
 }
 @media(max-width:599px){
   html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {display:flex}
@@ -2943,7 +2959,7 @@ html[data-layout='cartographic'] .viewer--plan.viewer--has-selection:not(.viewer
 
 @media(min-width:700px){
  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {position:static;max-height:none;overflow:visible;padding:0;align-self:stretch}
- html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:sticky;top:16px;z-index:8;max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain}
+ html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:static;inset:auto;z-index:auto;max-height:none;overflow:visible}
 }
 
 html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionPrimary {height:auto;min-height:0;display:block}
@@ -2967,6 +2983,48 @@ html[data-layout='cartographic'] .sectionPlotTools button[aria-pressed='true']:h
 html[data-layout='cartographic'] .sectionPlotTools :is(button,summary):focus-visible {outline:2px solid #b0e6f3;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){html[data-layout='cartographic'] .sectionPlotTools :is(button,summary){transition:none}}
 .sectionModelToggle em {display:inline-block;width:22px;height:3px;flex:none}
+
+/* One working surface: switch the plot and its records without stacking pages. */
+html[data-layout='cartographic'] .sectionMode>.sectionPlotTools {margin:0 0 14px;max-width:none}
+.sectionTabs {display:flex;align-items:stretch;gap:3px;padding:3px;background:#10212a;border:1px solid var(--ui-border);border-radius:7px;min-width:0}
+html[data-layout='cartographic'] .sectionTabs>button {display:flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:7px 14px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--ui-muted);font:600 12px Arial,Helvetica,sans-serif;cursor:pointer;transition:background-color 150ms ease,border-color 150ms ease}
+html[data-layout='cartographic'] .sectionTabs>button[aria-selected='true'] {background:#263f4b;color:var(--ui-text);border-color:#577887;box-shadow:inset 0 -2px #8acee0}
+.sectionTabs button span {font-size:10px;font-weight:400;white-space:nowrap;color:#c5dce5}
+.sectionTabs button:disabled {opacity:.5;cursor:wait}
+.sectionTabs button:focus-visible {outline:2px solid #b0e6f3;outline-offset:3px}
+.sectionTabPanel {min-width:0;width:100%}
+.sectionTabPanel[hidden],.sectionListResults[hidden] {display:none!important}
+.sectionTabPanel:not([hidden]) {animation:sectionTabIn 160ms ease both}
+.sectionMode[data-reduced-motion='true'] .sectionTabPanel {animation:none}
+.sectionMode[data-reduced-motion='true'] .sectionTabs>button {transition:none}
+.sectionGraphPanel {display:flex;flex-direction:column;gap:14px}
+html[data-layout='cartographic'] .sectionMode--demonstration .sectionGraphPanel {height:100%;min-height:0;flex:1;gap:0}
+html[data-layout='cartographic'] .sectionMode .sectionGraphPanel>.guidedDiscovery {margin:0!important;width:100%!important;max-width:100%;font-family:Arial,Helvetica,sans-serif}
+.sectionGraphPanel>.guidedDiscovery h3 {font-family:Arial,Helvetica,sans-serif;font-size:23px;letter-spacing:-.4px}
+.sectionListPanel .eventListTable {max-height:clamp(220px,45dvh,560px)}
+html[data-layout='cartographic'] .sectionListPanel .eventListTable .eventListRow {display:block;width:100%;min-height:36px;padding:0;border:0;border-radius:0;background:transparent;color:inherit;text-align:left;font:inherit}
+html[data-layout='cartographic'] .sectionListPanel .eventListTools .eventListExport {background:#8acee0;border-color:#8acee0;color:#08222e}
+html[data-layout='cartographic'] .sectionListPanel .eventListHeader>button {width:32px;height:32px;min-height:32px;flex:none;padding:0;border:0;border-radius:50%;background:#253e49;color:inherit;font-size:20px}
+.sectionListStatus,.sectionListHint {margin:0;padding:18px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-panel);color:var(--ui-text);font:12px/1.5 Arial,Helvetica,sans-serif}
+.sectionListHint h3 {margin:0 0 8px;font-size:15px}
+.sectionListHint p {margin:0;color:var(--ui-muted)}
+html[data-layout='cartographic'] .sectionWorkspace[data-section-view='list'] .sectionContext,
+html[data-layout='cartographic'] .sectionWorkspace[data-section-view='list'] .sectionExportPng {display:none}
+html[data-layout='cartographic'] .viewer--section:has(.sectionWorkspace[data-section-view='list'])>.scene {visibility:hidden}
+@media(min-width:700px){
+  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace[data-section-view='list']>.sectionSidebar {position:sticky;top:16px;align-self:start;max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain}
+}
+@media(max-width:699px){
+  .sectionTabs {flex:1 1 210px;width:auto}
+  html[data-layout='cartographic'] .sectionTabs>button {flex:1;padding:7px 9px;gap:6px}
+  html[data-layout='cartographic'] .sectionMode .sectionWorkspace[data-section-view='list'] .sectionSidebar>.sectionInspector {max-height:min(34dvh,200px)}
+  .sectionWorkspace[data-section-view='list'] .sectionInspector .inspectorHeader {position:absolute;top:8px;right:8px;padding:0;margin:0;border:0}
+  .sectionWorkspace[data-section-view='list'] .sectionInspector .inspectorHeader h2 {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .sectionWorkspace[data-section-view='list'] .sectionInspector .eventSummary {margin:0 0 8px;padding-right:32px;gap:10px}
+  .sectionWorkspace[data-section-view='list'] .sectionInspector .eventMagnitude {font-size:26px}
+  .sectionWorkspace[data-section-view='list'] .sectionInspector .eventDepth {margin:0 0 8px}
+}
+@keyframes sectionTabIn {from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:699px){
  html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:fixed;z-index:38;top:auto;bottom:12px;left:12px;right:12px;width:auto;max-height:42dvh;overflow:auto;padding:12px}
  html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) {padding-bottom:280px}
