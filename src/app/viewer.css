@@ -1031,9 +1031,6 @@ to {
 .viewer:has(.studioBar).viewer--tour.viewer--section > .scene {
   display:none
 }
-.viewer:has(.studioBar) .sectionInspector .eventSummary {
-  display:none
-}
 .viewer--tour .studioScrim {
   display:none
 }
@@ -2720,4 +2717,264 @@ html[data-layout='cartographic'] .sectionMode--demonstration .tourSectionLocatio
 html[data-layout='cartographic'] .studioBar {padding-right:18px}
 .documentHeader {padding-right:4vw}
 html[data-layout='cartographic'] .sectionModeHeader {padding-right:0}
+
+/* Contextual inspection and map controls: reserve space instead of stacking cards. */
+.eventSummary > div {min-width:0;overflow-wrap:anywhere}
+.eventDepth {display:flex;align-items:baseline;gap:10px;margin:0 0 14px}
+.eventDepth strong {font-size:23px;font-weight:500;white-space:nowrap;font-variant-numeric:tabular-nums}
+.eventDepth span {font-size:11px;color:var(--ui-muted)}
+.eventDetails {border-top:1px solid var(--ui-border);padding-top:12px}
+.eventDetails > summary {cursor:pointer;font-size:12px;line-height:1.4}
+.inspector .qualityWarning {margin:12px 0;padding:10px 12px;font-size:11px;line-height:1.5}
+.qualityWarning > summary {cursor:pointer;font-weight:600;color:#ffe0a3}
+.inspector .source {margin-bottom:0}
+html[data-layout='cartographic'] .viewer--has-selection:not(.viewer--section) > .regionBanner {display:none}
+@media(min-width:800px){
+  html[data-layout='cartographic'] .viewer--has-selection:not(.viewer--section) > .compass {right:356px}
+  html[data-layout='cartographic'] .viewer--has-selection:not(.viewer--section) > .planView {right:352px}
+}
+html[data-layout='cartographic'] .sectionMode {animation:contextFade 180ms ease both}
+@keyframes contextFade {from{opacity:0}to{opacity:1}}
+html[data-layout='cartographic'] .sectionPlotTools {display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+html[data-layout='cartographic'] .sectionMain > .sectionPlotTools {width:100%;max-width:var(--section-card-width)}
+.sectionCompareModes {display:flex;border:1px solid var(--ui-border);padding:3px;gap:3px;border-radius:5px}
+html[data-layout='cartographic'] .sectionCompareModes button {border:0}
+.sectionPlotTools a {font-size:12px;color:var(--ui-muted);margin-left:auto;padding:8px 0;text-underline-offset:3px}
+html[data-layout='cartographic'] .sectionLegend .sectionModelToggle {display:flex;align-items:center;gap:8px;background:var(--ui-muted-bg);font-size:11px;min-height:34px}
+.sectionModelToggle i {display:block;width:24px;height:14px;border-radius:10px;background:var(--ui-border);position:relative}
+.sectionModelToggle i::after {content:'';position:absolute;width:10px;height:10px;left:2px;top:2px;border-radius:50%;background:var(--ui-muted);transition:transform 150ms ease}
+.sectionModelToggle[aria-checked='true'] i {background:var(--ui-accent)}
+.sectionModelToggle[aria-checked='true'] i::after {transform:translateX(10px);background:var(--ui-on-accent)}
+html[data-layout='cartographic'] .sectionLegend .sectionRangeToggle {font-size:11px;min-height:34px}
+html[data-layout='cartographic'] .sectionPrimary {height:calc(100dvh - 184px)}
+html[data-layout='cartographic'] .sectionMain > .sectionFilterBar {display:flex;flex-wrap:wrap;gap:8px 12px;border:1px solid var(--ui-border);border-radius:var(--ui-radius);padding:12px}
+.sectionMain > .sectionFilterBar p {flex-basis:100%;font-size:11px;line-height:1.5}
+.sectionMain > .sectionFilterBar small {font-size:10px;line-height:1.5}
+html[data-layout='cartographic'] .sectionMode > .guidedDiscovery {margin-left:298px;max-width:1100px}
+html[data-layout='cartographic'] .sectionWorkspace > .sectionInspector {position:sticky;z-index:6;top:16px;bottom:auto;align-self:start;width:auto;height:auto;margin:0;max-height:calc(100dvh - 32px);overflow:auto;padding:16px;box-shadow:none;overscroll-behavior:contain}
+html[data-layout='cartographic'] .sectionInspector .inspector {padding:0;max-height:none;overflow:visible}
+html[data-layout='cartographic'] .sectionInspector .inspectorHeader {margin-bottom:12px;padding-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+html[data-layout='cartographic'] .sectionInspector .inspectorHeader h2 {margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+html[data-layout='cartographic'] .sectionInspector .inspectorHeader button {min-height:30px;height:30px;width:30px;padding:0;border:0;background:var(--ui-muted-bg);font-size:18px;flex:none}
+html[data-layout='cartographic'] .sectionInspector .eventSummary {display:flex;gap:12px;align-items:center;margin:12px 0}
+.sectionInspector .eventSummary small {display:block;font-size:10px;margin-top:4px}
+.sectionInspector .eventSummary strong {font-size:12px;font-weight:500}
+.sectionInspector .eventMagnitude {font-size:28px;white-space:nowrap}
+.sectionInspector .source {font-size:10px;line-height:1.5;margin-top:12px}
+.sectionInspector .eventDepth {margin-bottom:12px}
+@media(min-width:1280px){
+  html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) .sectionWorkspace {grid-template-columns:260px minmax(0,1fr) 300px}
+  html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) > .guidedDiscovery {margin-right:316px}
+}
+@media(min-width:900px) and (max-width:1279px){
+  html[data-layout='cartographic'] .sectionWorkspace:has(.sectionInspector--active) {grid-template-columns:minmax(0,1fr) 300px}
+  .sectionWorkspace:has(.sectionInspector--active) > .sectionMain {grid-column:1;grid-row:1}
+  .sectionWorkspace:has(.sectionInspector--active) > .sectionInspector {grid-column:2;grid-row:1}
+  html[data-layout='cartographic'] .sectionWorkspace:has(.sectionInspector--active) > .sectionSidebar {grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:1fr 1fr;align-items:start}
+}
+.planBack3d {display:none}
+html[data-layout='cartographic'] .viewer--plan:has(.planActions) > .studioDock {display:none}
+html[data-layout='cartographic'] .planView > .planToolbar {position:relative;inset:auto;max-width:none;width:100%}
+.planUpdating {position:absolute;right:12px;top:calc(100% + 6px);z-index:2;padding:5px 8px;border:1px solid var(--ui-border);border-radius:4px;background:var(--ui-panel);color:var(--ui-muted);font-size:11px;pointer-events:none}
+@media(max-width:899px){
+  html[data-layout='cartographic'] .sectionMode > .guidedDiscovery {margin-left:0;width:100%}
+  html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) {padding-bottom:260px}
+  html[data-layout='cartographic'] .sectionWorkspace > .sectionInspector {position:fixed;z-index:35;top:auto;bottom:12px;left:12px;right:12px;width:auto;max-height:min(52dvh,420px);padding:12px;box-shadow:0 8px 32px #0005}
+  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionPrimary {height:auto}
+  html[data-layout='cartographic'] .sectionSidebar {display:flex;flex-direction:column}
+  html[data-layout='cartographic'] .sectionPlotTools {gap:6px}
+  html[data-layout='cartographic'] .sectionPlotTools button {font-size:11px;padding:6px 9px}
+  .sectionPlotTools a {font-size:11px}
+}
+@media(min-width:600px) and (max-width:899px){
+  html[data-layout='cartographic'] .sectionWorkspace:has(.sectionInspector--active) {display:grid;grid-template-columns:minmax(0,1fr) 300px;align-items:start}
+  .sectionWorkspace:has(.sectionInspector--active) > .sectionMain {grid-column:1;grid-row:1}
+  html[data-layout='cartographic'] .sectionWorkspace:has(.sectionInspector--active) > .sectionInspector {position:sticky;grid-column:2;grid-row:1;top:12px;left:auto;right:auto;bottom:auto;width:300px;max-height:calc(100dvh - 24px);margin:0}
+  html[data-layout='cartographic'] .sectionWorkspace:has(.sectionInspector--active) > .sectionSidebar {grid-column:1 / -1;grid-row:2;display:grid;grid-template-columns:1fr 1fr}
+}
+@media(max-width:799px){
+  html[data-layout='cartographic'] .viewer:has(.studioBar) {--viewer-footer:76px}
+  html[data-layout='cartographic'] .studioFooter {height:76px}
+  .studioHeaderActions .studioHistory {display:inline-flex;width:36px;min-width:36px;height:36px;padding:6px}
+  .studioHeaderActions .studioHistory span {display:none}
+  .studioFooter .studioProvenance {display:block;position:absolute;bottom:4px;right:12px;max-width:calc(100% - 24px);text-align:right;line-height:1.2}
+  .studioFooter .studioProvenance > span {display:none}
+  .studioFooter .studioProvenance small {font-size:8px;white-space:nowrap}
+  html[data-layout='cartographic'] .studioDock {top:72px;bottom:auto;left:10px;width:44px;height:auto;max-height:calc(100dvh - 150px)}
+  html[data-layout='cartographic'] .studioDock[data-pinned='true'] {width:calc(100vw - 20px)}
+  html[data-layout='cartographic'] .studioBar .studioMode {left:64px;right:auto;top:72px}
+  html[data-layout='cartographic'] .viewer--plan .studioBar .studioMode {display:none}
+  html[data-layout='cartographic'] .viewer--plan .planView > .planToolbar {padding:8px 10px 8px 64px;min-height:52px;flex-wrap:wrap;gap:5px}
+  html[data-layout='cartographic'] .viewer--plan:has(.planActions) .planView > .planToolbar {padding-left:10px}
+  html[data-layout='cartographic'] .viewer--plan:has(.planActions) .studioDock {display:none}
+  .planBack3d {display:block}
+  html[data-layout='cartographic'] .viewer:has(.studioBar) > .inspector {bottom:calc(var(--viewer-footer) + 10px);max-height:50dvh;padding:14px}
+  html[data-layout='cartographic'] .viewer:has(.studioBar) .eventSummary {margin:12px 0;gap:12px}
+  html[data-layout='cartographic'] .planNotice {flex-wrap:wrap}
+}
+@media(max-width:599px){
+  html[data-layout='cartographic'] .sectionLegend .colorLegend {width:100%}
+  html[data-layout='cartographic'] .sectionPrimaryHeading {padding:10px}
+  .sectionCompareModes {flex:1 1 100%;width:100%}
+  .sectionCompareModes button {flex:1;white-space:nowrap}
+  .sectionPlotTools a {margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-layout='cartographic'] .sectionMode,.sectionModelToggle i::after {animation:none;transition:none}
+}
 @media(max-width:799px){html[data-layout='cartographic'] .studioBar {padding-right:12px}}
+.studioMotion {margin-block:1rem;padding-block:1rem;border-block:1px solid var(--studio-border,#344b57)}
+.studioMotion > label {display:flex;align-items:center;justify-content:space-between;gap:1rem;font-weight:600}
+.studioMotion input {width:1.2rem;height:1.2rem;accent-color:#8acee0;flex:none}
+.studioRevealAction {margin-block:.65rem 0;padding:.5rem .8rem;border:1px solid #577380;border-radius:6px;background:#203842;color:#dff3fa;font:inherit;cursor:pointer}
+.studioRevealAction:disabled {opacity:.5;cursor:default}
+.viewer--tour :is(.studioRevealAction,.studioMotion) {display:none}
+/* An explicit session/tutorial opt-in also applies to these short fades.
+   All other reduced-motion defaults, including page navigation, stay intact. */
+.viewer[data-motion='full']:not(.viewer--plan):not(.viewer--section) > .scene,
+.viewer[data-motion='full'] > :is(.planView,.sectionMode) {animation:contextFade 240ms ease both}
+@media(prefers-reduced-motion:reduce){
+  .viewer[data-motion='full']:not(.viewer--plan):not(.viewer--section) > .scene,
+  .viewer[data-motion='full'] > :is(.planView,.sectionMode) {animation:contextFade 240ms ease both !important}
+  .viewer[data-motion='full'] .tourBubble[data-motion='true'] {transition:left 420ms cubic-bezier(.22,.8,.2,1),top 420ms cubic-bezier(.22,.8,.2,1);transition-duration:420ms !important}
+  .viewer[data-motion='full'] .tourBubble[data-motion='true'] .bubbleCopy {animation:bubbleCopyIn 300ms ease both;animation-duration:300ms !important}
+}
+
+/* Shared catalog results; pagination limits DOM work, never exported rows. */
+.eventList {color:var(--ui-text,#e0edf3);background:var(--ui-panel,#172933);border:1px solid var(--ui-border,#344c59);border-radius:8px;overflow:hidden;font:13px/1.45 Arial,Helvetica,sans-serif;min-width:0}
+.eventListHeader {display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--ui-border,#344c59)}
+.eventListHeader h3 {margin:4px 0;font:600 17px/1.2 Arial,Helvetica,sans-serif;letter-spacing:-.2px}
+.eventListHeader p {margin:5px 0 0;font-size:11px;color:var(--ui-muted,#adc5d0)}
+.eventListHeader>button {border:0;border-radius:50%;background:#253e49;color:inherit;width:32px;height:32px;flex:none;font-size:20px;cursor:pointer}
+.eventListTools {padding:10px 14px;display:flex;flex-wrap:wrap;gap:6px}
+.eventList :is(button,input) {font:inherit}
+.eventListTools>button,.eventListSelection button,.eventListFooter button,.eventListTable button,.eventListEmpty button {border:1px solid #45616e;background:#203843;color:inherit;border-radius:5px;min-height:34px;padding:6px 10px;cursor:pointer}
+.eventList button:disabled {opacity:.45;cursor:default}
+.eventListTools .eventListExport {margin-left:auto;background:#8acee0;color:#08222e;border-color:#8acee0;font-weight:600}
+.eventListSearch {padding:0 14px 10px}
+.eventListSearch label {display:block;font-size:11px;color:var(--ui-muted,#adc5d0);margin-bottom:4px}
+.eventListSearch input {width:100%;min-height:38px;border:1px solid #45616e;border-radius:5px;background:#10232c;color:inherit;padding:8px 10px}
+.eventListSelection {padding:0 14px 10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.eventListSelection p {margin:0;font-size:12px}
+.eventListSelection>div {display:flex;gap:6px}
+.eventListSelection button {font-size:11px;padding:4px 8px;min-height:30px}
+.eventListTable {overflow:auto;max-height:440px;overscroll-behavior:contain;border-block:1px solid #344c59}
+.eventList table {border-collapse:collapse;width:100%;font-size:12px;table-layout:auto}
+.eventList th {font-size:10px;font-weight:500;color:#b6ced8;text-align:left;position:sticky;top:0;background:#10232c;z-index:1;white-space:nowrap;padding:8px}
+.eventList td {border-bottom:1px solid #2b424e;padding:9px 7px;vertical-align:middle}
+.eventList td:first-child {width:32px;padding-left:14px}
+.eventList td:nth-child(3),.eventList td:nth-child(4) {white-space:nowrap;font-variant-numeric:tabular-nums}
+.eventList td:nth-child(2) {max-width:260px;overflow-wrap:anywhere}
+.eventList td strong {display:block;font-size:11px;font-weight:500}
+.eventList td span {display:block;font-size:10px;color:#adc5d0;margin-top:3px}
+.eventList td small {display:block;font-size:9px;color:#adc5d0}
+.eventList td:last-child {padding-right:14px}
+.eventList input[type='checkbox'] {width:17px;height:17px;accent-color:#8acee0;cursor:pointer}
+.eventList tr[data-checked='true'] {background:#204351}
+.eventList tr[data-active='true'] {box-shadow:inset 3px 0 #bceafa}
+.eventListFooter {padding:12px 14px}
+.eventListFooter nav {display:flex;justify-content:space-between;align-items:center;gap:10px}
+.eventListFooter p {font-size:10px;line-height:1.5;color:#adc5d0;margin:10px 0 0}
+.eventListEmpty {padding:16px;margin:0}.eventListEmpty button {display:block;margin-top:10px}
+.mapEventList {position:absolute;z-index:32;top:calc(var(--viewer-bar,54px) + 12px);bottom:calc(var(--viewer-footer,60px) + 12px);right:12px;width:390px;overflow:auto;border-radius:8px;background:var(--ui-panel,#172933);overscroll-behavior:contain;box-shadow:0 8px 30px #0004}
+.mapEventList>.inspector {position:static!important;width:auto!important;max-height:none!important;border:0!important;border-radius:0;padding:16px!important;margin:0!important;box-shadow:none!important}
+.mapEventList .eventList {border:0;border-radius:0}
+.collectionOpen3d {margin:12px 14px;padding:10px;border:1px solid #45616e;background:#203843;color:#e0edf3;border-radius:5px;cursor:pointer}
+html[data-layout='cartographic'] .viewer--event-list:not(.viewer--section) > :is(.scene,.planView) {right:414px}
+html[data-layout='cartographic'] .viewer--event-list > .regionBanner {display:none}
+html[data-layout='cartographic'] .viewer--event-list > .compass {right:424px}
+.mapSelectionInstruction {position:absolute;top:65px;left:50%;transform:translateX(-50%);max-width:calc(100% - 24px);width:max-content;padding:10px 14px;border-radius:6px;background:#10232ced;color:#e3f2f6;border:1px solid #45616e;font-size:12px;pointer-events:none}
+/* The scientific plot and its companion rail share a compact, centered frame. */
+html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace {display:grid;grid-template-columns:minmax(0,var(--section-card-width)) 320px;gap:20px;justify-content:center;align-items:start;width:100%;max-width:100%;margin:0 auto}
+html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionMain {grid-column:1;grid-row:1;min-width:0;width:100%;max-width:100%;display:flex;flex-direction:column;gap:14px}
+html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:14px;width:320px;min-width:0;position:sticky;top:16px;max-height:calc(100dvh - 32px);overflow:auto;padding:0 3px 0 0;overscroll-behavior:contain}
+html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:static;inset:auto;width:auto;max-height:none;overflow:visible;margin:0;padding:16px;box-shadow:none;background:var(--ui-panel);border:1px solid var(--ui-border);border-radius:8px}
+html[data-layout='cartographic'] .sectionMode .sectionMain>.guidedDiscovery {margin:0!important;width:100%!important;max-width:100%;font-family:Arial,Helvetica,sans-serif}
+.sectionMain>.guidedDiscovery h3 {font-family:Arial,Helvetica,sans-serif;font-size:23px;letter-spacing:-.4px}
+html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) {padding-bottom:16px}
+html[data-layout='cartographic'] .sectionMode .sectionPrimary {width:100%;max-width:100%;margin:0}
+html[data-layout='cartographic'] .sectionMode .sectionPrimaryHeading {gap:12px}
+html[data-layout='cartographic'] .sectionMode .sectionBottom {margin:0}
+.sectionListAnchor {scroll-margin-top:12px}
+.sectionPlot {position:relative}
+.sectionPlot--selecting canvas {cursor:crosshair;touch-action:none}
+.selectionInstruction {margin:0;padding:10px 14px;font-size:12px;background:#203e4b;color:#e0f3f7;border-bottom:1px solid #45616e}
+.plotSelectionLayer {position:absolute;top:0;left:50%;transform:translateX(-50%);pointer-events:none;overflow:hidden}
+.plotSelectionLayer i {position:absolute;display:block;border:2px dashed #bceafa;background:#8acee026;box-sizing:border-box}
+.profilePlotSurface {position:relative;flex:none}
+.profilePlotSurface canvas {display:block}
+html[data-layout='cartographic'] .viewer--section:has(.sectionLoading)>.scene {visibility:hidden}
+.eventListProvenance {margin:10px 0;font-size:11px;line-height:1.5}
+.eventList tbody tr {cursor:pointer;transition:background-color 150ms ease}
+.eventList tbody tr:hover,.eventList tbody tr:focus-within {background:#294753}
+.eventListTable .eventListRow {display:block;border:0;background:transparent;min-height:36px;width:100%;padding:0;text-align:left;border-radius:3px;color:inherit}
+.eventListRow:focus-visible {outline:2px solid #a7dce9;outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.eventList tbody tr {transition:none}}
+@media(max-width:699px){
+  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace {grid-template-columns:minmax(0,var(--section-card-width));gap:16px}
+  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {grid-column:1;grid-row:2;width:100%;position:static;max-height:none;overflow:visible;padding:0;display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {grid-column:1 / -1;position:sticky;top:12px;z-index:36}
+}
+@media(max-width:799px){
+  .mapEventList {top:auto;left:8px;right:8px;bottom:calc(var(--viewer-footer,76px) + 8px);width:auto;max-height:57dvh;border:1px solid #45616e}
+  html[data-layout='cartographic'] .viewer--event-list:not(.viewer--section)>:is(.scene,.planView) {right:0}
+  html[data-layout='cartographic'] .viewer--event-list>.compass {right:12px}
+  .mapSelectionInstruction {top:110px;font-size:11px;width:calc(100% - 24px)}
+  .eventListTable {max-height:320px}
+  .eventListTools {padding:9px 10px}.eventListHeader {padding:12px}
+  .eventListTools>button {font-size:11px;padding:6px 8px}
+  .eventListSearch,.eventListSelection {padding-inline:10px}
+}
+@media(max-width:599px){
+  html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {display:flex}
+  html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:fixed;z-index:38;top:auto;bottom:12px;left:12px;right:12px;width:auto;max-height:42dvh;overflow:auto;padding:12px}
+  html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) {padding-bottom:280px}
+  .eventListSelection>div {width:100%}
+  .eventListTable {max-height:340px}
+  .eventList td {padding:9px 5px}.eventList td:first-child {padding-left:8px;width:26px}.eventList td:last-child {padding-right:8px}
+  .eventList td button {padding:5px;min-width:32px}.eventList td:nth-child(2) {max-width:145px}
+}
+
+/* A single 2D inspection is a compact overlay, not an empty full-height rail. */
+html[data-layout='cartographic'] .viewer--plan.viewer--has-selection:not(.viewer--event-list)>.planView {right:0}
+@media(min-width:800px){
+  html[data-layout='cartographic'] .viewer--plan>.inspector {width:320px;right:12px;top:calc(var(--viewer-bar) + 12px);bottom:auto;max-height:calc(100dvh - var(--viewer-bar) - var(--viewer-footer) - 24px);border-radius:8px;padding:18px}
+}
+
+@media(min-width:700px){
+ html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionWorkspace>.sectionSidebar {position:static;max-height:none;overflow:visible;padding:0;align-self:stretch}
+ html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:sticky;top:16px;z-index:8;max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain}
+}
+
+html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionPrimary {height:auto;min-height:0;display:block}
+html[data-layout='cartographic'] .sectionMode:not(.sectionMode--demonstration) .sectionPlot {height:var(--section-canvas-height);min-height:0;flex:none;padding:0;display:flex;align-items:flex-start;justify-content:center}
+
+.sectionMoreActions {position:relative;align-self:stretch}
+.sectionMoreActions>summary {list-style:none;cursor:pointer;border:1px solid var(--ui-border);border-radius:5px;min-height:38px;padding:9px 12px;font-size:12px;background:var(--ui-panel);color:var(--ui-text)}
+.sectionMoreActions>summary::-webkit-details-marker {display:none}
+.sectionMoreActions[open] {z-index:42}
+.sectionMoreActions[open]>:not(summary) {display:block;position:absolute;left:0;top:calc(100% + 5px);width:190px;padding:12px;border:1px solid var(--ui-border);background:var(--ui-panel);color:var(--ui-text);font-size:12px;box-shadow:0 8px 20px #0004}
+.sectionMoreActions[open]>a {top:calc(100% + 49px);text-align:left;text-decoration:none}
+html[data-layout='cartographic'] .viewer--section:not(:has(.sectionMode--demonstration))>.scene {clip-path:inset(var(--section-map-clip-top,0px) 0 var(--section-map-clip-bottom,0px))!important;transition:none}
+html[data-layout='cartographic'] .sectionPlotTools>button,
+.sectionMoreActions>summary {height:40px;min-height:40px;box-sizing:border-box;border-radius:5px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;cursor:pointer;transition:background-color 140ms ease,border-color 140ms ease}
+html[data-layout='cartographic'] .sectionPlotTools .sectionCompareModes {height:40px;box-sizing:border-box;align-items:center}
+html[data-layout='cartographic'] .sectionPlotTools .sectionCompareModes button {height:32px;min-height:32px;padding:6px 12px;font-size:12px;cursor:pointer;transition:background-color 140ms ease}
+.sectionMoreActions>summary::after {content:'▾';font-size:10px;color:var(--ui-muted)}
+html[data-layout='cartographic'] .sectionPlotTools button:not(:disabled):hover,
+.sectionMoreActions>summary:hover,.sectionMoreActions[open]>summary {background:#294753;border-color:#7dabbc}
+html[data-layout='cartographic'] .sectionPlotTools button[aria-pressed='true']:hover {background:#a7ddea;color:#08222e}
+html[data-layout='cartographic'] .sectionPlotTools :is(button,summary):focus-visible {outline:2px solid #b0e6f3;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){html[data-layout='cartographic'] .sectionPlotTools :is(button,summary){transition:none}}
+.sectionModelToggle em {display:inline-block;width:22px;height:3px;flex:none}
+@media(max-width:699px){
+ html[data-layout='cartographic'] .sectionMode .sectionSidebar>.sectionInspector {position:fixed;z-index:38;top:auto;bottom:12px;left:12px;right:12px;width:auto;max-height:42dvh;overflow:auto;padding:12px}
+ html[data-layout='cartographic'] .sectionMode:has(.sectionInspector--active) {padding-bottom:280px}
+ html[data-layout='cartographic'] .sectionModeHeader {gap:8px;min-height:0;padding-bottom:12px}
+ html[data-layout='cartographic'] .sectionModeHeader h2 {font-size:21px;line-height:1.2}
+ html[data-layout='cartographic'] .sectionModeHeader .sectionBack {padding:7px 10px;min-height:36px}
+ html[data-layout='cartographic'] .sectionCompareModes {flex:1 1 220px;width:auto;min-width:0}
+ html[data-layout='cartographic'] .sectionPlotTools {gap:6px}
+ html[data-layout='cartographic'] .sectionPlotTools button {min-height:38px}
+ .sectionMoreActions>summary {padding:9px 10px}
+}

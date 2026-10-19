@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
-import type { Slab2Artifact } from "@/lib/data/slab2";
-import { geographicToScene } from "@/lib/geo/scene-coordinates";
+import type { Slab2Artifact } from "../data/slab2.ts";
+import { geographicToScene } from "../geo/scene-coordinates.ts";
 
 export function createSlab2Geometry(artifact: Slab2Artifact) {
   const { west, north, stepDegrees, width, height, depthKm } = artifact.grid;
@@ -19,6 +19,7 @@ export function createSlab2Geometry(artifact: Slab2Artifact) {
   }
 
   const indices: number[] = [];
+  let firstColumn=width,lastColumn=-1;
   for (let row = 0; row < height - 1; row++) {
     for (let column = 0; column < width - 1; column++) {
       const northwest = row * width + column;
@@ -31,6 +32,7 @@ export function createSlab2Geometry(artifact: Slab2Artifact) {
         depthKm[southwest] === null || depthKm[southeast] === null
       ) continue;
       indices.push(northwest, southwest, northeast, northeast, southwest, southeast);
+      firstColumn=Math.min(firstColumn,column);lastColumn=Math.max(lastColumn,column+1);
     }
   }
   const geometry = new THREE.BufferGeometry();
@@ -42,5 +44,10 @@ export function createSlab2Geometry(artifact: Slab2Artifact) {
     geometry,
     validVertices: artifact.summary.validNodes,
     triangles: indices.length / 3,
+    // Only drawable faces set the reveal range; nodata must not delay its start.
+    revealRange: (lastColumn<0?[0,0]:[
+      geographicToScene(west+firstColumn*stepDegrees,north,0)[0],
+      geographicToScene(west+lastColumn*stepDegrees,north,0)[0],
+    ]) as [number,number],
   };
 }
