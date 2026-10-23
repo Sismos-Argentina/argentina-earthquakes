@@ -10,9 +10,9 @@
     "method": "WGS84 a azimutal equidistante local; distancia a segmento, ±50 km"
   },
   "web": {
-    "date": "2026-10-16",
-    "events": 80877,
-    "sha256": "0e6adb24f1254fe5a4beb06c29de1436337a6aaaabe84810f706dd887503f53f",
+    "date": "2026-10-23",
+    "events": 80948,
+    "sha256": "8d7e1e048569d7347f5bb581e8f855a5d4d484a11aa705d22adaec49e16d4309",
     "method": "Distancia a geodésica WGS84, ±50 km; extremos 73°O–61°O"
   },
   "stops": [
@@ -28,10 +28,10 @@
         "changeJS": 0.6477466664780293
       },
       "web": {
-        "n": 4664,
+        "n": 4672,
         "medianKm": 190,
         "shallow": 334,
-        "intermediate": 4322,
+        "intermediate": 4330,
         "deep": 8
       }
     },
@@ -47,10 +47,10 @@
         "changeJS": 0.3699452831035172
       },
       "web": {
-        "n": 1883,
+        "n": 1885,
         "medianKm": 40,
         "shallow": 1055,
-        "intermediate": 789,
+        "intermediate": 791,
         "deep": 39
       }
     },
@@ -66,10 +66,10 @@
         "changeJS": 0.3861774851622778
       },
       "web": {
-        "n": 3514,
+        "n": 3517,
         "medianKm": 91,
-        "shallow": 1713,
-        "intermediate": 1796,
+        "shallow": 1714,
+        "intermediate": 1798,
         "deep": 5
       }
     }
