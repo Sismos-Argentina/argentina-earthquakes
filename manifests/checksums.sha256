@@ -1,5 +1,5 @@
 # INPRES: identidad vigente en src/data/catalog-snapshot.json; Slab2 y cartografia fijados
-6666ef73ab8336a75760c3d6061d4656c2695dcc0fef4f69e9c718661605130f  inpres/sismos.geojson
+3dd9fcd163e631d3fadffceadb40823590b764729b7f5af848c2d5ed957785e0  inpres/sismos.geojson
 46c5bced98c9e01aec61cb8abef241deee10ce6ba29daa8be043f35d739d09d9  gebco/GEBCO_18_Sep_2026_2b57c69752b6.zip
 ce1ac7036499a0edd641fbc093cd209a98f96a49d2eca8480aaacad35138a7f6  natural-earth/ne_10m_admin_0_countries.zip
 a1fa49dabca0b92c9933af18cf60430c1d07997aece75e736abfd9d90c650b3b  slab2/Slab2_sam.xml
@@ -21,8 +21,8 @@ a3856e102bdc7272df3093996aea2c1c4e1120750438af67e5d1edb5faaccc09  generated/slab
 8fd4a0df2c3616837fdcadac5a9534ebcb0821c1de80bdb415c2fe33855c7a17  ign/pais.json
 
 # Artefactos del prototipo de competencia 2026-10-06; rutas relativas al producto
-568d723828c595d43a261ed8c0a0d7dfc9d8cbf5623630c7d5628d5ce1f58046  src/data/catalog-snapshot.json
-4ace1fa99ed2fee61788401955c52ac30fd7a62cb13e330ac48f93b8d34e97c3  src/data/competition-presets.json
+997b7c14c8344adbec0a942047159898e943500d24688b7bc3683f91ed6be57c  src/data/catalog-snapshot.json
+3c6683eeabbe56b0fd4024ce7a8105ee1eab6ad3ab9c6f325123f9bf21817efa  src/data/competition-presets.json
 37b4ec2ef40559e71a3b56a484e45c1e24fa4c90ed56b9257e4be3e3584191bc  src/data/competition-history.json
 c1f51e91421e797699db95e63db8dc0ae34355e9564a3befada7c16f726f1f5e  public/data/generated/historical/media-manifest.json
 73fc0bd16fa26fbcd07f75cc70836cfe50e599d0611f40f1a1c218db1f031b52  public/data/generated/historical/fotos_historicas/1894-10-27-san-juan/01-angaco-f1889208-480.webp
@@ -67,7 +67,7 @@ ec95691335a64079e60556e6b45b5803e9050338f1f9f3ffb8f714f663224643  public/data/ge
 826b2b8304e86e0a9e94dea857e34739e177bb54604982795dc8d8a5b8bab0e2  public/data/generated/historical/fotos_historicas/2015-10-17-el-galpon-salta/06-el-galpon-salta-d4bf6b0b-1600.webp
 2ca0bc31735e93b1b24298c25af5dc9f262a130013a25f083b0a608b8fa709b9  src/data/place-labels.json
 c551bfe8501ae83d2f8f955ec1e9351223c918ef9487e8f00350a61e76299ce6  src/data/historical-archive.json
-45c201a41bad3b0e666f7b7080d267da1d0e0d7c86a0d1a0ac5d9c7862e197d5  src/data/catalog-quality.json
-65a4b0b197be08fbed2304b6cc159e6557ad64cc3e8d084666b36acba6a729a5  src/data/flat-slab-guide.json
+9ac3d4f22e590ca42eb962e447428276b9d3672001f7966e616f1810e2bf901f  src/data/catalog-quality.json
+2420eeffbcaa29b276a0c57b126674ba5ff8aa1f012edb67b8717aacf869b14a  src/data/flat-slab-guide.json
 432c7ee84ab60e625a43f83beb059589f7f866fecf0427bc4897da0511c5a774  src/data/catalog-update-policy.json
-5b18a47197ffe09ff55f604de18a56d77787dd82a3735d119553700bd50c1344  src/data/catalog-refresh.json
+54651238946f2ea466db710f3a4e1daea4ad00194265be35603d6a7e0b1228e5  src/data/catalog-refresh.json
