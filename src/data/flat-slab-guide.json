@@ -3,9 +3,9 @@
   "question": "¿Por qué hay sismos en San Juan mientras se interrumpe el arco volcánico de los Andes?",
   "answer": "La placa de Nazca sigue descendiendo y la región registra sismos. Según Gao et al. (2021), su tramo subhorizontal reduce la cuña de manto caliente que favorece el magmatismo. Sismos y volcanismo responden a procesos distintos: uno puede continuar mientras el otro disminuye.",
   "web": {
-    "date": "2026-11-06",
-    "period": "16/07/2011–06/11/2026",
-    "sha256": "72c67941c0ee84c660347e400a17c0d6ec7b66c53ba90e03e8e9429c99e90700"
+    "date": "2026-11-11",
+    "period": "16/07/2011–11/11/2026",
+    "sha256": "f5c0caa2e4e976833b753bd5ae73d40977405dd18e141560c3dc48aea77241f5"
   },
   "comparison": {
     "halfWidthKm": 50,
